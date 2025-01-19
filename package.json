@@ -1,0 +1,86 @@
+{
+  "name": "UTD-Rooms",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "next lint --fix",
+    "lint:check": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^6.1.2",
+    "@mui/material": "^6.1.2",
+    "@next/third-parties": "^14.2.15",
+    "autoprefixer": "^10.4.2",
+    "dotenv": "^16.0.0",
+    "framer-motion": "^11.11.1",
+    "next": "^14.2.22",
+    "postcss": "^8.4.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sharp": "^0.33.5",
+    "tailwindcss": "^3.0.23"
+  },
+  "devDependencies": {
+    "@types/autosuggest-highlight": "^3.2.0",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.1",
+    "@typescript-eslint/parser": "^8.8.1",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.14",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.0.4"
+  },
+  "browserslist": "> 0.25%, not dead",
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "next/core-web-vitals",
+      "prettier",
+      "plugin:jsx-a11y/recommended",
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "simple-import-sort",
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "jsx-a11y/anchor-is-valid": [
+        "error",
+        {
+          "components": [
+            "Link"
+          ],
+          "specialLink": [
+            "hrefLeft",
+            "hrefRight"
+          ],
+          "aspects": [
+            "invalidHref",
+            "preferButton"
+          ]
+        }
+      ],
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error"
+    }
+  }
+}
