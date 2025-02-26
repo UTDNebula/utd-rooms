@@ -11,16 +11,22 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Set up PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'pnpm'
 
       - name: Install Next for ESLint and Prettier
-        run: npm install next prettier
+        run: pnpm install
 
       - name: Run ESLint
-        run: npm run lint:check
+        run: pnpm lint:check
 
       - name: Run Prettier
-        run: npm run format:check
+        run: pnpm format:check
