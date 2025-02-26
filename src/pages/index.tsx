@@ -5,7 +5,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import {BuildingSelect} from '../components/BuildingSelect';
 
 /**
  * Returns the home page with Nebula Branding, ...
