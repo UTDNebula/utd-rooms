@@ -2,10 +2,19 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import React from 'react';
 
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
+import type { Rooms } from '@/types/Rooms';
+
+interface Props {
+  rooms: GenericFetchedData<Rooms>;
+}
+
 /**
  * Returns the home page with Nebula Branding, ...
  */
-const Home: NextPage = () => {
+const Home: NextPage<Props> = (props: Props) => {
+  console.log(props.rooms);
+
   return (
     <>
       <Head>

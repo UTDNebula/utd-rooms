@@ -3,12 +3,20 @@ import Head from 'next/head';
 import React from 'react';
 
 import TopMenu from '@/components/topMenu';
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
+import type { Rooms } from '@/types/Rooms';
+
+interface Props {
+  rooms: GenericFetchedData<Rooms>;
+}
 
 /**
  * Returns the results page with Nebula Branding, and room availability
  */
-const Home: NextPage = () => {
-  //Fetch data here
+const Results: NextPage<Props> = (props: Props) => {
+  console.log(props.rooms);
+
+  // Read search query params and fetch events data
 
   return (
     <>
@@ -31,4 +39,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Results;

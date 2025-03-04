@@ -6,10 +6,12 @@ import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
 import Head from 'next/head';
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 import resolveConfig from 'tailwindcss/resolveConfig';
 
 import tailwindConfig from '@/../tailwind.config.js';
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
+import type { Rooms } from '@/types/Rooms';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -132,6 +134,26 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
   });
 
+  const [rooms, setRooms] = useState<GenericFetchedData<Rooms>>({
+    state: 'loading',
+  });
+  useEffect(() => {
+    fetch('/api/rooms')
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.message !== 'success') {
+          throw new Error(response.message);
+        }
+        setRooms({
+          state: 'done',
+          data: response,
+        });
+      })
+      .catch(() => {
+        setRooms({ state: 'error' });
+      });
+  }, []);
+
   return (
     <>
       <GoogleAnalytics gaId="G-BKZ9JMC28B" />
@@ -167,7 +189,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             ' h-full text-haiti dark:text-white'
           }
         >
-          <Component {...pageProps} />
+          <Component rooms={rooms} {...pageProps} />
         </div>
       </ThemeProvider>
     </>
