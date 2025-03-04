@@ -6,7 +6,7 @@ import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
 import Head from 'next/head';
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import resolveConfig from 'tailwindcss/resolveConfig';
 
 import tailwindConfig from '@/../tailwind.config.js';
