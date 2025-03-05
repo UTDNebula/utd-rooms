@@ -148,7 +148,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
         setRooms({
           state: 'done',
-          data: response,
+          data: response.data,
         });
       })
       .catch(() => {
