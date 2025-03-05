@@ -158,10 +158,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const [courseBookEvents, fetchAndStoreCourseBookEvents] =
     useEventsStore<CourseBookEvent>('events');
-  useEffect(() => {
-    fetchAndStoreCourseBookEvents('2025-03-05', new AbortController());
-  }, []);
-  console.log(courseBookEvents);
 
   return (
     <>
@@ -198,7 +194,12 @@ function MyApp({ Component, pageProps }: AppProps) {
             ' h-full text-haiti dark:text-white'
           }
         >
-          <Component rooms={rooms} {...pageProps} />
+          <Component
+            rooms={rooms}
+            courseBookEvents={courseBookEvents}
+            fetchAndStoreCourseBookEvents={fetchAndStoreCourseBookEvents}
+            {...pageProps}
+          />
         </div>
       </ThemeProvider>
     </>
