@@ -41,11 +41,11 @@ const Filters = (props: Props) => {
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
-
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
+  const error = startTime && endTime && dayjs('2022-04-17T' + endTime).isBefore(dayjs('2022-04-17T' + startTime));
 
   let buildings = router.query.buildings ?? [];
   if (!Array.isArray(buildings)) {
@@ -84,6 +84,8 @@ const Filters = (props: Props) => {
               },
               textField: { size: 'small' },
             }}
+            disablePast
+            maxDate={dayjs().add(365, 'day')}
           />
         </LocalizationProvider>
       </Grid>
@@ -93,6 +95,7 @@ const Filters = (props: Props) => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <TimePicker
             label="Start time"
+            className="w-full"
             value={startTime ? dayjs('2022-04-17T' + startTime) : null}
             onChange={(newValue: Dayjs | null) => {
               if (router.isReady) {
@@ -116,8 +119,14 @@ const Filters = (props: Props) => {
               actionBar: {
                 actions: ['clear', 'accept'],
               },
-              textField: { size: 'small' },
+              textField: {
+                size: 'small',
+                error: error,
+                helperText: error && 'Start time must be before end time',
+              },
             }}
+            minTime={dayjs('2022-04-17T06:00')}
+            maxTime={dayjs('2022-04-17T23:00')}
           />
         </LocalizationProvider>
       </Grid>
@@ -127,6 +136,7 @@ const Filters = (props: Props) => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <TimePicker
             label="End time"
+            className="w-full"
             value={endTime ? dayjs('2022-04-17T' + endTime) : null}
             onChange={(newValue: Dayjs | null) => {
               if (router.isReady) {
@@ -150,8 +160,14 @@ const Filters = (props: Props) => {
               actionBar: {
                 actions: ['clear', 'accept'],
               },
-              textField: { size: 'small' },
+              textField: {
+                size: 'small',
+                error: error,
+                helperText: error && 'Start time must be before end time',
+              },
             }}
+            minTime={dayjs('2022-04-17T06:00')}
+            maxTime={dayjs('2022-04-17T23:00')}
           />
         </LocalizationProvider>
       </Grid>
