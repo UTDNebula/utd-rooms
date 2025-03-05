@@ -10,6 +10,8 @@ import React, { useEffect, useState } from 'react';
 import resolveConfig from 'tailwindcss/resolveConfig';
 
 import tailwindConfig from '@/../tailwind.config.js';
+import useEventsStore from '@/modules/useEventsStore';
+import type { CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -153,6 +155,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         setRooms({ state: 'error' });
       });
   }, []);
+
+  const [courseBookEvents, fetchAndStoreCourseBookEvents] =
+    useEventsStore<CourseBookEvent>('events');
+  useEffect(() => {
+    fetchAndStoreCourseBookEvents('2025-03-05', new AbortController());
+  }, []);
+  console.log(courseBookEvents);
 
   return (
     <>
