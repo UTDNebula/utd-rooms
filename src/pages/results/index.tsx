@@ -1,7 +1,7 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Filters from '@/components/Filters';
 import TopMenu from '@/components/TopMenu';
@@ -60,6 +60,7 @@ const Results: NextPage<Props> = (props: Props) => {
   }, [router.isReady, router.query.date]);
 
   console.log('rooms', props.rooms, 'courseBookEvents', props.courseBookEvents);
+  const [search, setSearch] = useState('');
 
   return (
     <>
@@ -72,7 +73,7 @@ const Results: NextPage<Props> = (props: Props) => {
         <meta property="og:url" content="https://rooms.utdnebula.com" />
       </Head>
       <div className="w-full h-full">
-        <TopMenu />
+        <TopMenu search={search} setSearch={setSearch} />
         <main className="p-4">
           <Filters rooms={props.rooms} />
           {/*Add results component*/}
