@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 import Filters from '@/components/Filters';
+import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import type { HierarchyStore } from '@/modules/useEventsStore';
 import type { CourseBookEvent } from '@/types/Events';
@@ -59,7 +60,6 @@ const Results: NextPage<Props> = (props: Props) => {
     }
   }, [router.isReady, router.query.date]);
 
-  console.log('rooms', props.rooms, 'courseBookEvents', props.courseBookEvents);
   const [search, setSearch] = useState('');
 
   return (
@@ -76,7 +76,11 @@ const Results: NextPage<Props> = (props: Props) => {
         <TopMenu search={search} setSearch={setSearch} />
         <main className="p-4">
           <Filters rooms={props.rooms} />
-          {/*Add results component*/}
+          <ResultsTable
+            rooms={props.rooms}
+            courseBookEvents={props.courseBookEvents}
+            search={search}
+          />
         </main>
       </div>
     </>
