@@ -112,25 +112,27 @@ export function ResultsTable(props: Props) {
   Object.entries(rooms.data)
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
-      if (!buildingIdMap.has(building)) {
-        buildingIdMap.set(building, buildingIdCounter++);
-        buildingResources.push({
-          Id: buildingIdMap.get(building),
-          Text: building,
-        });
-      }
-
-      rooms.toSorted().forEach((room) => {
-        const roomName = `${building} ${room}`;
-        if (!roomIdMap.has(roomName)) {
-          roomIdMap.set(roomName, roomIdCounter++);
-          roomResources.push({
-            Id: roomIdMap.get(roomName),
-            Text: room,
-            BuildingId: buildingIdMap.get(building), // Assign room to its building
+      if (!buildings.length || buildings.includes(building)) {
+        if (!buildingIdMap.has(building)) {
+          buildingIdMap.set(building, buildingIdCounter++);
+          buildingResources.push({
+            Id: buildingIdMap.get(building),
+            Text: building,
           });
         }
-      });
+
+        rooms.toSorted().forEach((room) => {
+          const roomName = `${building} ${room}`;
+          if (!roomIdMap.has(roomName)) {
+            roomIdMap.set(roomName, roomIdCounter++);
+            roomResources.push({
+              Id: roomIdMap.get(roomName),
+              Text: room,
+              BuildingId: buildingIdMap.get(building), // Assign room to its building
+            });
+          }
+        });
+      }
     });
 
   // Convert events to correct format
@@ -162,6 +164,9 @@ export function ResultsTable(props: Props) {
       eventSettings={{ dataSource: scheduleData }}
       quickInfoTemplates={{ footer: () => <></> }}
       group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
+      selectedDate={dayjs(date).toDate()}
+      startHour={startTime}
+      endHour={endTime}
     >
       <ResourcesDirective>
         <ResourceDirective
@@ -183,11 +188,7 @@ export function ResultsTable(props: Props) {
         />
       </ResourcesDirective>
       <ViewsDirective>
-        <ViewDirective
-          option="TimelineDay"
-          startHour={startTime}
-          endHour={endTime}
-        />
+        <ViewDirective option="TimelineDay" />
       </ViewsDirective>
       <Inject services={[TimelineViews]} />
     </ScheduleComponent>
