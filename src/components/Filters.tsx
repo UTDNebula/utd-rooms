@@ -45,7 +45,10 @@ const Filters = (props: Props) => {
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
-  const error = startTime && endTime && dayjs('2022-04-17T' + endTime).isBefore(dayjs('2022-04-17T' + startTime));
+  const error =
+    startTime &&
+    endTime &&
+    dayjs(endTime, 'h:mma').isBefore(dayjs(startTime, 'h:mma'));
 
   let buildings = router.query.buildings ?? [];
   if (!Array.isArray(buildings)) {
@@ -53,7 +56,7 @@ const Filters = (props: Props) => {
   }
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={1}>
       {/*Date picker*/}
       <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -96,7 +99,7 @@ const Filters = (props: Props) => {
           <TimePicker
             label="Start time"
             className="w-full"
-            value={startTime ? dayjs('2022-04-17T' + startTime) : null}
+            value={startTime ? dayjs(startTime, 'h:mma') : null}
             onChange={(newValue: Dayjs | null) => {
               if (router.isReady) {
                 const newQuery = { ...router.query };
@@ -125,8 +128,8 @@ const Filters = (props: Props) => {
                 helperText: error && 'Start time must be before end time',
               },
             }}
-            minTime={dayjs('2022-04-17T06:00')}
-            maxTime={dayjs('2022-04-17T23:00')}
+            minTime={dayjs().hour(6)}
+            maxTime={dayjs().hour(23)}
           />
         </LocalizationProvider>
       </Grid>
@@ -137,7 +140,7 @@ const Filters = (props: Props) => {
           <TimePicker
             label="End time"
             className="w-full"
-            value={endTime ? dayjs('2022-04-17T' + endTime) : null}
+            value={endTime ? dayjs(endTime, 'h:mma') : null}
             onChange={(newValue: Dayjs | null) => {
               if (router.isReady) {
                 const newQuery = { ...router.query };
@@ -166,8 +169,8 @@ const Filters = (props: Props) => {
                 helperText: error && 'Start time must be before end time',
               },
             }}
-            minTime={dayjs('2022-04-17T06:00')}
-            maxTime={dayjs('2022-04-17T23:00')}
+            minTime={dayjs().hour(6)}
+            maxTime={dayjs().hour(23)}
           />
         </LocalizationProvider>
       </Grid>

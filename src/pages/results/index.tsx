@@ -74,7 +74,7 @@ const Results: NextPage<Props> = (props: Props) => {
       </Head>
       <div className="w-full h-full">
         <TopMenu search={search} setSearch={setSearch} />
-        <main className="p-4">
+        <main className="p-4 flex flex-col gap-4">
           <Filters rooms={props.rooms} />
           <ResultsTable
             rooms={props.rooms}

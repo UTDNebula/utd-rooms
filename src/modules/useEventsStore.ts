@@ -44,6 +44,9 @@ export default function useEventsStore<T>(
 
   //Call fetchEventsData and store response
   function fetchAndStoreEventData(date: string, controller: AbortController) {
+    if (typeof events[date] !== 'undefined' && events[date] !== 'error') {
+      return;
+    }
     addToEvents(date, { state: 'loading' });
     fetchEventsData<T>(route, date, controller)
       .then((res: Hierarchy<T>) => {
