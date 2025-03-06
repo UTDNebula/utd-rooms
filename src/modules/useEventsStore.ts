@@ -44,7 +44,7 @@ export default function useEventsStore<T>(
 
   //Call fetchEventsData and store response
   function fetchAndStoreEventData(date: string, controller: AbortController) {
-    if (typeof events[date] !== 'undefined' && events[date] !== 'error') {
+    if (typeof events[date] !== 'undefined' && events[date].state !== 'error') {
       return;
     }
     addToEvents(date, { state: 'loading' });
