@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import React, {useEffect,useState} from 'react';
 import Background from '@/../public/background.png';
 import Image from 'next/image';
-
+import Button from '@mui/material/Button';
 /**
  * Returns the home page with Nebula Branding, ...
  */
@@ -24,15 +24,14 @@ const Home: NextPage = () => {
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
 
-  useEffect(() => {
-    if (selectedDate !== null && startTime !== null && endTime !== null) {
-        const formattedDate = selectedDate ? selectedDate.toISOString().split('T')[0] : '';
+  async function searchRooms() {
+    if(selectedDate !== null && startTime !== null && endTime !== null) {
+    const formattedDate = selectedDate ? selectedDate.toISOString().split('T')[0] : '';
 
-        const url = `/results?date=${formattedDate}&startTime=${extractTime(startTime)}&endTime=${extractTime(endTime)}`;
-        router.push(url);
+    const url = `/results?date=${formattedDate}&startTime=${extractTime(startTime)}&endTime=${extractTime(endTime)}`;
+    router.push(url);
     }
   }
-  ,[selectedDate, startTime, endTime, router]);
 
   return (
     <>
@@ -75,6 +74,14 @@ const Home: NextPage = () => {
         </LocalizationProvider>
         <div className="flex justify-center">
         </div>
+        <div className="flex justify-center mb-10">
+            <Button
+          variant="contained"
+          type="button"
+          color="primary"
+          onClick={searchRooms}
+          >Search Rooms</Button>
+          </div>
         </div>
     </>
   );
