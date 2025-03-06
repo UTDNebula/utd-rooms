@@ -48,7 +48,7 @@ const Filters = (props: Props) => {
   const error =
     startTime &&
     endTime &&
-    dayjs(endTime, 'h:mma').isBefore(dayjs(startTime, 'h:mma'));
+    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm'));
 
   let buildings = router.query.buildings ?? [];
   if (!Array.isArray(buildings)) {
@@ -99,7 +99,7 @@ const Filters = (props: Props) => {
           <TimePicker
             label="Start time"
             className="w-full"
-            value={startTime ? dayjs(startTime, 'h:mma') : null}
+            value={startTime ? dayjs(startTime, 'HH:mm') : null}
             onChange={(newValue: Dayjs | null) => {
               if (router.isReady) {
                 const newQuery = { ...router.query };
@@ -140,7 +140,7 @@ const Filters = (props: Props) => {
           <TimePicker
             label="End time"
             className="w-full"
-            value={endTime ? dayjs(endTime, 'h:mma') : null}
+            value={endTime ? dayjs(endTime, 'HH:mm') : null}
             onChange={(newValue: Dayjs | null) => {
               if (router.isReady) {
                 const newQuery = { ...router.query };

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import React from 'react';
 
@@ -40,14 +41,13 @@ export function ResultsTable(props: Props) {
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
+  startTime = startTime ?? '06:00';
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
-  const error =
-    startTime &&
-    endTime &&
-    dayjs(endTime, 'h:mma').isBefore(dayjs(startTime, 'h:mma'));
+  endTime = endTime ?? '23:00';
+  const error = dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm'));
 
   let buildings = router.query.buildings ?? [];
   if (!Array.isArray(buildings)) {
