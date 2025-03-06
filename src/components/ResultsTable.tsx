@@ -7,7 +7,7 @@ import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
 /**
- * Props type used by the TopMenu component
+ * Props type used by the ResultsTable component
  */
 interface Props {
   rooms: GenericFetchedData<Rooms>;
@@ -40,11 +40,14 @@ export function ResultsTable(props: Props) {
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
-
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
+  const error =
+    startTime &&
+    endTime &&
+    dayjs(endTime, 'h:mma').isBefore(dayjs(startTime, 'h:mma'));
 
   let buildings = router.query.buildings ?? [];
   if (!Array.isArray(buildings)) {
@@ -58,6 +61,16 @@ export function ResultsTable(props: Props) {
     buildings,
     router.query.onlyAvailFullTime,
   );
+  //Loading state
+  if (
+    typeof props.courseBookEvents[date] === 'undefined' ||
+    props.courseBookEvents[date].state === 'loading'
+  ) {
+    return <>loading</>;
+  }
+  if (error) {
+    return null;
+  }
 
   return <>ResultsTable</>;
 }
