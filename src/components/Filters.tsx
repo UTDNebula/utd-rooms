@@ -45,10 +45,11 @@ const Filters = (props: Props) => {
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
-  const error =
+  const error = Boolean(
     startTime &&
-    endTime &&
-    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm'));
+      endTime &&
+      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+  );
 
   let buildings = router.query.buildings ?? [];
   if (!Array.isArray(buildings)) {
