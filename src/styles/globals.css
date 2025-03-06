@@ -1,5 +1,5 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
 
 @import '@syncfusion/ej2-base/styles/material3.css' screen;
 @import '@syncfusion/ej2-buttons/styles/material3.css' screen;
@@ -32,7 +32,7 @@
 @import '@syncfusion/ej2-react-schedule/styles/material3-dark.css' screen and
   (prefers-color-scheme: dark);
 
-@import "tailwindcss/utilities";
+@import 'tailwindcss/utilities';
 
 html,
 body,
