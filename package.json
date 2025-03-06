@@ -17,6 +17,8 @@
     "@mui/material": "^6.1.2",
     "@mui/x-date-pickers": "^7.27.0",
     "@next/third-parties": "^14.2.15",
+    "@syncfusion/ej2-base": "^28.2.9",
+    "@syncfusion/ej2-react-schedule": "^28.2.7",
     "autoprefixer": "^10.4.2",
     "dayjs": "^1.11.13",
     "dotenv": "^16.0.0",

@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { registerLicense } from '@syncfusion/ej2-base';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
@@ -158,6 +159,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const [courseBookEvents, fetchAndStoreCourseBookEvents] =
     useEventsStore<CourseBookEvent>('events');
+
+  if (typeof process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY !== 'undefined') {
+    registerLicense(process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY);
+  }
 
   return (
     <>
