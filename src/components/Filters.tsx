@@ -233,7 +233,7 @@ const Filters = (props: Props) => {
       </Grid>
 
       {/*Only show rooms available the whole time checkbox*/}
-      <Grid size={{ xs: 12, sm: 6, md: 12, lg: 2.4 }}>
+      <Grid size={{ xs: 12, sm: 6, md: 12, lg: 2.4 }} className="px-2">
         <FormControlLabel
           control={
             <Checkbox

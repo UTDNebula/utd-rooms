@@ -7,7 +7,7 @@ import {
   ViewDirective,
   ViewsDirective,
 } from '@syncfusion/ej2-react-schedule';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import React from 'react';
@@ -50,7 +50,7 @@ interface Props {
 /**
  * This is a component to hold results for room availablity in a table
  */
-export function ResultsTable(props: Props) {
+function ResultsTable(props: Props) {
   let state = 'done';
   //TODO: make look better
   const loading = <>loading</>;
@@ -71,12 +71,14 @@ export function ResultsTable(props: Props) {
     startTime = startTime[0];
   }
   startTime = startTime ?? '06:00';
+  const dayjsStartTime = dayjs(startTime, 'HH:mm')
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
   endTime = endTime ?? '23:00';
-  if (dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm'))) {
+  const dayjsEndTime = dayjs(endTime, 'HH:mm')
+  if (dayjsEndTime.isBefore(dayjsStartTime)) {
     state = 'error';
   }
 
@@ -84,6 +86,8 @@ export function ResultsTable(props: Props) {
   if (!Array.isArray(buildings)) {
     buildings = buildings.split(','); // if buildings is a comma-delimited string, make it an array
   }
+
+  const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
 
   if (state === 'error') {
     return null;
@@ -107,28 +111,34 @@ export function ResultsTable(props: Props) {
   }
 
   // Generate resource groups
+  //to pass into calendar
   const buildingResources: BuildingResource[] = [];
   const roomResources: RoomResource[] = [];
+  //to number them
   let buildingIdCounter = 1;
   let roomIdCounter = 1;
+  //to get the number for the events
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
+
   Object.entries(rooms.data)
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
       if (!buildings.length || buildings.includes(building)) {
-        if (!buildingIdMap.has(building)) {
-          buildingIdMap.set(building, buildingIdCounter++);
-          buildingResources.push({
-            type: 'building',
-            id: buildingIdMap.get(building),
-            text: building,
-          });
-        }
+        buildingIdMap.set(building, buildingIdCounter++);
+        buildingResources.push({
+          type: 'building',
+          id: buildingIdMap.get(building),
+          text: building,
+        });
 
         rooms.toSorted().forEach((room) => {
-          const roomName = `${building} ${room}`;
-          if (!roomIdMap.has(roomName)) {
+          //Check if free
+          const events = courseBookEvents.data[building]?.[room] ?? [];
+          const [completelyFree, hasGap] = findAvailability(events, dayjsStartTime, dayjsEndTime);
+          if (completelyFree || (hasGap && !onlyAvailFullTime)) {
+            const roomName = `${building} ${room}`;
+            //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
             roomIdMap.set(roomName, roomIdCounter++);
             roomResources.push({
               type: 'room',
@@ -145,22 +155,28 @@ export function ResultsTable(props: Props) {
   // Convert events to correct format
   const scheduleData: EventSource[] = [];
   Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
-    Object.entries(rooms).forEach(([room, events]) => {
-      const roomName = `${building} ${room}`;
-      events.forEach((event, index) => {
-        scheduleData.push({
-          id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
-          Subject: `Section ${event.section}`,
-          StartTime: dayjs(
-            date + event.start_time,
-            'YYYY-MM-DDhh:mma',
-          ).toDate(),
-          EndTime: dayjs(date + event.end_time, 'YYYY-MM-DDhh:mma').toDate(),
-          roomId: roomIdMap.get(roomName),
-          buildingId: buildingIdMap.get(building),
-        });
+    if (!buildings.length || buildings.includes(building)) {
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        const roomId = roomIdMap.get(roomName);
+        //If room exists (it doesn't when its been filtered out)
+        if (roomId) {
+          events.forEach((event, index) => {
+            scheduleData.push({
+              id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
+              Subject: `Section ${event.section}`,
+              StartTime: dayjs(
+                date + event.start_time,
+                'YYYY-MM-DDhh:mma',
+              ).toDate(),
+              EndTime: dayjs(date + event.end_time, 'YYYY-MM-DDhh:mma').toDate(),
+              roomId: roomId,
+              buildingId: buildingIdMap.get(building),
+            });
+          });
+        }
       });
-    });
+    }
   });
 
   return (
@@ -215,6 +231,46 @@ export function ResultsTable(props: Props) {
       <Inject services={[TimelineViews]} />
     </ScheduleComponent>
   );
+}
+
+function findAvailability(events: CourseBookEvent[], calendarStart: Dayjs, calendarEnd: Dayjs): boolean[2] {
+  let times = Array(calendarEnd.diff(calendarStart, 'minute')).fill(true);
+  let completelyFree = true;
+  for (const event of events) {
+    const eventStart = dayjs(event.start_time, 'h:mma');
+    const eventEnd = dayjs(event.end_time, 'h:mma');
+    if (isBetween(eventStart, calendarStart, calendarEnd) || isBetween(eventEnd, calendarStart, calendarEnd)) {
+      completelyFree = false;
+      let fillStart = 0;
+      if (eventStart.isAfter(calendarStart)) {
+        fillStart = eventStart.diff(calendarStart, 'minute');
+      }
+      let fillEnd = times.length - 1;
+      if (eventEnd.isBefore(calendarEnd)) {
+        fillEnd = eventEnd.diff(calendarStart, 'minute');
+      }
+      times = times.fill(0, fillStart, fillEnd);
+    }
+  }
+  if (completelyFree) {
+    return [true, true];
+  }
+  let freeMinutes = 0;
+  for (const time of times) {
+    if (time) {
+      freeMinutes++;
+      if (freeMinutes > 15) {
+        return [false, true];
+      }
+    } else {
+      freeMinutes = 0;
+    }
+  }
+  return [false, false];
+}
+
+function isBetween(test: Dayjs, start: Dayjs, end: Dayjs) {
+  return test.isAfter(start) && test.isBefore(end);
 }
 
 export default ResultsTable;
