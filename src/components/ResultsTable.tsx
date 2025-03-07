@@ -9,6 +9,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import React from 'react';
 
 import type { HierarchyStore } from '@/modules/useEventsStore';
@@ -17,21 +18,24 @@ import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
 interface BuildingResource {
-  Id: number;
-  Text: string;
+  type: 'building',
+  id: number;
+  text: string;
 }
 interface RoomResource {
-  Id: number;
-  Text: string;
-  BuildingId: number;
+  type: 'room',
+  id: number;
+  text: string;
+  link: string;
+  buildingId: number;
 }
 interface EventSource {
-  Id: string;
+  id: string;
   Subject: string;
   StartTime: Date;
   EndTime: Date;
-  RoomId: number;
-  BuildingId: number;
+  roomId: number;
+  buildingId: number;
 }
 
 /**
@@ -116,8 +120,9 @@ export function ResultsTable(props: Props) {
         if (!buildingIdMap.has(building)) {
           buildingIdMap.set(building, buildingIdCounter++);
           buildingResources.push({
-            Id: buildingIdMap.get(building),
-            Text: building,
+            type: 'building',
+            id: buildingIdMap.get(building),
+            text: building,
           });
         }
 
@@ -126,9 +131,11 @@ export function ResultsTable(props: Props) {
           if (!roomIdMap.has(roomName)) {
             roomIdMap.set(roomName, roomIdCounter++);
             roomResources.push({
-              Id: roomIdMap.get(roomName),
-              Text: room,
-              BuildingId: buildingIdMap.get(building), // Assign room to its building
+              type: 'room',
+              id: roomIdMap.get(roomName),
+              text: room,
+              link: `https://locator.utdallas.edu/${building}_${room}`,
+              buildingId: buildingIdMap.get(building), // Assign room to its building
             });
           }
         });
@@ -142,15 +149,15 @@ export function ResultsTable(props: Props) {
       const roomName = `${building} ${room}`;
       events.forEach((event, index) => {
         scheduleData.push({
-          Id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
+          id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
           Subject: `Section ${event.section}`,
           StartTime: dayjs(
             date + event.start_time,
             'YYYY-MM-DDhh:mma',
           ).toDate(),
           EndTime: dayjs(date + event.end_time, 'YYYY-MM-DDhh:mma').toDate(),
-          RoomId: roomIdMap.get(roomName),
-          BuildingId: buildingIdMap.get(building),
+          roomId: roomIdMap.get(roomName),
+          buildingId: buildingIdMap.get(building),
         });
       });
     });
@@ -167,24 +174,39 @@ export function ResultsTable(props: Props) {
       selectedDate={dayjs(date).toDate()}
       startHour={startTime}
       endHour={endTime}
+      resourceHeaderTemplate={(props) => {
+        const data = props.resourceData;
+        if (data.type === 'building') {
+          return (
+            <div className="e-resource-text ml-0">
+              {data.text}
+            </div>
+          )
+        }
+        return (
+          <div className="e-resource-text ml-[25px]">
+            <a href={data.link} target="_blank" className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">{data.text}</a>
+          </div>
+        )
+      }}
     >
       <ResourcesDirective>
         <ResourceDirective
-          field="BuildingId"
+          field="buildingId"
           title="Building"
           name="Buildings"
           dataSource={buildingResources}
-          textField="Text"
-          idField="Id"
+          textField="text"
+          idField="id"
         />
         <ResourceDirective
-          field="RoomId"
+          field="roomId"
           title="Room"
           name="Rooms"
           dataSource={roomResources}
-          textField="Text"
-          idField="Id"
-          groupIDField="BuildingId"
+          textField="text"
+          idField="id"
+          groupIDField="buildingId"
         />
       </ResourcesDirective>
       <ViewsDirective>

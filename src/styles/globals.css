@@ -48,6 +48,10 @@ body,
   box-sizing: border-box;
 }
 
+.e-header-row:first-of-type {
+  display: none;
+}
+
 @layer utilities {
   .bg-lighten {
     background-color: rgba(255, 255, 255, 0.6);
