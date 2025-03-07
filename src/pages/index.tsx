@@ -11,10 +11,18 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import Background from '@/../public/background.png';
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
+import type { Rooms } from '@/types/Rooms';
+
+interface Props {
+  rooms: GenericFetchedData<Rooms>;
+}
+
 /**
  * Returns the home page with Nebula Branding and search options
  */
-const Home: NextPage = () => {
+const Home: NextPage<Props> = (props: Props) => {
+  console.log(props.rooms);
   const router = useRouter();
 
   function extractTime(dateTime: Dayjs) {
