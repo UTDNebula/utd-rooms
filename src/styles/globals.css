@@ -48,7 +48,22 @@ body,
   box-sizing: border-box;
 }
 
+/*Hide header*/
 .e-header-row:first-of-type {
+  display: none;
+}
+/*Loading skeleton*/
+.e-appointment:has(.e-appointment-details div .loading-event) {
+  background-color: transparent;
+  border: none;
+}
+.e-appointment .e-appointment-details:has(div .loading-event) {
+  padding: 0 !important;
+}
+.e-appointment .e-appointment-details div:has(.loading-event) {
+  flex-grow: 1;
+}
+.e-appointment .e-appointment-details:has(div .loading-event) .e-indicator {
   display: none;
 }
 
