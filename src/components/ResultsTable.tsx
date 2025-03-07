@@ -9,8 +9,8 @@ import {
   ViewsDirective,
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 
 import type { HierarchyStore } from '@/modules/useEventsStore';
@@ -117,133 +117,152 @@ function LoadingResultsTable(props: LoadingProps) {
   ];
   const scheduleData: EventSource[] = [
     {
-      id: 0,
+      id: '1',
+      Subject: 'Class',
       StartTime: dayjs('08:30', 'HH:mm').toDate(),
       EndTime: dayjs('09:45', 'HH:mm').toDate(),
       roomId: 1,
       buildingId: 1,
     },
     {
-      id: 1,
+      id: '2',
+      Subject: 'Class',
       StartTime: dayjs('11:30', 'HH:mm').toDate(),
       EndTime: dayjs('12:45', 'HH:mm').toDate(),
       roomId: 1,
       buildingId: 1,
     },
     {
-      id: 2,
+      id: '3',
+      Subject: 'Class',
       StartTime: dayjs('13:00', 'HH:mm').toDate(),
       EndTime: dayjs('14:15', 'HH:mm').toDate(),
       roomId: 1,
       buildingId: 1,
     },
     {
-      id: 3,
+      id: '4',
+      Subject: 'Class',
       StartTime: dayjs('16:00', 'HH:mm').toDate(),
       EndTime: dayjs('17:15', 'HH:mm').toDate(),
       roomId: 1,
       buildingId: 1,
     },
     {
-      id: 4,
+      id: '5',
+      Subject: 'Class',
       StartTime: dayjs('10:00', 'HH:mm').toDate(),
       EndTime: dayjs('11:15', 'HH:mm').toDate(),
       roomId: 2,
       buildingId: 2,
     },
     {
-      id: 5,
+      id: '6',
+      Subject: 'Class',
       StartTime: dayjs('11:30', 'HH:mm').toDate(),
       EndTime: dayjs('12:45', 'HH:mm').toDate(),
       roomId: 2,
       buildingId: 2,
     },
     {
-      id: 6,
+      id: '7',
+      Subject: 'Class',
       StartTime: dayjs('19:00', 'HH:mm').toDate(),
       EndTime: dayjs('21:45', 'HH:mm').toDate(),
       roomId: 2,
       buildingId: 2,
     },
     {
-      id: 7,
+      id: '8',
+      Subject: 'Class',
       StartTime: dayjs('13:00', 'HH:mm').toDate(),
       EndTime: dayjs('14:15', 'HH:mm').toDate(),
       roomId: 3,
       buildingId: 2,
     },
     {
-      id: 8,
+      id: '9',
+      Subject: 'Class',
       StartTime: dayjs('17:30', 'HH:mm').toDate(),
       EndTime: dayjs('18:45', 'HH:mm').toDate(),
       roomId: 3,
       buildingId: 2,
     },
     {
-      id: 9,
+      id: '10',
+      Subject: 'Class',
       StartTime: dayjs('08:30', 'HH:mm').toDate(),
       EndTime: dayjs('9:45', 'HH:mm').toDate(),
       roomId: 4,
       buildingId: 2,
     },
     {
-      id: 10,
+      id: '11',
+      Subject: 'Class',
       StartTime: dayjs('13:00', 'HH:mm').toDate(),
       EndTime: dayjs('14:15', 'HH:mm').toDate(),
       roomId: 4,
       buildingId: 2,
     },
     {
-      id: 11,
+      id: '12',
+      Subject: 'Class',
       StartTime: dayjs('14:30', 'HH:mm').toDate(),
       EndTime: dayjs('15:45', 'HH:mm').toDate(),
       roomId: 4,
       buildingId: 2,
     },
     {
-      id: 12,
+      id: '13',
+      Subject: 'Class',
       StartTime: dayjs('11:30', 'HH:mm').toDate(),
       EndTime: dayjs('12:45', 'HH:mm').toDate(),
       roomId: 5,
       buildingId: 2,
     },
     {
-      id: 13,
+      id: '14',
+      Subject: 'Class',
       StartTime: dayjs('13:00', 'HH:mm').toDate(),
       EndTime: dayjs('14:15', 'HH:mm').toDate(),
       roomId: 5,
       buildingId: 2,
     },
     {
-      id: 14,
+      id: '15',
+      Subject: 'Class',
       StartTime: dayjs('17:30', 'HH:mm').toDate(),
       EndTime: dayjs('18:45', 'HH:mm').toDate(),
       roomId: 6,
       buildingId: 2,
     },
     {
-      id: 15,
+      id: '16',
+      Subject: 'Class',
       StartTime: dayjs('19:00', 'HH:mm').toDate(),
       EndTime: dayjs('21:45', 'HH:mm').toDate(),
       roomId: 6,
       buildingId: 2,
     },
     {
-      id: 16,
+      id: '17',
+      Subject: 'Class',
       StartTime: dayjs('08:30', 'HH:mm').toDate(),
       EndTime: dayjs('09:45', 'HH:mm').toDate(),
       roomId: 7,
       buildingId: 2,
     },
     {
-      id: 17,
+      id: '18',
+      Subject: 'Class',
       StartTime: dayjs('11:30', 'HH:mm').toDate(),
       EndTime: dayjs('12:45', 'HH:mm').toDate(),
       roomId: 7,
       buildingId: 2,
     },
     {
-      id: 18,
+      id: '19',
+      Subject: 'Class',
       StartTime: dayjs('14:30', 'HH:mm').toDate(),
       EndTime: dayjs('15:45', 'HH:mm').toDate(),
       roomId: 8,
@@ -260,7 +279,9 @@ function LoadingResultsTable(props: LoadingProps) {
       group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
       startHour={props.startTime}
       endHour={props.endTime}
-      resourceHeaderTemplate={(props) => {
+      resourceHeaderTemplate={(props: {
+        resourceData: BuildingResource | RoomResource;
+      }) => {
         const data = props.resourceData;
         if (data.type === 'building') {
           return (
@@ -303,7 +324,7 @@ function LoadingResultsTable(props: LoadingProps) {
         <ViewDirective
           option="TimelineDay"
           //the loading-event class is used in globals.css
-          eventTemplate={(props) => (
+          eventTemplate={() => (
             <div className="loading-event w-full h-full">
               <Skeleton variant="rounded" className="w-full h-full" />
             </div>
@@ -375,7 +396,7 @@ function ResultsTable(props: Props) {
   }
 
   const rooms = props.rooms;
-  const courseBookEvents = props.courseBookEvents[date];
+  const courseBookEvents = props.courseBookEvents[date as string];
 
   //Loading state
   if (
@@ -479,20 +500,22 @@ function ResultsTable(props: Props) {
       selectedDate={dayjs(date).toDate()}
       startHour={startTime}
       endHour={endTime}
-      resourceHeaderTemplate={(props) => {
+      resourceHeaderTemplate={(props: {
+        resourceData: BuildingResource | RoomResource;
+      }) => {
         const data = props.resourceData;
         if (data.type === 'building') {
           return <div className="e-resource-text ml-0">{data.text}</div>;
         }
         return (
           <div className="e-resource-text ml-[25px]">
-            <a
+            <Link
               href={data.link}
               target="_blank"
               className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
             >
               {data.text}
-            </a>
+            </Link>
           </div>
         );
       }}
@@ -528,7 +551,7 @@ function findAvailability(
   events: CourseBookEvent[],
   calendarStart: Dayjs,
   calendarEnd: Dayjs,
-): boolean[2] {
+): boolean[] {
   let times = Array(calendarEnd.diff(calendarStart, 'minute')).fill(true);
   let completelyFree = true;
   for (const event of events) {
@@ -547,7 +570,7 @@ function findAvailability(
       if (eventEnd.isBefore(calendarEnd)) {
         fillEnd = eventEnd.diff(calendarStart, 'minute');
       }
-      times = times.fill(0, fillStart, fillEnd);
+      times = times.fill(false, fillStart, fillEnd);
     }
   }
   if (completelyFree) {
