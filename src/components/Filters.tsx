@@ -244,7 +244,6 @@ const Filters = (props: Props) => {
           control={
             <Checkbox
               checked={router.query.onlyAvailFullTime === 'true'}
-              disabled={!startTime || !endTime}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 if (router.isReady) {
                   const newQuery = { ...router.query };
