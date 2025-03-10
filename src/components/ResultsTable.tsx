@@ -566,7 +566,9 @@ function findAvailability(
     const eventEnd = dayjs(event.end_time, 'h:mma');
     if (
       isBetween(eventStart, calendarStart, calendarEnd) ||
-      isBetween(eventEnd, calendarStart, calendarEnd)
+      isBetween(eventEnd, calendarStart, calendarEnd) ||
+      //event covers whole time
+      (eventStart.isBefore(calendarStart) && eventEnd.isAfter(calendarEnd))
     ) {
       completelyFree = false;
       let fillStart = 0;
