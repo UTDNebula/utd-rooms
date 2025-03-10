@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 
+import { excludedBuildings } from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
 import type { CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -385,14 +386,14 @@ function ResultsTable(props: Props) {
 
   const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
 
+  if (state === 'error') {
+    return null;
+  }
   const loading = (
     <LoadingResultsTable startTime={startTime} endTime={endTime} />
   );
   if (state === 'loading') {
     return loading;
-  }
-  if (state === 'error') {
-    return null;
   }
 
   const rooms = props.rooms;
@@ -426,7 +427,10 @@ function ResultsTable(props: Props) {
   Object.entries(rooms.data)
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
-      if (!buildings.length || buildings.includes(building)) {
+      if (
+        !excludedBuildings.includes(building) &&
+        (!buildings.length || buildings.includes(building))
+      ) {
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
           type: 'building',
@@ -461,7 +465,10 @@ function ResultsTable(props: Props) {
   // Convert events to correct format
   const scheduleData: EventSource[] = [];
   Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
-    if (!buildings.length || buildings.includes(building)) {
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
       Object.entries(rooms).forEach(([room, events]) => {
         const roomName = `${building} ${room}`;
         const roomId = roomIdMap.get(roomName);
