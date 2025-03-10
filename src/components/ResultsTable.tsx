@@ -367,13 +367,22 @@ function ResultsTable(props: Props) {
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
-  startTime = startTime ?? '06:00';
+  if (
+    typeof date !== 'undefined' &&
+    date === dayjs().format('YYYY-MM-DD') &&
+    dayjs().hour() < 20
+  ) {
+    //if looking at today and not too late, set start time to now
+    startTime = startTime ?? dayjs().format('HH') + ':00';
+  } else {
+    startTime = startTime ?? '09:00';
+  }
   const dayjsStartTime = dayjs(startTime, 'HH:mm');
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
-  endTime = endTime ?? '23:00';
+  endTime = endTime ?? '22:00';
   const dayjsEndTime = dayjs(endTime, 'HH:mm');
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     state = 'error';
