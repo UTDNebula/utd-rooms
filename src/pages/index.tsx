@@ -9,6 +9,17 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import {
+  Autocomplete,
+  TextField,
+  Select,
+  FormControl,
+  MenuItem,
+  ListItemText,
+  Radio,
+  Checkbox,
+  Grid2 as Grid,
+} from '@mui/material';
 
 import Background from '@/../public/background.png';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -42,6 +53,11 @@ const Home: NextPage<Props> = (props: Props) => {
       const url = `/results?date=${formattedDate}&startTime=${extractTime(startTime)}&endTime=${extractTime(endTime)}`;
       router.push(url);
     }
+  }
+
+  let buildings = router.query.buildings ?? [];
+  if (!Array.isArray(buildings)) {
+    buildings = buildings.split(','); // if buildings is a comma-delimited string, make it an array
   }
 
   return (
@@ -87,8 +103,20 @@ const Home: NextPage<Props> = (props: Props) => {
               onChange={(newValue) => setEndTime(newValue)}
             />
           </div>
+          <div className="flex justify-center mb-10">
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              options={buildings}
+              getOptionLabel={(option) => option}
+              filterSelectedOptions
+              renderInput={(params) => (
+                <TextField {...params} label="Buildings" fullWidth />
+              )}
+              fullWidth
+            />
+          </div>
         </LocalizationProvider>
-        <div className="flex justify-center"></div>
         <div className="flex justify-center mb-10">
           <Button
             variant="contained"
