@@ -505,61 +505,70 @@ function ResultsTable(props: Props) {
   });
 
   return (
-    <ScheduleComponent
-      currentView="TimelineDay"
-      readonly
-      showHeaderBar={false}
-      rowAutoHeight={true}
-      eventSettings={{ dataSource: scheduleData }}
-      quickInfoTemplates={{ footer: () => <></> }}
-      group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
-      selectedDate={dayjs(date).toDate()}
-      startHour={startTime}
-      endHour={endTime}
-      resourceHeaderTemplate={(props: {
-        resourceData: BuildingResource | RoomResource;
-      }) => {
-        const data = props.resourceData;
-        if (data.type === 'building') {
-          return <div className="e-resource-text ml-0">{data.text}</div>;
-        }
-        return (
-          <div className="e-resource-text ml-[25px]">
-            <Link
-              href={data.link}
-              target="_blank"
-              className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
-            >
-              {data.text}
-            </Link>
-          </div>
-        );
-      }}
-    >
-      <ResourcesDirective>
-        <ResourceDirective
-          field="buildingId"
-          title="Building"
-          name="Buildings"
-          dataSource={buildingResources}
-          textField="text"
-          idField="id"
-        />
-        <ResourceDirective
-          field="roomId"
-          title="Room"
-          name="Rooms"
-          dataSource={roomResources}
-          textField="text"
-          idField="id"
-          groupIDField="buildingId"
-        />
-      </ResourcesDirective>
-      <ViewsDirective>
-        <ViewDirective option="TimelineDay" />
-      </ViewsDirective>
-      <Inject services={[TimelineViews]} />
-    </ScheduleComponent>
+    <>
+      <p>
+        {'Found '}
+        {roomResources.length}
+        {onlyAvailFullTime
+          ? ' rooms that are completely free.'
+          : ' rooms that have free time.'}
+      </p>
+      <ScheduleComponent
+        currentView="TimelineDay"
+        readonly
+        showHeaderBar={false}
+        rowAutoHeight={true}
+        eventSettings={{ dataSource: scheduleData }}
+        quickInfoTemplates={{ footer: () => <></> }}
+        group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
+        selectedDate={dayjs(date).toDate()}
+        startHour={startTime}
+        endHour={endTime}
+        resourceHeaderTemplate={(props: {
+          resourceData: BuildingResource | RoomResource;
+        }) => {
+          const data = props.resourceData;
+          if (data.type === 'building') {
+            return <div className="e-resource-text ml-0">{data.text}</div>;
+          }
+          return (
+            <div className="e-resource-text ml-[25px]">
+              <Link
+                href={data.link}
+                target="_blank"
+                className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+              >
+                {data.text}
+              </Link>
+            </div>
+          );
+        }}
+      >
+        <ResourcesDirective>
+          <ResourceDirective
+            field="buildingId"
+            title="Building"
+            name="Buildings"
+            dataSource={buildingResources}
+            textField="text"
+            idField="id"
+          />
+          <ResourceDirective
+            field="roomId"
+            title="Room"
+            name="Rooms"
+            dataSource={roomResources}
+            textField="text"
+            idField="id"
+            groupIDField="buildingId"
+          />
+        </ResourcesDirective>
+        <ViewsDirective>
+          <ViewDirective option="TimelineDay" />
+        </ViewsDirective>
+        <Inject services={[TimelineViews]} />
+      </ScheduleComponent>
+    </>
   );
 }
 
