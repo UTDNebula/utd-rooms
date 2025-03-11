@@ -277,7 +277,11 @@ function LoadingResultsTable(props: LoadingProps) {
       showHeaderBar={false}
       eventSettings={{ dataSource: scheduleData }}
       quickInfoTemplates={{ footer: () => <></> }}
-      group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
+      group={{
+        resources: ['Buildings', 'Rooms'],
+        byGroupID: true,
+        enableCompactView: false,
+      }}
       startHour={props.startTime}
       endHour={props.endTime}
       resourceHeaderTemplate={(props: {
@@ -520,7 +524,11 @@ function ResultsTable(props: Props) {
         rowAutoHeight={true}
         eventSettings={{ dataSource: scheduleData }}
         quickInfoTemplates={{ footer: () => <></> }}
-        group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
+        group={{
+          resources: ['Buildings', 'Rooms'],
+          byGroupID: true,
+          enableCompactView: false,
+        }}
         selectedDate={dayjs(date).toDate()}
         startHour={startTime}
         endHour={endTime}
@@ -529,10 +537,12 @@ function ResultsTable(props: Props) {
         }) => {
           const data = props.resourceData;
           if (data.type === 'building') {
-            return <div className="e-resource-text ml-0">{data.text}</div>;
+            return (
+              <div className="e-resource-text ml-0 text-clip">{data.text}</div>
+            );
           }
           return (
-            <div className="e-resource-text ml-[25px]">
+            <div className="e-resource-text ml-[25px] text-clip">
               <Link
                 href={data.link}
                 target="_blank"

@@ -52,6 +52,15 @@ body,
 .e-header-row:first-of-type {
   display: none;
 }
+/*Resourse group width*/
+@media not screen(sm) {
+  .e-resource-left-td {
+    width: 8rem !important;
+  }
+  .e-resource-cells {
+    padding-left: 0 !important;
+  }
+}
 /*Loading skeleton*/
 .e-appointment:has(.e-appointment-details div .loading-event) {
   background-color: transparent;
