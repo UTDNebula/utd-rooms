@@ -13,7 +13,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import { excludedBuildings } from '@/modules/buildingInfo';
+import {
+  excludedBuildingsAndRooms,
+  mapLinkOverrides,
+} from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
 import type { CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -441,7 +444,7 @@ function ResultsTable(props: Props) {
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
       if (
-        !excludedBuildings.includes(building) &&
+        !excludedBuildingsAndRooms.includes(building) &&
         (!buildings.length || buildings.includes(building))
       ) {
         buildingIdMap.set(building, buildingIdCounter++);
@@ -452,24 +455,28 @@ function ResultsTable(props: Props) {
         });
 
         rooms.toSorted().forEach((room) => {
-          //Check if free
-          const events = courseBookEvents.data[building]?.[room] ?? [];
-          const [completelyFree, hasGap] = findAvailability(
-            events,
-            dayjsStartTime,
-            dayjsEndTime,
-          );
-          if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-            const roomName = `${building} ${room}`;
-            //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
-            roomIdMap.set(roomName, roomIdCounter++);
-            roomResources.push({
-              type: 'room',
-              id: roomIdMap.get(roomName),
-              text: room,
-              link: `https://locator.utdallas.edu/${building}_${room}`,
-              buildingId: buildingIdMap.get(building), // Assign room to its building
-            });
+          const roomName = `${building} ${room}`;
+          if (!excludedBuildingsAndRooms.includes(roomName)) {
+            //Check if free
+            const events = courseBookEvents.data[building]?.[room] ?? [];
+            const [completelyFree, hasGap] = findAvailability(
+              events,
+              dayjsStartTime,
+              dayjsEndTime,
+            );
+            if (completelyFree || (hasGap && !onlyAvailFullTime)) {
+              //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
+              roomIdMap.set(roomName, roomIdCounter++);
+              let link = `https://locator.utdallas.edu/${building}_${room}`;
+              link = mapLinkOverrides[link] ?? link;
+              roomResources.push({
+                type: 'room',
+                id: roomIdMap.get(roomName),
+                text: room,
+                link: link,
+                buildingId: buildingIdMap.get(building), // Assign room to its building
+              });
+            }
           }
         });
       }
@@ -479,30 +486,32 @@ function ResultsTable(props: Props) {
   const scheduleData: EventSource[] = [];
   Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
     if (
-      !excludedBuildings.includes(building) &&
+      !excludedBuildingsAndRooms.includes(building) &&
       (!buildings.length || buildings.includes(building))
     ) {
       Object.entries(rooms).forEach(([room, events]) => {
         const roomName = `${building} ${room}`;
-        const roomId = roomIdMap.get(roomName);
-        //If room exists (it doesn't when its been filtered out)
-        if (roomId) {
-          events.forEach((event, index) => {
-            scheduleData.push({
-              id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
-              Subject: `Section ${event.section}`,
-              StartTime: dayjs(
-                date + event.start_time,
-                'YYYY-MM-DDhh:mma',
-              ).toDate(),
-              EndTime: dayjs(
-                date + event.end_time,
-                'YYYY-MM-DDhh:mma',
-              ).toDate(),
-              roomId: roomId,
-              buildingId: buildingIdMap.get(building),
+        if (!excludedBuildingsAndRooms.includes(roomName)) {
+          const roomId = roomIdMap.get(roomName);
+          //If room exists (it doesn't when its been filtered out)
+          if (roomId) {
+            events.forEach((event, index) => {
+              scheduleData.push({
+                id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
+                Subject: `Section ${event.section}`,
+                StartTime: dayjs(
+                  date + event.start_time,
+                  'YYYY-MM-DDhh:mma',
+                ).toDate(),
+                EndTime: dayjs(
+                  date + event.end_time,
+                  'YYYY-MM-DDhh:mma',
+                ).toDate(),
+                roomId: roomId,
+                buildingId: buildingIdMap.get(building),
+              });
             });
-          });
+          }
         }
       });
     }

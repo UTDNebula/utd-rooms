@@ -18,7 +18,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import { excludedBuildings } from '@/modules/buildingInfo';
+import { excludedBuildingsAndRooms } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -224,7 +224,7 @@ const Filters = (props: Props) => {
               Object.keys(props.rooms.data)
                 .toSorted()
                 .map((value) => {
-                  if (excludedBuildings.includes(value)) {
+                  if (excludedBuildingsAndRooms.includes(value)) {
                     return null;
                   }
                   return (
