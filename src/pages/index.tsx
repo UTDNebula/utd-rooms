@@ -7,6 +7,13 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, {useEffect,useState} from 'react';
+
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
+import type { Rooms } from '@/types/Rooms';
+
+interface Props {
+  rooms: GenericFetchedData<Rooms>;
+}
 import Background from '@/../public/background.png';
 import Image from 'next/image';
 import Button from '@mui/material/Button';

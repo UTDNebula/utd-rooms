@@ -1,5 +1,5 @@
 import { Share } from '@mui/icons-material';
-import { IconButton, Snackbar, Tooltip } from '@mui/material';
+import { IconButton, Snackbar, TextField, Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -8,9 +8,17 @@ import React, { useState } from 'react';
 import Background from '@/../public/background.png';
 
 /**
+ * Props type used by the TopMenu component
+ */
+interface Props {
+  search: string;
+  setSearch: (arg0: string) => void;
+}
+
+/**
  * This is a component to hold UTD Rooms branding and basic navigation
  */
-export function TopMenu() {
+export function TopMenu(props: Props) {
   const router = useRouter();
   const [openCopied, setOpenCopied] = useState(false);
 
@@ -55,7 +63,14 @@ export function TopMenu() {
         >
           UTD ROOMS
         </Link>
-        {'add <SearchBar /> here'}
+        <TextField
+          label="Filter results"
+          className="order-last basis-full sm:order-none sm:basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+          value={props.search}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            props.setSearch(event.target.value);
+          }}
+        />
         <Tooltip title="Share link to search" className="ml-auto">
           <IconButton
             className="aspect-square"
