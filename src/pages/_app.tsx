@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { registerLicense } from '@syncfusion/ej2-base';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
@@ -10,6 +11,8 @@ import React, { useEffect, useState } from 'react';
 import resolveConfig from 'tailwindcss/resolveConfig';
 
 import tailwindConfig from '@/../tailwind.config.js';
+import useEventsStore from '@/modules/useEventsStore';
+import type { CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -146,13 +149,20 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
         setRooms({
           state: 'done',
-          data: response,
+          data: response.data,
         });
       })
       .catch(() => {
         setRooms({ state: 'error' });
       });
   }, []);
+
+  const [courseBookEvents, fetchAndStoreCourseBookEvents] =
+    useEventsStore<CourseBookEvent>('events');
+
+  if (typeof process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY !== 'undefined') {
+    registerLicense(process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY);
+  }
 
   return (
     <>
@@ -189,7 +199,12 @@ function MyApp({ Component, pageProps }: AppProps) {
             ' h-full text-haiti dark:text-white'
           }
         >
-          <Component rooms={rooms} {...pageProps} />
+          <Component
+            rooms={rooms}
+            courseBookEvents={courseBookEvents}
+            fetchAndStoreCourseBookEvents={fetchAndStoreCourseBookEvents}
+            {...pageProps}
+          />
         </div>
       </ThemeProvider>
     </>
