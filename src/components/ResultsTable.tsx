@@ -13,6 +13,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 
+import {
+  excludedBuildingsAndRooms,
+  mapLinkOverrides,
+} from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
 import type { CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -276,7 +280,11 @@ function LoadingResultsTable(props: LoadingProps) {
       showHeaderBar={false}
       eventSettings={{ dataSource: scheduleData }}
       quickInfoTemplates={{ footer: () => <></> }}
-      group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
+      group={{
+        resources: ['Buildings', 'Rooms'],
+        byGroupID: true,
+        enableCompactView: false,
+      }}
       startHour={props.startTime}
       endHour={props.endTime}
       resourceHeaderTemplate={(props: {
@@ -366,13 +374,22 @@ function ResultsTable(props: Props) {
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
-  startTime = startTime ?? '06:00';
+  if (
+    typeof date !== 'undefined' &&
+    date === dayjs().format('YYYY-MM-DD') &&
+    dayjs().hour() < 20
+  ) {
+    //if looking at today and not too late, set start time to now
+    startTime = startTime ?? dayjs().format('HH') + ':00';
+  } else {
+    startTime = startTime ?? '09:00';
+  }
   const dayjsStartTime = dayjs(startTime, 'HH:mm');
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
-  endTime = endTime ?? '23:00';
+  endTime = endTime ?? '22:00';
   const dayjsEndTime = dayjs(endTime, 'HH:mm');
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     state = 'error';
@@ -385,14 +402,14 @@ function ResultsTable(props: Props) {
 
   const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
 
+  if (state === 'error') {
+    return null;
+  }
   const loading = (
     <LoadingResultsTable startTime={startTime} endTime={endTime} />
   );
   if (state === 'loading') {
     return loading;
-  }
-  if (state === 'error') {
-    return null;
   }
 
   const rooms = props.rooms;
@@ -426,7 +443,10 @@ function ResultsTable(props: Props) {
   Object.entries(rooms.data)
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
-      if (!buildings.length || buildings.includes(building)) {
+      if (
+        !excludedBuildingsAndRooms.includes(building) &&
+        (!buildings.length || buildings.includes(building))
+      ) {
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
           type: 'building',
@@ -435,24 +455,28 @@ function ResultsTable(props: Props) {
         });
 
         rooms.toSorted().forEach((room) => {
-          //Check if free
-          const events = courseBookEvents.data[building]?.[room] ?? [];
-          const [completelyFree, hasGap] = findAvailability(
-            events,
-            dayjsStartTime,
-            dayjsEndTime,
-          );
-          if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-            const roomName = `${building} ${room}`;
-            //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
-            roomIdMap.set(roomName, roomIdCounter++);
-            roomResources.push({
-              type: 'room',
-              id: roomIdMap.get(roomName),
-              text: room,
-              link: `https://locator.utdallas.edu/${building}_${room}`,
-              buildingId: buildingIdMap.get(building), // Assign room to its building
-            });
+          const roomName = `${building} ${room}`;
+          if (!excludedBuildingsAndRooms.includes(roomName)) {
+            //Check if free
+            const events = courseBookEvents.data[building]?.[room] ?? [];
+            const [completelyFree, hasGap] = findAvailability(
+              events,
+              dayjsStartTime,
+              dayjsEndTime,
+            );
+            if (completelyFree || (hasGap && !onlyAvailFullTime)) {
+              //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
+              roomIdMap.set(roomName, roomIdCounter++);
+              let link = `https://locator.utdallas.edu/${building}_${room}`;
+              link = mapLinkOverrides[link] ?? link;
+              roomResources.push({
+                type: 'room',
+                id: roomIdMap.get(roomName),
+                text: room,
+                link: link,
+                buildingId: buildingIdMap.get(building), // Assign room to its building
+              });
+            }
           }
         });
       }
@@ -461,89 +485,109 @@ function ResultsTable(props: Props) {
   // Convert events to correct format
   const scheduleData: EventSource[] = [];
   Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
-    if (!buildings.length || buildings.includes(building)) {
+    if (
+      !excludedBuildingsAndRooms.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
       Object.entries(rooms).forEach(([room, events]) => {
         const roomName = `${building} ${room}`;
-        const roomId = roomIdMap.get(roomName);
-        //If room exists (it doesn't when its been filtered out)
-        if (roomId) {
-          events.forEach((event, index) => {
-            scheduleData.push({
-              id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
-              Subject: `Section ${event.section}`,
-              StartTime: dayjs(
-                date + event.start_time,
-                'YYYY-MM-DDhh:mma',
-              ).toDate(),
-              EndTime: dayjs(
-                date + event.end_time,
-                'YYYY-MM-DDhh:mma',
-              ).toDate(),
-              roomId: roomId,
-              buildingId: buildingIdMap.get(building),
+        if (!excludedBuildingsAndRooms.includes(roomName)) {
+          const roomId = roomIdMap.get(roomName);
+          //If room exists (it doesn't when its been filtered out)
+          if (roomId) {
+            events.forEach((event, index) => {
+              scheduleData.push({
+                id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
+                Subject: `Section ${event.section}`,
+                StartTime: dayjs(
+                  date + event.start_time,
+                  'YYYY-MM-DDhh:mma',
+                ).toDate(),
+                EndTime: dayjs(
+                  date + event.end_time,
+                  'YYYY-MM-DDhh:mma',
+                ).toDate(),
+                roomId: roomId,
+                buildingId: buildingIdMap.get(building),
+              });
             });
-          });
+          }
         }
       });
     }
   });
 
   return (
-    <ScheduleComponent
-      currentView="TimelineDay"
-      readonly
-      showHeaderBar={false}
-      rowAutoHeight={true}
-      eventSettings={{ dataSource: scheduleData }}
-      quickInfoTemplates={{ footer: () => <></> }}
-      group={{ resources: ['Buildings', 'Rooms'], byGroupID: true }}
-      selectedDate={dayjs(date).toDate()}
-      startHour={startTime}
-      endHour={endTime}
-      resourceHeaderTemplate={(props: {
-        resourceData: BuildingResource | RoomResource;
-      }) => {
-        const data = props.resourceData;
-        if (data.type === 'building') {
-          return <div className="e-resource-text ml-0">{data.text}</div>;
-        }
-        return (
-          <div className="e-resource-text ml-[25px]">
-            <Link
-              href={data.link}
-              target="_blank"
-              className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
-            >
-              {data.text}
-            </Link>
-          </div>
-        );
-      }}
-    >
-      <ResourcesDirective>
-        <ResourceDirective
-          field="buildingId"
-          title="Building"
-          name="Buildings"
-          dataSource={buildingResources}
-          textField="text"
-          idField="id"
-        />
-        <ResourceDirective
-          field="roomId"
-          title="Room"
-          name="Rooms"
-          dataSource={roomResources}
-          textField="text"
-          idField="id"
-          groupIDField="buildingId"
-        />
-      </ResourcesDirective>
-      <ViewsDirective>
-        <ViewDirective option="TimelineDay" />
-      </ViewsDirective>
-      <Inject services={[TimelineViews]} />
-    </ScheduleComponent>
+    <>
+      <p>
+        {'Found '}
+        {roomResources.length}
+        {onlyAvailFullTime
+          ? ' rooms that are completely free.'
+          : ' rooms that have free time.'}
+      </p>
+      <ScheduleComponent
+        currentView="TimelineDay"
+        readonly
+        showHeaderBar={false}
+        rowAutoHeight={true}
+        eventSettings={{ dataSource: scheduleData }}
+        quickInfoTemplates={{ footer: () => <></> }}
+        group={{
+          resources: ['Buildings', 'Rooms'],
+          byGroupID: true,
+          enableCompactView: false,
+        }}
+        selectedDate={dayjs(date).toDate()}
+        startHour={startTime}
+        endHour={endTime}
+        resourceHeaderTemplate={(props: {
+          resourceData: BuildingResource | RoomResource;
+        }) => {
+          const data = props.resourceData;
+          if (data.type === 'building') {
+            return (
+              <div className="e-resource-text ml-0 text-clip">{data.text}</div>
+            );
+          }
+          return (
+            <div className="e-resource-text ml-[25px] text-clip">
+              <Link
+                href={data.link}
+                target="_blank"
+                className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+              >
+                {data.text}
+              </Link>
+            </div>
+          );
+        }}
+      >
+        <ResourcesDirective>
+          <ResourceDirective
+            field="buildingId"
+            title="Building"
+            name="Buildings"
+            dataSource={buildingResources}
+            textField="text"
+            idField="id"
+          />
+          <ResourceDirective
+            field="roomId"
+            title="Room"
+            name="Rooms"
+            dataSource={roomResources}
+            textField="text"
+            idField="id"
+            groupIDField="buildingId"
+          />
+        </ResourcesDirective>
+        <ViewsDirective>
+          <ViewDirective option="TimelineDay" />
+        </ViewsDirective>
+        <Inject services={[TimelineViews]} />
+      </ScheduleComponent>
+    </>
   );
 }
 
@@ -559,7 +603,9 @@ function findAvailability(
     const eventEnd = dayjs(event.end_time, 'h:mma');
     if (
       isBetween(eventStart, calendarStart, calendarEnd) ||
-      isBetween(eventEnd, calendarStart, calendarEnd)
+      isBetween(eventEnd, calendarStart, calendarEnd) ||
+      //event covers whole time
+      (eventStart.isBefore(calendarStart) && eventEnd.isAfter(calendarEnd))
     ) {
       completelyFree = false;
       let fillStart = 0;

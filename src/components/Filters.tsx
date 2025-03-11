@@ -18,6 +18,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { useRouter } from 'next/router';
 import React from 'react';
 
+import { excludedBuildingsAndRooms } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -222,12 +223,17 @@ const Filters = (props: Props) => {
             {props.rooms.state === 'done' &&
               Object.keys(props.rooms.data)
                 .toSorted()
-                .map((value) => (
-                  <MenuItem className="h-10" key={value} value={value}>
-                    <Checkbox checked={buildings.includes(value)} />
-                    <ListItemText primary={value} />
-                  </MenuItem>
-                ))}
+                .map((value) => {
+                  if (excludedBuildingsAndRooms.includes(value)) {
+                    return null;
+                  }
+                  return (
+                    <MenuItem className="h-10" key={value} value={value}>
+                      <Checkbox checked={buildings.includes(value)} />
+                      <ListItemText primary={value} />
+                    </MenuItem>
+                  );
+                })}
           </Select>
         </FormControl>
       </Grid>
@@ -238,7 +244,6 @@ const Filters = (props: Props) => {
           control={
             <Checkbox
               checked={router.query.onlyAvailFullTime === 'true'}
-              disabled={!startTime || !endTime}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 if (router.isReady) {
                   const newQuery = { ...router.query };
