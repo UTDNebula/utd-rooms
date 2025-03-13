@@ -56,7 +56,7 @@ const Home: NextPage<Props> = (props: Props) => {
           date: formattedDate,
           ...(startTime && { startTime: extractTime(startTime) }),
           ...(endTime && { endTime: extractTime(endTime) }),
-          ...(buildings && { buildings: buildings.join(',') }),
+          ...(buildings.length && { buildings: buildings.join(',') }),
         },
       });
     }
