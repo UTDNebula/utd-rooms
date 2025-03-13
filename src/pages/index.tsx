@@ -48,6 +48,11 @@ const Home: NextPage<Props> = (props: Props) => {
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
   const [buildings, setBuildings] = useState<String[]>([]);
+  const error = Boolean(
+    startTime &&
+      endTime &&
+      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+  );
 
   async function searchRooms() {
     if (selectedDate !== null) {
@@ -98,24 +103,53 @@ const Home: NextPage<Props> = (props: Props) => {
         <div className="w-full sm:w-1/2 md:w-1/4 mb-10">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
+              label="Date *"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
-              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-black"
-              // sx={{ backgroundColor: 'black' }}
+              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+              slotProps={{
+                actionBar: {
+                  actions: ['today', 'accept'],
+                },
+              }}
+              disablePast
+              maxDate={dayjs().add(365, 'day')}
             />
             <TimePicker
               label="Start time"
               value={startTime}
               onChange={(newValue) => setStartTime(newValue)}
-              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-black"
+              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+              slotProps={{
+                actionBar: {
+                  actions: ['clear', 'accept'],
+                },
+                textField: {
+                  error: error,
+                  helperText: error && 'Start time must be before end time',
+                },
+              }}
+              minTime={dayjs().hour(6)}
+              maxTime={dayjs().hour(23)}
             />
             <TimePicker
               label="End time"
               value={endTime}
               onChange={(newValue) => setEndTime(newValue)}
-              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-black"
+              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+              slotProps={{
+                actionBar: {
+                  actions: ['clear', 'accept'],
+                },
+                textField: {
+                  error: error,
+                  helperText: error && 'Start time must be before end time',
+                },
+              }}
+              minTime={dayjs().hour(6)}
+              maxTime={dayjs().hour(23)}
             />
-            <FormControl className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-black">
+            <FormControl className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti">
               <InputLabel id="buildings">Buildings</InputLabel>
               <Select
                 label="Buildings"
