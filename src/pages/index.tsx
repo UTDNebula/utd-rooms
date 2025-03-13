@@ -12,8 +12,6 @@ import {
 } from '@mui/material';
 
 import Button from '@mui/material/Button';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { Dayjs } from 'dayjs';
@@ -100,13 +98,12 @@ const Home: NextPage<Props> = (props: Props) => {
             UTD ROOMS
           </h1>
         </div>
-        <div className="w-full sm:w-1/2 md:w-1/4 mb-10">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-8">
             <DatePicker
               label="Date *"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
-              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+              className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
               slotProps={{
                 actionBar: {
                   actions: ['today', 'accept'],
@@ -119,7 +116,7 @@ const Home: NextPage<Props> = (props: Props) => {
               label="Start time"
               value={startTime}
               onChange={(newValue) => setStartTime(newValue)}
-              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+              className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
               slotProps={{
                 actionBar: {
                   actions: ['clear', 'accept'],
@@ -136,7 +133,7 @@ const Home: NextPage<Props> = (props: Props) => {
               label="End time"
               value={endTime}
               onChange={(newValue) => setEndTime(newValue)}
-              className="flex justify-center mb-10 w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+              className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
               slotProps={{
                 actionBar: {
                   actions: ['clear', 'accept'],
@@ -196,18 +193,14 @@ const Home: NextPage<Props> = (props: Props) => {
                     })}
               </Select>
             </FormControl>
-          </LocalizationProvider>
-        </div>
-        <div className="flex justify-center mb-10">
-          <Button
-            variant="contained"
-            type="button"
-            color="primary"
-            onClick={searchRooms}
-            disabled={selectedDate === null}
-          >
-            Search Rooms
-          </Button>
+            <Button
+              variant="contained"
+              className="w-fit"
+              onClick={searchRooms}
+              disabled={selectedDate === null}
+            >
+              Search Rooms
+            </Button>
         </div>
       </div>
     </>
