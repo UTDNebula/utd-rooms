@@ -1,29 +1,25 @@
 import {
-  Autocomplete,
   Checkbox,
   FormControl,
-  Grid2 as Grid,
+  InputLabel,
   ListItemText,
   MenuItem,
   Radio,
   Select,
-  TextField,
-  InputLabel,
 } from '@mui/material';
-
 import Button from '@mui/material/Button';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { excludedBuildingsAndRooms } from '@/modules/buildingInfo';
-import type { SelectChangeEvent } from '@mui/material/Select';
+
 import Background from '@/../public/background.png';
+import { excludedBuildingsAndRooms } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -45,7 +41,7 @@ const Home: NextPage<Props> = (props: Props) => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
-  const [buildings, setBuildings] = useState<String[]>([]);
+  const [buildings, setBuildings] = useState<string[]>([]);
   const error = Boolean(
     startTime &&
       endTime &&
@@ -113,108 +109,108 @@ const Home: NextPage<Props> = (props: Props) => {
           </p>
         </div>
         <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-8">
-            <DatePicker
-              label="Date *"
-              value={selectedDate}
-              onChange={(newValue) => setSelectedDate(newValue)}
-              className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
-              slotProps={{
-                actionBar: {
-                  actions: ['today', 'accept'],
-                },
+          <DatePicker
+            label="Date *"
+            value={selectedDate}
+            onChange={(newValue) => setSelectedDate(newValue)}
+            className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+            slotProps={{
+              actionBar: {
+                actions: ['today', 'accept'],
+              },
+            }}
+            disablePast
+            maxDate={dayjs().add(365, 'day')}
+          />
+          <TimePicker
+            label="Start time"
+            value={startTime}
+            onChange={(newValue) => setStartTime(newValue)}
+            className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+            slotProps={{
+              actionBar: {
+                actions: ['clear', 'accept'],
+              },
+              textField: {
+                error: error,
+                helperText: error && 'Start time must be before end time',
+              },
+            }}
+            minTime={dayjs().hour(6)}
+            maxTime={dayjs().hour(23)}
+          />
+          <TimePicker
+            label="End time"
+            value={endTime}
+            onChange={(newValue) => setEndTime(newValue)}
+            className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+            slotProps={{
+              actionBar: {
+                actions: ['clear', 'accept'],
+              },
+              textField: {
+                error: error,
+                helperText: error && 'Start time must be before end time',
+              },
+            }}
+            minTime={dayjs().hour(6)}
+            maxTime={dayjs().hour(23)}
+          />
+          <FormControl className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti">
+            <InputLabel id="buildings">Buildings</InputLabel>
+            <Select
+              label="Buildings"
+              labelId="buildings"
+              multiple
+              disabled={props.rooms.state !== 'done'}
+              value={buildings}
+              onChange={(event: SelectChangeEvent<string[]>) => {
+                let newValue = event.target.value;
+                if (typeof newValue === 'string') {
+                  newValue = [newValue];
+                }
+                if (!newValue.includes('any')) {
+                  setBuildings(newValue.toSorted());
+                } else {
+                  setBuildings([]);
+                }
               }}
-              disablePast
-              maxDate={dayjs().add(365, 'day')}
-            />
-            <TimePicker
-              label="Start time"
-              value={startTime}
-              onChange={(newValue) => setStartTime(newValue)}
-              className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
-              slotProps={{
-                actionBar: {
-                  actions: ['clear', 'accept'],
-                },
-                textField: {
-                  error: error,
-                  helperText: error && 'Start time must be before end time',
-                },
+              renderValue={(selected) => {
+                if (!selected.length) {
+                  return '';
+                }
+                return selected.join(', ');
               }}
-              minTime={dayjs().hour(6)}
-              maxTime={dayjs().hour(23)}
-            />
-            <TimePicker
-              label="End time"
-              value={endTime}
-              onChange={(newValue) => setEndTime(newValue)}
-              className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
-              slotProps={{
-                actionBar: {
-                  actions: ['clear', 'accept'],
-                },
-                textField: {
-                  error: error,
-                  helperText: error && 'Start time must be before end time',
-                },
-              }}
-              minTime={dayjs().hour(6)}
-              maxTime={dayjs().hour(23)}
-            />
-            <FormControl className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti">
-              <InputLabel id="buildings">Buildings</InputLabel>
-              <Select
-                label="Buildings"
-                labelId="buildings"
-                multiple
-                disabled={props.rooms.state !== 'done'}
-                value={buildings}
-                onChange={(event: SelectChangeEvent<string[]>) => {
-                  let newValue = event.target.value;
-                  if (typeof newValue === 'string') {
-                    newValue = [newValue];
-                  }
-                  if (!newValue.includes('any')) {
-                    setBuildings(newValue.toSorted());
-                  } else {
-                    setBuildings([]);
-                  }
-                }}
-                renderValue={(selected) => {
-                  if (!selected.length) {
-                    return '';
-                  }
-                  return selected.join(', ');
-                }}
-              >
-                <MenuItem className="h-10" value="any">
-                  <Radio checked={!buildings.length} />
-                  <ListItemText primary="Any" />
-                </MenuItem>
-                {/* dropdown options*/}
-                {props.rooms.state === 'done' &&
-                  Object.keys(props.rooms.data)
-                    .toSorted()
-                    .map((value) => {
-                      if (excludedBuildingsAndRooms.includes(value)) {
-                        return null;
-                      }
-                      return (
-                        <MenuItem className="h-10" key={value} value={value}>
-                          <Checkbox checked={buildings.includes(value)} />
-                          <ListItemText primary={value} />
-                        </MenuItem>
-                      );
-                    })}
-              </Select>
-            </FormControl>
-            <Button
-              variant="contained"
-              className="w-fit"
-              onClick={searchRooms}
-              disabled={selectedDate === null}
             >
-              Search Rooms
-            </Button>
+              <MenuItem className="h-10" value="any">
+                <Radio checked={!buildings.length} />
+                <ListItemText primary="Any" />
+              </MenuItem>
+              {/* dropdown options*/}
+              {props.rooms.state === 'done' &&
+                Object.keys(props.rooms.data)
+                  .toSorted()
+                  .map((value) => {
+                    if (excludedBuildingsAndRooms.includes(value)) {
+                      return null;
+                    }
+                    return (
+                      <MenuItem className="h-10" key={value} value={value}>
+                        <Checkbox checked={buildings.includes(value)} />
+                        <ListItemText primary={value} />
+                      </MenuItem>
+                    );
+                  })}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            className="w-fit"
+            onClick={searchRooms}
+            disabled={selectedDate === null}
+          >
+            Search Rooms
+          </Button>
         </div>
       </div>
     </>
