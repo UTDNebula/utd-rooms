@@ -31,14 +31,13 @@ interface Props {
  * Returns the home page with Nebula Branding and search options
  */
 const Home: NextPage<Props> = (props: Props) => {
-  console.log(props.rooms);
   const router = useRouter();
 
   function extractTime(dateTime: Dayjs) {
     return dateTime.format('HH:mm');
   }
 
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [startTime, setStartTime] = useState<Dayjs | null>(null);
   const [endTime, setEndTime] = useState<Dayjs | null>(null);
   const [buildings, setBuildings] = useState<string[]>([]);
@@ -50,24 +49,15 @@ const Home: NextPage<Props> = (props: Props) => {
 
   async function searchRooms() {
     if (selectedDate !== null) {
-      const formattedDate = selectedDate
-        ? selectedDate.toISOString().split('T')[0]
-        : '';
-
-      const params = { date: formattedDate };
-      if (startTime) {
-        params.startTime = extractTime(startTime);
-      }
-      if (endTime) {
-        params.endTime = extractTime(endTime);
-      }
-      if (buildings.length) {
-        params.buildings = buildings.join(',');
-      }
-
-      router.push({
+      const formattedDate = selectedDate.toISOString().split('T')[0];
+      await router.push({
         pathname: '/results',
-        query: params,
+        query: {
+          date: formattedDate,
+          ...(startTime && { startTime: extractTime(startTime) }),
+          ...(endTime && { endTime: extractTime(endTime) }),
+          ...(buildings && { buildings: buildings.join(',') }),
+        },
       });
     }
   }
