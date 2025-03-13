@@ -83,17 +83,31 @@ const Home: NextPage<Props> = (props: Props) => {
         />
         <meta property="og:url" content="https://rooms.utdnebula.com" />
       </Head>
+      <Image
+        src={Background}
+        alt="gradient background"
+        fill
+        className="object-cover -z-20"
+      />
       <div className="relative bg-lighten dark:bg-darken h-full w-full flex flex-col items-center gap-4 px-8 py-4">
-        <Image
-          src={Background}
-          alt="gradient background"
-          fill
-          className="object-cover -z-20"
-        />
         <div className="text-center text-white" style={{ marginTop: '10vh' }}>
-          <h1 className="text-6xl font-extrabold font-kallisto mb-6">
+          <h2 className="text-sm font-semibold mb-3 text-cornflower-600 dark:text-cornflower-400 tracking-wider">
+            POWERED BY {/*eslint-disable-next-line react/jsx-no-target-blank*/}
+            <a
+              href="https://www.utdnebula.com/"
+              target="_blank"
+              rel="noopener"
+              className="underline decoration-transparent hover:decoration-inherit transition"
+            >
+              NEBULA LABS
+            </a>
+          </h2>
+          <h1 className="text-6xl font-extrabold font-kallisto mb-3">
             UTD ROOMS
           </h1>
+          <p className="mb-5 text-gray-700 dark:text-gray-300 leading-7">
+            Find available rooms on campus
+          </p>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 mb-10">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
