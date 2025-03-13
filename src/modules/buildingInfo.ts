@@ -17,6 +17,26 @@ export const excludedBuildingsAndRooms = [
 //TODO: add names and show in table and filters
 const buildingNames = {
   SCI: 'Sciences',
+  AB: 'Activity Center',
+  AD: 'Administration',
+  ATEC: 'Arts, Technology, and Emerging Communication',
+  BE: 'Berkner Hall',
+  CB: 'Classroom Building',
+  CR: 'Callier Center',
+  ECSN: 'Engineering & Computer Science North',
+  ECSS: 'Engineering & Computer Science South',
+  ECSW: 'Engineering & Computer Science West',
+  FA: 'Founders Annex',
+  FN: 'Founders North',
+  FO: 'Founders Building',
+  GC: 'Green Center',
+  GR: 'Green Hall',
+  HH: 'Hoblitzelle Hall',
+  JO: 'Jonsson Building',
+  MC: 'McDermott Library',
+  SU: 'Student Union',
+  TH: 'Theatre',
+  PHY: 'Physics',
   //...
 };
 
