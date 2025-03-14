@@ -37,7 +37,6 @@ const Results: NextPage<Props> = (props: Props) => {
         const newQuery = { ...router.query };
         //set to today
         newQuery.date = new Date().toISOString().split('T')[0];
-        date = newQuery.date;
         router.replace(
           {
             query: newQuery,
@@ -45,6 +44,7 @@ const Results: NextPage<Props> = (props: Props) => {
           undefined,
           { shallow: true },
         );
+        return;
       }
       if (Array.isArray(date)) {
         date = date[0];
