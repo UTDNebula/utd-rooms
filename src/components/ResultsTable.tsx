@@ -14,7 +14,8 @@ import { useRouter } from 'next/router';
 import React from 'react';
 
 import {
-  excludedBuildingsAndRooms,
+  excludedBuildings,
+  excludedRooms,
   mapLinkOverrides,
 } from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
@@ -444,7 +445,7 @@ function ResultsTable(props: Props) {
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
       if (
-        !excludedBuildingsAndRooms.includes(building) &&
+        !excludedBuildings.includes(building) &&
         (!buildings.length || buildings.includes(building))
       ) {
         buildingIdMap.set(building, buildingIdCounter++);
@@ -456,7 +457,7 @@ function ResultsTable(props: Props) {
 
         rooms.toSorted().forEach((room) => {
           const roomName = `${building} ${room}`;
-          if (!excludedBuildingsAndRooms.includes(roomName)) {
+          if (!excludedRooms.includes(roomName)) {
             //Check if free
             const events = courseBookEvents.data[building]?.[room] ?? [];
             const [completelyFree, hasGap] = findAvailability(
@@ -486,12 +487,12 @@ function ResultsTable(props: Props) {
   const scheduleData: EventSource[] = [];
   Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
     if (
-      !excludedBuildingsAndRooms.includes(building) &&
+      !excludedBuildings.includes(building) &&
       (!buildings.length || buildings.includes(building))
     ) {
       Object.entries(rooms).forEach(([room, events]) => {
         const roomName = `${building} ${room}`;
-        if (!excludedBuildingsAndRooms.includes(roomName)) {
+        if (!excludedRooms.includes(roomName)) {
           const roomId = roomIdMap.get(roomName);
           //If room exists (it doesn't when its been filtered out)
           if (roomId) {
