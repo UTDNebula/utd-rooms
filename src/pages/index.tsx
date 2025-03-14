@@ -19,7 +19,7 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import Background from '@/../public/background.png';
-import { excludedBuildingsAndRooms } from '@/modules/buildingInfo';
+import { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -181,7 +181,7 @@ const Home: NextPage<Props> = (props: Props) => {
                 Object.keys(props.rooms.data)
                   .toSorted()
                   .map((value) => {
-                    if (excludedBuildingsAndRooms.includes(value)) {
+                    if (excludedBuildings.includes(value)) {
                       return null;
                     }
                     return (
