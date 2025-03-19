@@ -466,17 +466,33 @@ function ResultsTable(props: Props) {
               dayjsEndTime,
             );
             if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-              //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
               roomIdMap.set(roomName, roomIdCounter++);
               let link = `https://locator.utdallas.edu/${building}_${room}`;
               link = mapLinkOverrides[link] ?? link;
-              roomResources.push({
-                type: 'room',
-                id: roomIdMap.get(roomName),
-                text: room,
-                link: link,
-                buildingId: buildingIdMap.get(building), // Assign room to its building
-              });
+              if (isNaN(Number(props.search))) {
+                // props.search contains letters
+                if (roomName.toLowerCase().startsWith(props.search.toLowerCase())) {
+                  roomResources.push({
+                    type: 'room',
+                    id: roomIdMap.get(roomName),
+                    text: room,
+                    link: link,
+                    buildingId: buildingIdMap.get(building), // Assign room to its building
+                  });
+                }
+              } else {
+                // props.search is a number
+                const roomNumber = roomName.split(' ')[1]; // Get the numerical part of the roomName
+                if (roomNumber.startsWith(props.search)) {
+                  roomResources.push({
+                    type: 'room',
+                    id: roomIdMap.get(roomName),
+                    text: room,
+                    link: link,
+                    buildingId: buildingIdMap.get(building), // Assign room to its building
+                  });
+                }
+              }
             }
           }
         });
