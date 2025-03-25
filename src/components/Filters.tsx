@@ -223,11 +223,11 @@ const Filters = (props: Props) => {
                     <MenuItem className="h-10" key={value} value={value}>
                       <Checkbox checked={buildings.includes(value)} />
                       <ListItemText
-                      primary={
-                        buildingNames[value as keyof typeof buildingNames]
-                        ? `${buildingNames[value as keyof typeof buildingNames]} (${value})`
-                        : value
-                      }
+                        primary={
+                          buildingNames[value as keyof typeof buildingNames]
+                            ? `${buildingNames[value as keyof typeof buildingNames]} (${value})`
+                            : value
+                        }
                       />
                     </MenuItem>
                   );
