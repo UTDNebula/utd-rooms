@@ -471,17 +471,22 @@ function ResultsTable(props: Props) {
               dayjsEndTime,
             );
             if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-              //TODO: filter out rooms based on search, maybe only include if roomName.includes(search)?
-              roomIdMap.set(roomName, roomIdCounter++);
-              let link = `https://locator.utdallas.edu/${building}_${room}`;
-              link = mapLinkOverrides[link] ?? link;
-              roomResources.push({
-                type: 'room',
-                id: roomIdMap.get(roomName),
-                text: room,
-                link: link,
-                buildingId: buildingIdMap.get(building), // Assign room to its building
-              });
+              if (
+                props.search === '' ||
+                roomName.toLowerCase().startsWith(props.search.toLowerCase()) ||
+                room.toLowerCase().startsWith(props.search.toLowerCase())
+              ) {
+                roomIdMap.set(roomName, roomIdCounter++);
+                let link = `https://locator.utdallas.edu/${building}_${room}`;
+                link = mapLinkOverrides[link] ?? link;
+                roomResources.push({
+                  type: 'room',
+                  id: roomIdMap.get(roomName),
+                  text: room,
+                  link: link,
+                  buildingId: buildingIdMap.get(building), // Assign room to its building
+                });
+              }
             }
           }
         });
@@ -526,11 +531,15 @@ function ResultsTable(props: Props) {
   return (
     <>
       <p>
-        {'Found '}
-        {roomResources.length}
-        {onlyAvailFullTime
-          ? ' rooms that are completely free.'
-          : ' rooms that have free time.'}
+        {`Found ${roomResources.length}${
+          onlyAvailFullTime
+            ? roomResources.length === 1
+              ? ' room that is completely free.'
+              : ' rooms that are completely free.'
+            : roomResources.length === 1
+              ? ' room that has free time.'
+              : ' rooms that have free time.'
+        }`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"
