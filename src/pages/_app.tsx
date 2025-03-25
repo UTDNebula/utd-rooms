@@ -1,6 +1,8 @@
 import '@/styles/globals.css';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { registerLicense } from '@syncfusion/ej2-base';
 import type { AppProps } from 'next/app';
@@ -191,21 +193,23 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <ThemeProvider theme={muiTheme}>
-        <div
-          className={
-            inter.variable +
-            ' ' +
-            kallisto.variable +
-            ' h-full text-haiti dark:text-white'
-          }
-        >
-          <Component
-            rooms={rooms}
-            courseBookEvents={courseBookEvents}
-            fetchAndStoreCourseBookEvents={fetchAndStoreCourseBookEvents}
-            {...pageProps}
-          />
-        </div>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <div
+            className={
+              inter.variable +
+              ' ' +
+              kallisto.variable +
+              ' h-full text-haiti dark:text-white'
+            }
+          >
+            <Component
+              rooms={rooms}
+              courseBookEvents={courseBookEvents}
+              fetchAndStoreCourseBookEvents={fetchAndStoreCourseBookEvents}
+              {...pageProps}
+            />
+          </div>
+        </LocalizationProvider>
       </ThemeProvider>
     </>
   );

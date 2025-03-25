@@ -1,4 +1,4 @@
-export const excludedBuildingsAndRooms = [
+export const excludedBuildings = [
   '',
   'See',
   'ONLINE',
@@ -10,7 +10,9 @@ export const excludedBuildingsAndRooms = [
   'CCTC',
   //All offices
   'SSB',
-  //???
+];
+export const excludedRooms = [
+  //Cannot find where this room is
   'Student Services Addition (SSA) SSA Green Room',
 ];
 

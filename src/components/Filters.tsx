@@ -10,8 +10,6 @@ import {
   Select,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
@@ -19,7 +17,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 
 import buildingNames from '@/modules/buildingInfo';
-import { excludedBuildingsAndRooms } from '@/modules/buildingInfo';
+import { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -62,120 +60,114 @@ const Filters = (props: Props) => {
     <Grid container spacing={1}>
       {/*Date picker*/}
       <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            className="w-full"
-            value={dayjs(date)}
-            onChange={(newValue: Dayjs | null) => {
-              if (router.isReady) {
-                const newQuery = { ...router.query };
-                if (newValue !== null) {
-                  newQuery.date = newValue.toISOString().split('T')[0];
-                } else {
-                  //set to today
-                  newQuery.date = dayjs().toISOString().split('T')[0];
-                }
-                router.replace(
-                  {
-                    query: newQuery,
-                  },
-                  undefined,
-                  { shallow: true },
-                );
+        <DatePicker
+          className="w-full"
+          value={dayjs(date)}
+          onChange={(newValue: Dayjs | null) => {
+            if (router.isReady) {
+              const newQuery = { ...router.query };
+              if (newValue !== null) {
+                newQuery.date = newValue.toISOString().split('T')[0];
+              } else {
+                //set to today
+                newQuery.date = dayjs().toISOString().split('T')[0];
               }
-            }}
-            slotProps={{
-              actionBar: {
-                actions: ['today', 'accept'],
-              },
-              textField: { size: 'small' },
-            }}
-            disablePast
-            maxDate={dayjs().add(365, 'day')}
-          />
-        </LocalizationProvider>
+              router.replace(
+                {
+                  query: newQuery,
+                },
+                undefined,
+                { shallow: true },
+              );
+            }
+          }}
+          slotProps={{
+            actionBar: {
+              actions: ['today', 'accept'],
+            },
+            textField: { size: 'small' },
+          }}
+          disablePast
+          maxDate={dayjs().add(365, 'day')}
+        />
       </Grid>
 
       {/*Start time dropdown*/}
       <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimePicker
-            label="Start time"
-            className="w-full"
-            value={startTime ? dayjs(startTime, 'HH:mm') : null}
-            onChange={(newValue: Dayjs | null) => {
-              if (router.isReady) {
-                const newQuery = { ...router.query };
-                if (newValue !== null) {
-                  newQuery.startTime = newValue.format('HH:mm');
-                } else {
-                  delete newQuery.startTime;
-                  delete newQuery.onlyAvailFullTime;
-                }
-                router.replace(
-                  {
-                    query: newQuery,
-                  },
-                  undefined,
-                  { shallow: true },
-                );
+        <TimePicker
+          label="Start time"
+          className="w-full"
+          value={startTime ? dayjs(startTime, 'HH:mm') : null}
+          onChange={(newValue: Dayjs | null) => {
+            if (router.isReady) {
+              const newQuery = { ...router.query };
+              if (newValue !== null) {
+                newQuery.startTime = newValue.format('HH:mm');
+              } else {
+                delete newQuery.startTime;
+                delete newQuery.onlyAvailFullTime;
               }
-            }}
-            slotProps={{
-              actionBar: {
-                actions: ['clear', 'accept'],
-              },
-              textField: {
-                size: 'small',
-                error: error,
-                helperText: error && 'Start time must be before end time',
-              },
-            }}
-            minTime={dayjs().hour(6)}
-            maxTime={dayjs().hour(23)}
-          />
-        </LocalizationProvider>
+              router.replace(
+                {
+                  query: newQuery,
+                },
+                undefined,
+                { shallow: true },
+              );
+            }
+          }}
+          slotProps={{
+            actionBar: {
+              actions: ['clear', 'accept'],
+            },
+            textField: {
+              size: 'small',
+              error: error,
+              helperText: error && 'Start time must be before end time',
+            },
+          }}
+          minTime={dayjs().hour(6)}
+          maxTime={dayjs().hour(23)}
+        />
       </Grid>
 
       {/*End time dropdown*/}
       <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimePicker
-            label="End time"
-            className="w-full"
-            value={endTime ? dayjs(endTime, 'HH:mm') : null}
-            onChange={(newValue: Dayjs | null) => {
-              if (router.isReady) {
-                const newQuery = { ...router.query };
-                if (newValue !== null) {
-                  newQuery.endTime = newValue.format('HH:mm');
-                } else {
-                  delete newQuery.endTime;
-                  delete newQuery.onlyAvailFullTime;
-                }
-                router.replace(
-                  {
-                    query: newQuery,
-                  },
-                  undefined,
-                  { shallow: true },
-                );
+        <TimePicker
+          label="End time"
+          className="w-full"
+          value={endTime ? dayjs(endTime, 'HH:mm') : null}
+          onChange={(newValue: Dayjs | null) => {
+            if (router.isReady) {
+              const newQuery = { ...router.query };
+              if (newValue !== null) {
+                newQuery.endTime = newValue.format('HH:mm');
+              } else {
+                delete newQuery.endTime;
+                delete newQuery.onlyAvailFullTime;
               }
-            }}
-            slotProps={{
-              actionBar: {
-                actions: ['clear', 'accept'],
-              },
-              textField: {
-                size: 'small',
-                error: error,
-                helperText: error && 'Start time must be before end time',
-              },
-            }}
-            minTime={dayjs().hour(6)}
-            maxTime={dayjs().hour(23)}
-          />
-        </LocalizationProvider>
+              router.replace(
+                {
+                  query: newQuery,
+                },
+                undefined,
+                { shallow: true },
+              );
+            }
+          }}
+          slotProps={{
+            actionBar: {
+              actions: ['clear', 'accept'],
+            },
+            textField: {
+              size: 'small',
+              error: error,
+              helperText: error && 'Start time must be before end time',
+            },
+          }}
+          minTime={dayjs().hour(6)}
+          maxTime={dayjs().hour(23)}
+        />
       </Grid>
 
       {/*Building dropdown*/}
@@ -225,7 +217,7 @@ const Filters = (props: Props) => {
               Object.keys(props.rooms.data)
                 .toSorted()
                 .map((value) => {
-                  if (excludedBuildingsAndRooms.includes(value)) {
+                  if (excludedBuildings.includes(value)) {
                     return null;
                   }
                   return (
