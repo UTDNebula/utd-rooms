@@ -16,7 +16,6 @@ export const excludedRooms = [
   'Student Services Addition (SSA) SSA Green Room',
 ];
 
-//TODO: add names and show in table and filters
 const buildingNames = {
   SCI: 'Sciences',
   AB: 'Activity Center',
