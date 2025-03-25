@@ -16,7 +16,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import { excludedBuildings } from '@/modules/buildingInfo';
+import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -222,7 +222,13 @@ const Filters = (props: Props) => {
                   return (
                     <MenuItem className="h-10" key={value} value={value}>
                       <Checkbox checked={buildings.includes(value)} />
-                      <ListItemText primary={value} />
+                      <ListItemText
+                        primary={
+                          buildingNames[value as keyof typeof buildingNames]
+                            ? `${buildingNames[value as keyof typeof buildingNames]} (${value})`
+                            : value
+                        }
+                      />
                     </MenuItem>
                   );
                 })}

@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import {
+import buildingNames, {
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
@@ -448,11 +448,16 @@ function ResultsTable(props: Props) {
         !excludedBuildings.includes(building) &&
         (!buildings.length || buildings.includes(building))
       ) {
+        const buildingText = buildingNames[
+          building as keyof typeof buildingNames
+        ]
+          ? `${buildingNames[building as keyof typeof buildingNames]} (${building})`
+          : building;
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
           type: 'building',
           id: buildingIdMap.get(building),
-          text: building,
+          text: buildingText,
         });
 
         rooms.toSorted().forEach((room) => {
@@ -548,7 +553,9 @@ function ResultsTable(props: Props) {
           const data = props.resourceData;
           if (data.type === 'building') {
             return (
-              <div className="e-resource-text ml-0 text-clip">{data.text}</div>
+              <div className="e-resource-text ml-0 text-clip whitespace-normal break-words">
+                {data.text}
+              </div>
             );
           }
           return (
