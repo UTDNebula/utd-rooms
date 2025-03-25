@@ -16,8 +16,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-import buildingNames from '@/modules/buildingInfo';
-import { excludedBuildings } from '@/modules/buildingInfo';
+import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
