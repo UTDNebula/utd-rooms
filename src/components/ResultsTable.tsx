@@ -471,7 +471,9 @@ function ResultsTable(props: Props) {
               link = mapLinkOverrides[link] ?? link;
               if (isNaN(Number(props.search))) {
                 // props.search contains letters
-                if (roomName.toLowerCase().startsWith(props.search.toLowerCase())) {
+                if (
+                  roomName.toLowerCase().startsWith(props.search.toLowerCase())
+                ) {
                   roomResources.push({
                     type: 'room',
                     id: roomIdMap.get(roomName),
