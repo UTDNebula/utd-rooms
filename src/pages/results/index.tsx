@@ -63,7 +63,7 @@ const Results: NextPage<Props> = (props: Props) => {
   const [search, setSearch] = useState('');
 
   return (
-    <>
+    <div className="bg-lighten dark:bg-darken">
       <Head>
         <link
           rel="canonical"
@@ -83,7 +83,7 @@ const Results: NextPage<Props> = (props: Props) => {
           />
         </main>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -41,7 +41,10 @@ body,
   margin: 0;
   height: 100%;
   width: 100%;
-  background-color: rgb(var(--light-DEFAULT));
+  background-image: url('../../public/background.png');
+  background-size: cover;
+  min-height: 100%;
+  background-attachment: fixed;
 }
 
 * {
@@ -59,6 +62,7 @@ body,
   }
   .e-resource-cells {
     padding-left: 0 !important;
+    height: 10px !important; /* Forces smaller height */
   }
 }
 /*Loading skeleton*/
@@ -83,4 +87,9 @@ body,
   .bg-darken {
     background-color: rgba(0, 0, 0, 0.6);
   }
+}
+
+.e-parent-node,
+tr .e-resource-group-cells {
+  height: 2.5em !important;
 }

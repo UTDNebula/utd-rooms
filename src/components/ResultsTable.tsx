@@ -572,7 +572,7 @@ function ResultsTable(props: Props) {
               <Link
                 href={data.link}
                 target="_blank"
-                className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+                className="font-bold text-lg text-blue-400 hover:text-blue-800 visited:text-purple-600"
               >
                 {data.text}
               </Link>
