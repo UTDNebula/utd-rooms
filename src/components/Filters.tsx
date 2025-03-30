@@ -15,6 +15,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useRouter } from 'next/router';
 import React from 'react';
+import { CircularProgress } from '@mui/material';
 
 import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -206,6 +207,16 @@ const Filters = (props: Props) => {
               }
               return selected.join(', ');
             }}
+            // loading icon on building dropdown
+            MenuProps={{ PaperProps: { className: 'max-h-60' } }}
+            endAdornment={
+              props.rooms.state !== 'done' ? (
+                <CircularProgress size={20} />
+              ) : null
+            }
+            IconComponent={
+              props.rooms.state !== 'done' ? () => null : undefined
+            }
           >
             <MenuItem className="h-10" value="any">
               <Radio checked={!buildings.length} />

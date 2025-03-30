@@ -16,6 +16,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
+import { CircularProgress } from '@mui/material';
 
 import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -163,6 +164,16 @@ const Home: NextPage<Props> = (props: Props) => {
                 }
                 return selected.join(', ');
               }}
+              // loading icon on building dropdown
+              MenuProps={{ PaperProps: { className: 'max-h-60' } }}
+              endAdornment={
+                props.rooms.state !== 'done' ? (
+                  <CircularProgress size={20} />
+                ) : null
+              }
+              IconComponent={
+                props.rooms.state !== 'done' ? () => null : undefined
+              }
             >
               <MenuItem className="h-10" value="any">
                 <Radio checked={!buildings.length} />
