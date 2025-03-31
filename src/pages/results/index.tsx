@@ -7,7 +7,7 @@ import Filters from '@/components/Filters';
 import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import type { HierarchyStore } from '@/modules/useEventsStore';
-import type { CourseBookEvent } from '@/types/Events';
+import type { AstraEvent, CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -18,6 +18,8 @@ interface Props {
     date: string,
     controller: AbortController,
   ) => void;
+  astraEvents: HierarchyStore<AstraEvent>;
+  fetchAndStoreAstraEvents: (date: string, controller: AbortController) => void;
 }
 
 /**
@@ -52,6 +54,7 @@ const Results: NextPage<Props> = (props: Props) => {
 
       //Fetch data
       props.fetchAndStoreCourseBookEvents(date, controller);
+      props.fetchAndStoreAstraEvents(date, controller);
 
       //Run to cancel
       return () => {
@@ -79,6 +82,7 @@ const Results: NextPage<Props> = (props: Props) => {
           <ResultsTable
             rooms={props.rooms}
             courseBookEvents={props.courseBookEvents}
+            astraEvents={props.astraEvents}
             search={search}
           />
         </main>
