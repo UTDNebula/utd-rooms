@@ -1,6 +1,3 @@
-import { FiberNew } from "@mui/icons-material";
-import { Rochester } from "next/font/google";
-
 export const excludedBuildings = [
   '',
   'See',
@@ -61,7 +58,7 @@ const buildingNames = {
   SPN: 'Synergy Park North',
   SP2: 'Synergy Park North 2',
   TH: 'University Theatre',
-  VCB: 'Visitor Center and University Bookstore'
+  VCB: 'Visitor Center and University Bookstore',
   //...
 };
 
