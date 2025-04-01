@@ -19,7 +19,7 @@ import buildingNames, {
   mapLinkOverrides,
 } from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
-import type { CourseBookEvent } from '@/types/Events';
+import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -35,14 +35,16 @@ interface RoomResource {
   link: string;
   buildingId: number;
 }
-interface EventSource {
-  id: string;
+interface EventSourceNoResource {
   Subject: string;
   StartTime: Date;
   EndTime: Date;
+}
+type EventSource = EventSourceNoResource & {
+  id: string;
   roomId: number;
   buildingId: number;
-}
+};
 
 interface LoadingProps {
   startTime: string;
@@ -351,6 +353,7 @@ function LoadingResultsTable(props: LoadingProps) {
 interface Props {
   rooms: GenericFetchedData<Rooms>;
   courseBookEvents: HierarchyStore<CourseBookEvent>;
+  astraEvents: HierarchyStore<AstraEvent>;
   search: string;
 }
 
@@ -415,20 +418,102 @@ function ResultsTable(props: Props) {
 
   const rooms = props.rooms;
   const courseBookEvents = props.courseBookEvents[date as string];
+  const astraEvents = props.astraEvents[date as string];
 
   //Loading state
   if (
     typeof rooms === 'undefined' ||
     rooms.state === 'loading' ||
     typeof courseBookEvents === 'undefined' ||
-    courseBookEvents.state === 'loading'
+    courseBookEvents.state === 'loading' ||
+    typeof astraEvents === 'undefined' ||
+    astraEvents.state === 'loading'
   ) {
     return loading;
   }
 
-  if (rooms.state === 'error' || courseBookEvents.state === 'error') {
+  if (
+    rooms.state === 'error' ||
+    courseBookEvents.state === 'error' ||
+    astraEvents.state === 'error'
+  ) {
     return null;
   }
+
+  // Combine sources
+  const combinedEvents: Hierarchy<EventSourceNoResource> = {};
+  Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            combinedEvents[building][room].push({
+              Subject: 'Class',
+              StartTime: dayjs(
+                date + event.start_time,
+                'YYYY-MM-DDhh:mma',
+              ).toDate(),
+              EndTime: dayjs(
+                date + event.end_time,
+                'YYYY-MM-DDhh:mma',
+              ).toDate(),
+            });
+          });
+        }
+      });
+    }
+  });
+  Object.entries(astraEvents.data).forEach(([building, rooms]) => {
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            combinedEvents[building][room].push({
+              Subject: event.activity_name,
+              StartTime: dayjs(event.start_date).toDate(),
+              EndTime: dayjs(event.end_date).toDate(),
+            });
+          });
+        }
+      });
+    }
+  });
+
+  //Remove duplicates
+  Object.values(combinedEvents).forEach((rooms) => {
+    Object.entries(rooms).forEach(([room, events]) => {
+      const eventMap = new Map<string, EventSourceNoResource>();
+      const extraEvents: EventSourceNoResource[] = [];
+      events.forEach((event) => {
+        const key = `${event.StartTime.getTime()}-${event.EndTime.getTime()}`;
+        const existingEvent = eventMap.get(key);
+        if (!existingEvent) {
+          eventMap.set(key, event);
+        } else if (
+          existingEvent.Subject === 'Class' &&
+          event.Subject !== 'Class'
+        ) {
+          // overwrite "Class" event with a more descriptive event
+          eventMap.set(key, event);
+        } else if (event.Subject !== 'Class') {
+          extraEvents.push(event);
+        }
+      });
+      rooms[room] = Array.from(eventMap.values()).concat(extraEvents);
+    });
+  });
 
   // Generate resource groups
   //to pass into calendar
@@ -464,7 +549,7 @@ function ResultsTable(props: Props) {
           const roomName = `${building} ${room}`;
           if (!excludedRooms.includes(roomName)) {
             //Check if free
-            const events = courseBookEvents.data[building]?.[room] ?? [];
+            const events = combinedEvents?.[building]?.[room] ?? [];
             const [completelyFree, hasGap] = findAvailability(
               events,
               dayjsStartTime,
@@ -493,39 +578,24 @@ function ResultsTable(props: Props) {
       }
     });
 
-  // Convert events to correct format
+  // Convert events to array
   const scheduleData: EventSource[] = [];
-  Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
-    if (
-      !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
-    ) {
-      Object.entries(rooms).forEach(([room, events]) => {
+  Object.entries(combinedEvents).forEach(([building, rooms]) => {
+    Object.entries(rooms).forEach(([room, events]) => {
+      events.forEach((event, index) => {
         const roomName = `${building} ${room}`;
-        if (!excludedRooms.includes(roomName)) {
-          const roomId = roomIdMap.get(roomName);
-          //If room exists (it doesn't when its been filtered out)
-          if (roomId) {
-            events.forEach((event, index) => {
-              scheduleData.push({
-                id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
-                Subject: `Section ${event.section}`,
-                StartTime: dayjs(
-                  date + event.start_time,
-                  'YYYY-MM-DDhh:mma',
-                ).toDate(),
-                EndTime: dayjs(
-                  date + event.end_time,
-                  'YYYY-MM-DDhh:mma',
-                ).toDate(),
-                roomId: roomId,
-                buildingId: buildingIdMap.get(building),
-              });
-            });
-          }
+        const roomId = roomIdMap.get(roomName);
+        //If room exists (it doesn't when its been filtered out)
+        if (roomId) {
+          scheduleData.push({
+            id: `${roomId}-${index}`, // Unique event ID
+            roomId: roomId,
+            buildingId: buildingIdMap.get(building),
+            ...event,
+          });
         }
       });
-    }
+    });
   });
 
   return (
@@ -609,15 +679,15 @@ function ResultsTable(props: Props) {
 }
 
 function findAvailability(
-  events: CourseBookEvent[],
+  events: EventSourceNoResource[],
   calendarStart: Dayjs,
   calendarEnd: Dayjs,
 ): boolean[] {
   let times = Array(calendarEnd.diff(calendarStart, 'minute')).fill(true);
   let completelyFree = true;
   for (const event of events) {
-    const eventStart = dayjs(event.start_time, 'h:mma');
-    const eventEnd = dayjs(event.end_time, 'h:mma');
+    const eventStart = dayjs(event.StartTime);
+    const eventEnd = dayjs(event.EndTime);
     if (
       isBetween(eventStart, calendarStart, calendarEnd) ||
       isBetween(eventEnd, calendarStart, calendarEnd) ||
