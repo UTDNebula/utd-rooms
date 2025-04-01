@@ -471,13 +471,17 @@ function ResultsTable(props: Props) {
               dayjsEndTime,
             );
             if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-              const buildingName = buildingNames[building as keyof typeof buildingNames];
-                if (
+              const buildingName =
+                buildingNames[building as keyof typeof buildingNames];
+              if (
                 props.search === '' ||
                 roomName.toLowerCase().startsWith(props.search.toLowerCase()) ||
                 room.toLowerCase().startsWith(props.search.toLowerCase()) ||
-                (buildingName && buildingName.toLowerCase().startsWith(props.search.toLowerCase()))
-                ) {
+                (buildingName &&
+                  buildingName
+                    .toLowerCase()
+                    .startsWith(props.search.toLowerCase()))
+              ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room}`;
                 link = mapLinkOverrides[link] ?? link;
