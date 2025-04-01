@@ -406,6 +406,8 @@ function ResultsTable(props: Props) {
 
   const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
 
+  const search = props.search.trim();
+
   if (state === 'error') {
     return null;
   }
@@ -533,10 +535,10 @@ function ResultsTable(props: Props) {
         !excludedBuildings.includes(building) &&
         (!buildings.length || buildings.includes(building))
       ) {
-        const buildingText = buildingNames[
-          building as keyof typeof buildingNames
-        ]
-          ? `${buildingNames[building as keyof typeof buildingNames]} (${building})`
+        const buildingName =
+          buildingNames[building as keyof typeof buildingNames];
+        const buildingText = buildingName
+          ? `${buildingName} (${building})`
           : building;
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
@@ -557,9 +559,11 @@ function ResultsTable(props: Props) {
             );
             if (completelyFree || (hasGap && !onlyAvailFullTime)) {
               if (
-                props.search === '' ||
-                roomName.toLowerCase().startsWith(props.search.toLowerCase()) ||
-                room.toLowerCase().startsWith(props.search.toLowerCase())
+                search === '' ||
+                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+                room.toLowerCase().startsWith(search.toLowerCase()) ||
+                (buildingName &&
+                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room}`;
