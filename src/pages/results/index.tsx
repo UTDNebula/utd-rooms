@@ -58,7 +58,7 @@ const Results: NextPage<Props> = (props: Props) => {
         controller.abort();
       };
     }
-  }, [router.isReady, router.query.date]);
+  }, [router.isReady, router.query.date, props, router]);
 
   const [search, setSearch] = useState('');
 

@@ -1,12 +1,11 @@
 import {
   Checkbox,
-  FormControl,
+ CircularProgress,  FormControl,
   InputLabel,
   ListItemText,
   MenuItem,
   Radio,
-  Select,
-} from '@mui/material';
+  Select } from '@mui/material';
 import Button from '@mui/material/Button';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -16,7 +15,6 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { CircularProgress } from '@mui/material';
 
 import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
