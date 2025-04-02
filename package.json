@@ -44,7 +44,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "postcss-import": "^16.1.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.2",
     "typescript": "^5.0.4"
   },
   "browserslist": "> 0.25%, not dead",
