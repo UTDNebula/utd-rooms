@@ -210,12 +210,12 @@ const Filters = (props: Props) => {
             // loading icon on building dropdown
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
             endAdornment={
-              props.rooms.state !== 'done' ? (
+              props.rooms.state === 'loading' ? (
                 <CircularProgress size={20} />
               ) : null
             }
             IconComponent={
-              props.rooms.state !== 'done' ? () => null : undefined
+              props.rooms.state === 'loading' ? () => null : undefined
             }
           >
             <MenuItem className="h-10" value="any">
