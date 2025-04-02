@@ -51,7 +51,7 @@ const buildingNames = {
   ROW: 'Research and Operations Center West',
   SLC: 'Science Learning Center',
   SCI: 'Sciences Building',
-  SOM: 'Naveen Jindal School of Management (Complex)',
+  SOM: 'Naveen Jindal School of Management',
   SSB: 'Student Services Building',
   SSA: 'Student Services Addition',
   SU: 'Student Union',
@@ -59,7 +59,6 @@ const buildingNames = {
   SP2: 'Synergy Park North 2',
   TH: 'University Theatre',
   VCB: 'Visitor Center and University Bookstore',
-  //...
 };
 
 export default buildingNames;
