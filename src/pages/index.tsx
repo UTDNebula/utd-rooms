@@ -15,9 +15,11 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
+import Background from '@/../public/background.png';
 import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
@@ -71,7 +73,13 @@ const Home: NextPage<Props> = (props: Props) => {
         />
         <meta property="og:url" content="https://rooms.utdnebula.com" />
       </Head>
-      <div className="relative bg-lighten dark:bg-darken h-full w-full flex flex-col justify-center items-center gap-10 px-8 py-4">
+      <div className="relative bg-lighten dark:bg-darken min-h-full w-full flex flex-col justify-center items-center gap-10 px-8 py-16">
+        <Image
+          src={Background}
+          alt="gradient background"
+          fill
+          className="object-cover -z-20"
+        />
         <div className="text-center text-white">
           <h2 className="text-sm font-semibold mb-3 text-cornflower-600 dark:text-cornflower-400 tracking-wider">
             POWERED BY {/*eslint-disable-next-line react/jsx-no-target-blank*/}

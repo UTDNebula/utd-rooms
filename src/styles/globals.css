@@ -41,10 +41,6 @@ body,
   margin: 0;
   height: 100%;
   width: 100%;
-  background-image: url('../../public/background.png');
-  background-size: cover;
-  min-height: 100%;
-  background-attachment: fixed;
 }
 
 * {

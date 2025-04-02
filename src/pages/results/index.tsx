@@ -58,12 +58,12 @@ const Results: NextPage<Props> = (props: Props) => {
         controller.abort();
       };
     }
-  }, [router.isReady, router.query.date, props, router]);
+  }, [router.isReady, router.query.date]);
 
   const [search, setSearch] = useState('');
 
   return (
-    <div className="bg-lighten dark:bg-darken">
+    <>
       <Head>
         <link
           rel="canonical"
@@ -83,7 +83,7 @@ const Results: NextPage<Props> = (props: Props) => {
           />
         </main>
       </div>
-    </div>
+    </>
   );
 };
 
