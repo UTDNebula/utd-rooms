@@ -85,7 +85,9 @@ body,
   }
 }
 
-.e-parent-node,
-tr .e-resource-group-cells {
-  height: 2.5em !important;
+@media (min-width: 600px) {
+  .e-parent-node,
+  tr .e-resource-group-cells {
+    height: 4.2em !important;
+  }
 }
