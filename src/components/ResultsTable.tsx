@@ -497,7 +497,6 @@ function ResultsTable(props: Props) {
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const eventMap = new Map<string, EventSourceNoResource>();
-      const extraEvents: EventSourceNoResource[] = [];
       events.forEach((event) => {
         const key = `${event.StartTime.getTime()}-${event.EndTime.getTime()}`;
         const existingEvent = eventMap.get(key);
@@ -509,11 +508,12 @@ function ResultsTable(props: Props) {
         ) {
           // overwrite "Class" event with a more descriptive event
           eventMap.set(key, event);
-        } else if (event.Subject !== 'Class') {
-          extraEvents.push(event);
+        } else if (existingEvent.Subject !== event.Subject) {
+          // merge subjects if they are different
+          existingEvent.Subject += `, ${event.Subject}`;
         }
       });
-      rooms[room] = Array.from(eventMap.values()).concat(extraEvents);
+      rooms[room] = Array.from(eventMap.values());
     });
   });
 
