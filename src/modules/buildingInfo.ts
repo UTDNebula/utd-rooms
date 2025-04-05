@@ -10,11 +10,17 @@ export const excludedBuildings = [
   'CCTC',
   //All offices
   'SSB',
+  //Merged with JSOM
+  'SOM',
 ];
 export const excludedRooms = [
   //Cannot find where this room is
   'Student Services Addition (SSA) SSA Green Room',
 ];
+
+export const mergedBuildings = {
+  SOM: 'JSOM',
+};
 
 const buildingNames = {
   AB: 'Activity Center',
@@ -51,10 +57,8 @@ const buildingNames = {
   ROW: 'Research and Operations Center West',
   SLC: 'Science Learning Center',
   SCI: 'Sciences Building',
-  SOM: 'Naveen Jindal School of Management',
   SSB: 'Student Services Building',
   SSA: 'Student Services Addition',
-  SU: 'Student Union',
   SPN: 'Synergy Park North',
   SP2: 'Synergy Park North 2',
   TH: 'University Theatre',

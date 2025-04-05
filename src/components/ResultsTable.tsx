@@ -17,6 +17,7 @@ import buildingNames, {
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
+  mergedBuildings,
 } from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
 import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
@@ -449,6 +450,7 @@ function ResultsTable(props: Props) {
   // Combine sources
   const combinedEvents: Hierarchy<EventSourceNoResource> = {};
   Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
       (!buildings.length || buildings.includes(building))
@@ -476,6 +478,7 @@ function ResultsTable(props: Props) {
     }
   });
   Object.entries(astraEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
       (!buildings.length || buildings.includes(building))
