@@ -388,13 +388,13 @@ function ResultsTable(props: Props) {
   } else {
     startTime = startTime ?? '09:00';
   }
-  const dayjsStartTime = dayjs(startTime, 'HH:mm');
+  const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
   endTime = endTime ?? '22:00';
-  const dayjsEndTime = dayjs(endTime, 'HH:mm');
+  const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     state = 'error';
   }
