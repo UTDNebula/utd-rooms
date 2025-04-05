@@ -542,8 +542,7 @@ function ResultsTable(props: Props) {
         !excludedBuildings.includes(building) &&
         (!buildings.length || buildings.includes(building))
       ) {
-        const buildingName =
-          buildingNames[building as keyof typeof buildingNames];
+        const buildingName = buildingNames[building];
         const buildingText = buildingName
           ? `${buildingName} (${building})`
           : building;

@@ -18,11 +18,11 @@ export const excludedRooms = [
   'Student Services Addition (SSA) SSA Green Room',
 ];
 
-export const mergedBuildings = {
+export const mergedBuildings: { [key: string]: string } = {
   SOM: 'JSOM',
 };
 
-const buildingNames = {
+const buildingNames: { [key: string]: string } = {
   AB: 'Activity Center',
   AD: 'Administration Building',
   BE: 'Berkner Hall',
