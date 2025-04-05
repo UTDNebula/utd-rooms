@@ -277,73 +277,77 @@ function LoadingResultsTable(props: LoadingProps) {
     },
   ];
   return (
-    <ScheduleComponent
-      currentView="TimelineDay"
-      readonly
-      showHeaderBar={false}
-      eventSettings={{ dataSource: scheduleData }}
-      quickInfoTemplates={{ footer: () => <></> }}
-      group={{
-        resources: ['Buildings', 'Rooms'],
-        byGroupID: true,
-        enableCompactView: false,
-      }}
-      startHour={props.startTime}
-      endHour={props.endTime}
-      resourceHeaderTemplate={(props: {
-        resourceData: BuildingResource | RoomResource;
-      }) => {
-        const data = props.resourceData;
-        if (data.type === 'building') {
+    <>
+      <p>Loading rooms...</p>
+      <ScheduleComponent
+        currentView="TimelineDay"
+        readonly
+        showHeaderBar={false}
+        eventSettings={{ dataSource: scheduleData }}
+        quickInfoTemplates={{ footer: () => <></> }}
+        group={{
+          resources: ['Buildings', 'Rooms'],
+          byGroupID: true,
+          enableCompactView: false,
+        }}
+        startHour={props.startTime}
+        endHour={props.endTime}
+        resourceHeaderTemplate={(props: {
+          resourceData: BuildingResource | RoomResource;
+        }) => {
+          const data = props.resourceData;
+          if (data.type === 'building') {
+            return (
+              <div className="e-resource-text ml-0">
+                <Skeleton variant="rounded">
+                  <p>{data.text}</p>
+                </Skeleton>
+              </div>
+            );
+          }
           return (
-            <div className="e-resource-text ml-0">
+            <div className="e-resource-text ml-[25px]">
               <Skeleton variant="rounded">
                 <p>{data.text}</p>
               </Skeleton>
             </div>
           );
-        }
-        return (
-          <div className="e-resource-text ml-[25px]">
-            <Skeleton variant="rounded">
-              <p>{data.text}</p>
-            </Skeleton>
-          </div>
-        );
-      }}
-    >
-      <ResourcesDirective>
-        <ResourceDirective
-          field="buildingId"
-          title="Building"
-          name="Buildings"
-          dataSource={buildingResources}
-          textField="text"
-          idField="id"
-        />
-        <ResourceDirective
-          field="roomId"
-          title="Room"
-          name="Rooms"
-          dataSource={roomResources}
-          textField="text"
-          idField="id"
-          groupIDField="buildingId"
-        />
-      </ResourcesDirective>
-      <ViewsDirective>
-        <ViewDirective
-          option="TimelineDay"
-          //the loading-event class is used in globals.css
-          eventTemplate={() => (
-            <div className="loading-event w-full h-full">
-              <Skeleton variant="rounded" className="w-full h-full" />
-            </div>
-          )}
-        />
-      </ViewsDirective>
-      <Inject services={[TimelineViews]} />
-    </ScheduleComponent>
+        }}
+        className="-mx-4 -mb-4 sm:m-0"
+      >
+        <ResourcesDirective>
+          <ResourceDirective
+            field="buildingId"
+            title="Building"
+            name="Buildings"
+            dataSource={buildingResources}
+            textField="text"
+            idField="id"
+          />
+          <ResourceDirective
+            field="roomId"
+            title="Room"
+            name="Rooms"
+            dataSource={roomResources}
+            textField="text"
+            idField="id"
+            groupIDField="buildingId"
+          />
+        </ResourcesDirective>
+        <ViewsDirective>
+          <ViewDirective
+            option="TimelineDay"
+            //the loading-event class is used in globals.css
+            eventTemplate={() => (
+              <div className="loading-event w-full h-full">
+                <Skeleton variant="rounded" className="w-full h-full" />
+              </div>
+            )}
+          />
+        </ViewsDirective>
+        <Inject services={[TimelineViews]} />
+      </ScheduleComponent>
+    </>
   );
 }
 
@@ -388,13 +392,13 @@ function ResultsTable(props: Props) {
   } else {
     startTime = startTime ?? '09:00';
   }
-  const dayjsStartTime = dayjs(startTime, 'HH:mm');
+  const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
   endTime = endTime ?? '22:00';
-  const dayjsEndTime = dayjs(endTime, 'HH:mm');
+  const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     state = 'error';
   }
@@ -497,7 +501,6 @@ function ResultsTable(props: Props) {
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const eventMap = new Map<string, EventSourceNoResource>();
-      const extraEvents: EventSourceNoResource[] = [];
       events.forEach((event) => {
         const key = `${event.StartTime.getTime()}-${event.EndTime.getTime()}`;
         const existingEvent = eventMap.get(key);
@@ -509,11 +512,12 @@ function ResultsTable(props: Props) {
         ) {
           // overwrite "Class" event with a more descriptive event
           eventMap.set(key, event);
-        } else if (event.Subject !== 'Class') {
-          extraEvents.push(event);
+        } else if (existingEvent.Subject !== event.Subject) {
+          // merge subjects if they are different
+          existingEvent.Subject += `, ${event.Subject}`;
         }
       });
-      rooms[room] = Array.from(eventMap.values()).concat(extraEvents);
+      rooms[room] = Array.from(eventMap.values());
     });
   });
 
@@ -653,6 +657,7 @@ function ResultsTable(props: Props) {
             </div>
           );
         }}
+        className="-mx-4 -mb-4 sm:m-0"
       >
         <ResourcesDirective>
           <ResourceDirective
