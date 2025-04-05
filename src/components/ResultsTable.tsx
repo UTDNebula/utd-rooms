@@ -277,73 +277,77 @@ function LoadingResultsTable(props: LoadingProps) {
     },
   ];
   return (
-    <ScheduleComponent
-      currentView="TimelineDay"
-      readonly
-      showHeaderBar={false}
-      eventSettings={{ dataSource: scheduleData }}
-      quickInfoTemplates={{ footer: () => <></> }}
-      group={{
-        resources: ['Buildings', 'Rooms'],
-        byGroupID: true,
-        enableCompactView: false,
-      }}
-      startHour={props.startTime}
-      endHour={props.endTime}
-      resourceHeaderTemplate={(props: {
-        resourceData: BuildingResource | RoomResource;
-      }) => {
-        const data = props.resourceData;
-        if (data.type === 'building') {
+    <>
+      <p>Loading rooms...</p>
+      <ScheduleComponent
+        currentView="TimelineDay"
+        readonly
+        showHeaderBar={false}
+        eventSettings={{ dataSource: scheduleData }}
+        quickInfoTemplates={{ footer: () => <></> }}
+        group={{
+          resources: ['Buildings', 'Rooms'],
+          byGroupID: true,
+          enableCompactView: false,
+        }}
+        startHour={props.startTime}
+        endHour={props.endTime}
+        resourceHeaderTemplate={(props: {
+          resourceData: BuildingResource | RoomResource;
+        }) => {
+          const data = props.resourceData;
+          if (data.type === 'building') {
+            return (
+              <div className="e-resource-text ml-0">
+                <Skeleton variant="rounded">
+                  <p>{data.text}</p>
+                </Skeleton>
+              </div>
+            );
+          }
           return (
-            <div className="e-resource-text ml-0">
+            <div className="e-resource-text ml-[25px]">
               <Skeleton variant="rounded">
                 <p>{data.text}</p>
               </Skeleton>
             </div>
           );
-        }
-        return (
-          <div className="e-resource-text ml-[25px]">
-            <Skeleton variant="rounded">
-              <p>{data.text}</p>
-            </Skeleton>
-          </div>
-        );
-      }}
-    >
-      <ResourcesDirective>
-        <ResourceDirective
-          field="buildingId"
-          title="Building"
-          name="Buildings"
-          dataSource={buildingResources}
-          textField="text"
-          idField="id"
-        />
-        <ResourceDirective
-          field="roomId"
-          title="Room"
-          name="Rooms"
-          dataSource={roomResources}
-          textField="text"
-          idField="id"
-          groupIDField="buildingId"
-        />
-      </ResourcesDirective>
-      <ViewsDirective>
-        <ViewDirective
-          option="TimelineDay"
-          //the loading-event class is used in globals.css
-          eventTemplate={() => (
-            <div className="loading-event w-full h-full">
-              <Skeleton variant="rounded" className="w-full h-full" />
-            </div>
-          )}
-        />
-      </ViewsDirective>
-      <Inject services={[TimelineViews]} />
-    </ScheduleComponent>
+        }}
+        className="-mx-4 -mb-4 sm:m-0"
+      >
+        <ResourcesDirective>
+          <ResourceDirective
+            field="buildingId"
+            title="Building"
+            name="Buildings"
+            dataSource={buildingResources}
+            textField="text"
+            idField="id"
+          />
+          <ResourceDirective
+            field="roomId"
+            title="Room"
+            name="Rooms"
+            dataSource={roomResources}
+            textField="text"
+            idField="id"
+            groupIDField="buildingId"
+          />
+        </ResourcesDirective>
+        <ViewsDirective>
+          <ViewDirective
+            option="TimelineDay"
+            //the loading-event class is used in globals.css
+            eventTemplate={() => (
+              <div className="loading-event w-full h-full">
+                <Skeleton variant="rounded" className="w-full h-full" />
+              </div>
+            )}
+          />
+        </ViewsDirective>
+        <Inject services={[TimelineViews]} />
+      </ScheduleComponent>
+    </>
   );
 }
 
@@ -653,6 +657,7 @@ function ResultsTable(props: Props) {
             </div>
           );
         }}
+        className="-mx-4 -mb-4 sm:m-0"
       >
         <ResourcesDirective>
           <ResourceDirective
