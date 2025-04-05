@@ -79,7 +79,7 @@ const Home: NextPage<Props> = (props: Props) => {
           fill
           className="object-cover -z-20"
         />
-        <div className="text-center text-white">
+        <div className="text-center">
           <h2 className="text-sm font-semibold mb-3 text-cornflower-600 dark:text-cornflower-400 tracking-wider">
             POWERED BY {/*eslint-disable-next-line react/jsx-no-target-blank*/}
             <a
@@ -91,7 +91,7 @@ const Home: NextPage<Props> = (props: Props) => {
               NEBULA LABS
             </a>
           </h2>
-          <h1 className="text-black dark:text-white text-6xl font-extrabold font-kallisto mb-3">
+          <h1 className="text-6xl font-extrabold font-kallisto mb-3">
             UTD ROOMS
           </h1>
           <p className="mb-5 text-gray-700 dark:text-gray-300 leading-7">
