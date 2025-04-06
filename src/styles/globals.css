@@ -58,7 +58,6 @@ body,
   }
   .e-resource-cells {
     padding-left: 0 !important;
-    height: 10px !important; /* Forces smaller height */
   }
 }
 /*Loading skeleton*/
@@ -85,9 +84,22 @@ body,
   }
 }
 
-@media (min-width: 600px) {
-  .e-parent-node,
-  tr .e-resource-group-cells {
-    height: 4.2em !important;
+.ellipsis-resource-header {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+tr .e-parent-node,
+tr .e-resource-group-cells {
+  height: 40px !important;
+}
+
+@media (hover: none) {
+  .ellipsis-resource-header {
+    text-decoration: none;
   }
 }

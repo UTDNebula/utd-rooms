@@ -451,7 +451,7 @@ function ResultsTable(props: Props) {
         const buildingText = buildingNames[
           building as keyof typeof buildingNames
         ]
-          ? `${buildingNames[building as keyof typeof buildingNames]} (${building})`
+          ? `${building} (${buildingNames[building as keyof typeof buildingNames]})`
           : building;
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
@@ -545,7 +545,7 @@ function ResultsTable(props: Props) {
         currentView="TimelineDay"
         readonly
         showHeaderBar={false}
-        rowAutoHeight={true}
+        // rowAutoHeight={true}
         eventSettings={{ dataSource: scheduleData }}
         quickInfoTemplates={{ footer: () => <></> }}
         group={{
@@ -562,7 +562,10 @@ function ResultsTable(props: Props) {
           const data = props.resourceData;
           if (data.type === 'building') {
             return (
-              <div className="e-resource-text ml-0 text-clip whitespace-normal break-words">
+              <div
+                className="ellipsis-resource-header e-resource-text ml-0"
+                title={data.text}
+              >
                 {data.text}
               </div>
             );
