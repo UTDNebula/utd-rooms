@@ -625,7 +625,6 @@ function ResultsTable(props: Props) {
         currentView="TimelineDay"
         readonly
         showHeaderBar={false}
-        // rowAutoHeight={true}
         eventSettings={{ dataSource: scheduleData }}
         quickInfoTemplates={{ footer: () => <></> }}
         group={{
@@ -643,7 +642,7 @@ function ResultsTable(props: Props) {
           if (data.type === 'building') {
             return (
               <div
-                className="ellipsis-resource-header e-resource-text ml-0"
+                className="e-resource-text ml-0 whitespace-nowrap overflow-hidden text-ellipsis"
                 title={data.text}
               >
                 {data.text}

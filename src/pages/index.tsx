@@ -199,6 +199,7 @@ const Home: NextPage<Props> = (props: Props) => {
                       <MenuItem className="h-10" key={value} value={value}>
                         <Checkbox checked={buildings.includes(value)} />
                         <ListItemText
+                          className="text-wrap"
                           primary={
                             buildingNames[value]
                               ? `${buildingNames[value]} (${value})`
