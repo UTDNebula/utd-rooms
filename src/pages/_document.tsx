@@ -33,7 +33,7 @@ function Document() {
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:domain" content="rooms.utdnebula.com" />
       </Head>
-      <body className="font-inter bg-white dark:bg-black">
+      <body className="bg-white dark:bg-black">
         <Main />
         <NextScript />
       </body>
