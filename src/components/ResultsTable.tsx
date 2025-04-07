@@ -1,4 +1,4 @@
-import { Skeleton } from '@mui/material';
+import { Skeleton, Tooltip } from '@mui/material';
 import {
   Inject,
   ResourceDirective,
@@ -641,12 +641,11 @@ function ResultsTable(props: Props) {
           const data = props.resourceData;
           if (data.type === 'building') {
             return (
-              <div
-                className="e-resource-text ml-0 whitespace-nowrap overflow-hidden text-ellipsis"
-                title={data.text}
-              >
-                {data.text}
-              </div>
+              <Tooltip title={data.text}>
+                <div className="e-resource-text ml-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {data.text}
+                </div>
+              </Tooltip>
             );
           }
           return (
