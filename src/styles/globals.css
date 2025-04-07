@@ -47,6 +47,10 @@ body,
   box-sizing: border-box;
 }
 
+/*Font*/
+.e-control {
+  font-family: inherit;
+}
 /*Hide header*/
 .e-header-row:first-of-type {
   display: none;
