@@ -57,12 +57,12 @@ function LoadingResultsTable(props: LoadingProps) {
     {
       type: 'building',
       id: 1,
-      text: 'AB',
+      text: 'Activity Center (AB)',
     },
     {
       type: 'building',
       id: 2,
-      text: 'AD',
+      text: 'Administration Building (AD)',
     },
   ];
   const roomResources = [
