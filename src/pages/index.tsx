@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  CircularProgress,
   FormControl,
   InputLabel,
   ListItemText,
@@ -72,7 +73,7 @@ const Home: NextPage<Props> = (props: Props) => {
         />
         <meta property="og:url" content="https://rooms.utdnebula.com" />
       </Head>
-      <div className="relative bg-lighten dark:bg-darken h-full w-full flex flex-col justify-center items-center gap-10 px-8 py-4">
+      <div className="relative bg-lighten dark:bg-darken min-h-full w-full flex flex-col justify-center items-center gap-10 px-8 py-16">
         <Image
           src={Background}
           alt="gradient background"
@@ -171,6 +172,16 @@ const Home: NextPage<Props> = (props: Props) => {
                 }
                 return selected.join(', ');
               }}
+              // loading icon on building dropdown
+              MenuProps={{ PaperProps: { className: 'max-h-60' } }}
+              endAdornment={
+                props.rooms.state === 'loading' ? (
+                  <CircularProgress size={20} />
+                ) : null
+              }
+              IconComponent={
+                props.rooms.state === 'loading' ? () => null : undefined
+              }
             >
               <MenuItem className="h-10" value="any">
                 <Radio checked={!buildings.length} />
@@ -188,9 +199,10 @@ const Home: NextPage<Props> = (props: Props) => {
                       <MenuItem className="h-10" key={value} value={value}>
                         <Checkbox checked={buildings.includes(value)} />
                         <ListItemText
+                          className="text-wrap"
                           primary={
-                            buildingNames[value as keyof typeof buildingNames]
-                              ? `${buildingNames[value as keyof typeof buildingNames]} (${value})`
+                            buildingNames[value]
+                              ? `${buildingNames[value]} (${value})`
                               : value
                           }
                         />

@@ -1,4 +1,4 @@
-import { Skeleton } from '@mui/material';
+import { Skeleton, Tooltip } from '@mui/material';
 import {
   Inject,
   ResourceDirective,
@@ -57,12 +57,12 @@ function LoadingResultsTable(props: LoadingProps) {
     {
       type: 'building',
       id: 1,
-      text: 'AB',
+      text: 'Activity Center (AB)',
     },
     {
       type: 'building',
       id: 2,
-      text: 'AD',
+      text: 'Administration Building (AD)',
     },
   ];
   const roomResources = [
@@ -544,7 +544,7 @@ function ResultsTable(props: Props) {
       ) {
         const buildingName = buildingNames[building];
         const buildingText = buildingName
-          ? `${buildingName} (${building})`
+          ? `${building} (${buildingName})`
           : building;
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
@@ -625,7 +625,6 @@ function ResultsTable(props: Props) {
         currentView="TimelineDay"
         readonly
         showHeaderBar={false}
-        rowAutoHeight={true}
         eventSettings={{ dataSource: scheduleData }}
         quickInfoTemplates={{ footer: () => <></> }}
         group={{
@@ -642,9 +641,11 @@ function ResultsTable(props: Props) {
           const data = props.resourceData;
           if (data.type === 'building') {
             return (
-              <div className="e-resource-text ml-0 text-clip whitespace-normal break-words">
-                {data.text}
-              </div>
+              <Tooltip title={data.text}>
+                <div className="e-resource-text ml-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {data.text}
+                </div>
+              </Tooltip>
             );
           }
           return (
@@ -652,7 +653,7 @@ function ResultsTable(props: Props) {
               <Link
                 href={data.link}
                 target="_blank"
-                className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+                className="font-bold text-lg text-blue-400 hover:text-blue-800 visited:text-purple-600"
               >
                 {data.text}
               </Link>

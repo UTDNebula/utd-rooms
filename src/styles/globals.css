@@ -41,7 +41,6 @@ body,
   margin: 0;
   height: 100%;
   width: 100%;
-  background-color: rgb(var(--light-DEFAULT));
 }
 
 * {
@@ -60,6 +59,11 @@ body,
   .e-resource-cells {
     padding-left: 0 !important;
   }
+}
+/*Resourse group height*/
+tr .e-parent-node,
+tr .e-resource-group-cells {
+  height: 2.5rem !important;
 }
 /*Loading skeleton*/
 .e-appointment:has(.e-appointment-details div .loading-event) {

@@ -1,5 +1,6 @@
 import {
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   Grid2 as Grid,
@@ -206,6 +207,16 @@ const Filters = (props: Props) => {
               }
               return selected.join(', ');
             }}
+            // loading icon on building dropdown
+            MenuProps={{ PaperProps: { className: 'max-h-60' } }}
+            endAdornment={
+              props.rooms.state === 'loading' ? (
+                <CircularProgress size={20} />
+              ) : null
+            }
+            IconComponent={
+              props.rooms.state === 'loading' ? () => null : undefined
+            }
           >
             <MenuItem className="h-10" value="any">
               <Radio checked={!buildings.length} />
@@ -223,9 +234,10 @@ const Filters = (props: Props) => {
                     <MenuItem className="h-10" key={value} value={value}>
                       <Checkbox checked={buildings.includes(value)} />
                       <ListItemText
+                        className="text-wrap"
                         primary={
-                          buildingNames[value as keyof typeof buildingNames]
-                            ? `${buildingNames[value as keyof typeof buildingNames]} (${value})`
+                          buildingNames[value]
+                            ? `${value} (${buildingNames[value]})`
                             : value
                         }
                       />
