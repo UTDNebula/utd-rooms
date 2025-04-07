@@ -427,6 +427,15 @@ function ResultsTable(props: Props) {
   const courseBookEvents = props.courseBookEvents[date as string];
   const astraEvents = props.astraEvents[date as string];
 
+  if (
+    (typeof rooms !== 'undefined' && rooms.state === 'error') ||
+    (typeof courseBookEvents !== 'undefined' &&
+      courseBookEvents.state === 'error') ||
+    (typeof astraEvents !== 'undefined' && astraEvents.state === 'error')
+  ) {
+    return null;
+  }
+
   //Loading state
   if (
     typeof rooms === 'undefined' ||
@@ -437,14 +446,6 @@ function ResultsTable(props: Props) {
     astraEvents.state === 'loading'
   ) {
     return loading;
-  }
-
-  if (
-    rooms.state === 'error' ||
-    courseBookEvents.state === 'error' ||
-    astraEvents.state === 'error'
-  ) {
-    return null;
   }
 
   // Combine sources
