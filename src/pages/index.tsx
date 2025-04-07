@@ -80,7 +80,7 @@ const Home: NextPage<Props> = (props: Props) => {
           fill
           className="object-cover -z-20"
         />
-        <div className="text-center text-white">
+        <div className="text-center">
           <h2 className="text-sm font-semibold mb-3 text-cornflower-600 dark:text-cornflower-400 tracking-wider">
             POWERED BY {/*eslint-disable-next-line react/jsx-no-target-blank*/}
             <a
@@ -200,8 +200,8 @@ const Home: NextPage<Props> = (props: Props) => {
                         <Checkbox checked={buildings.includes(value)} />
                         <ListItemText
                           primary={
-                            buildingNames[value as keyof typeof buildingNames]
-                              ? `${buildingNames[value as keyof typeof buildingNames]} (${value})`
+                            buildingNames[value]
+                              ? `${buildingNames[value]} (${value})`
                               : value
                           }
                         />

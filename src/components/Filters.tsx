@@ -236,8 +236,8 @@ const Filters = (props: Props) => {
                       <ListItemText
                         className="text-wrap"
                         primary={
-                          buildingNames[value as keyof typeof buildingNames]
-                            ? `${value} (${buildingNames[value as keyof typeof buildingNames]})`
+                          buildingNames[value]
+                            ? `${value} (${buildingNames[value]})`
                             : value
                         }
                       />

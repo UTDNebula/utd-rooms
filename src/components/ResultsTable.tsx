@@ -17,9 +17,10 @@ import buildingNames, {
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
+  mergedBuildings,
 } from '@/modules/buildingInfo';
 import type { HierarchyStore } from '@/modules/useEventsStore';
-import type { CourseBookEvent } from '@/types/Events';
+import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -35,14 +36,16 @@ interface RoomResource {
   link: string;
   buildingId: number;
 }
-interface EventSource {
-  id: string;
+interface EventSourceNoResource {
   Subject: string;
   StartTime: Date;
   EndTime: Date;
+}
+type EventSource = EventSourceNoResource & {
+  id: string;
   roomId: number;
   buildingId: number;
-}
+};
 
 interface LoadingProps {
   startTime: string;
@@ -275,73 +278,77 @@ function LoadingResultsTable(props: LoadingProps) {
     },
   ];
   return (
-    <ScheduleComponent
-      currentView="TimelineDay"
-      readonly
-      showHeaderBar={false}
-      eventSettings={{ dataSource: scheduleData }}
-      quickInfoTemplates={{ footer: () => <></> }}
-      group={{
-        resources: ['Buildings', 'Rooms'],
-        byGroupID: true,
-        enableCompactView: false,
-      }}
-      startHour={props.startTime}
-      endHour={props.endTime}
-      resourceHeaderTemplate={(props: {
-        resourceData: BuildingResource | RoomResource;
-      }) => {
-        const data = props.resourceData;
-        if (data.type === 'building') {
+    <>
+      <p>Loading rooms...</p>
+      <ScheduleComponent
+        currentView="TimelineDay"
+        readonly
+        showHeaderBar={false}
+        eventSettings={{ dataSource: scheduleData }}
+        quickInfoTemplates={{ footer: () => <></> }}
+        group={{
+          resources: ['Buildings', 'Rooms'],
+          byGroupID: true,
+          enableCompactView: false,
+        }}
+        startHour={props.startTime}
+        endHour={props.endTime}
+        resourceHeaderTemplate={(props: {
+          resourceData: BuildingResource | RoomResource;
+        }) => {
+          const data = props.resourceData;
+          if (data.type === 'building') {
+            return (
+              <div className="e-resource-text ml-0">
+                <Skeleton variant="rounded">
+                  <p>{data.text}</p>
+                </Skeleton>
+              </div>
+            );
+          }
           return (
-            <div className="e-resource-text ml-0">
+            <div className="e-resource-text ml-[25px]">
               <Skeleton variant="rounded">
                 <p>{data.text}</p>
               </Skeleton>
             </div>
           );
-        }
-        return (
-          <div className="e-resource-text ml-[25px]">
-            <Skeleton variant="rounded">
-              <p>{data.text}</p>
-            </Skeleton>
-          </div>
-        );
-      }}
-    >
-      <ResourcesDirective>
-        <ResourceDirective
-          field="buildingId"
-          title="Building"
-          name="Buildings"
-          dataSource={buildingResources}
-          textField="text"
-          idField="id"
-        />
-        <ResourceDirective
-          field="roomId"
-          title="Room"
-          name="Rooms"
-          dataSource={roomResources}
-          textField="text"
-          idField="id"
-          groupIDField="buildingId"
-        />
-      </ResourcesDirective>
-      <ViewsDirective>
-        <ViewDirective
-          option="TimelineDay"
-          //the loading-event class is used in globals.css
-          eventTemplate={() => (
-            <div className="loading-event w-full h-full">
-              <Skeleton variant="rounded" className="w-full h-full" />
-            </div>
-          )}
-        />
-      </ViewsDirective>
-      <Inject services={[TimelineViews]} />
-    </ScheduleComponent>
+        }}
+        className="-mx-4 -mb-4 sm:m-0"
+      >
+        <ResourcesDirective>
+          <ResourceDirective
+            field="buildingId"
+            title="Building"
+            name="Buildings"
+            dataSource={buildingResources}
+            textField="text"
+            idField="id"
+          />
+          <ResourceDirective
+            field="roomId"
+            title="Room"
+            name="Rooms"
+            dataSource={roomResources}
+            textField="text"
+            idField="id"
+            groupIDField="buildingId"
+          />
+        </ResourcesDirective>
+        <ViewsDirective>
+          <ViewDirective
+            option="TimelineDay"
+            //the loading-event class is used in globals.css
+            eventTemplate={() => (
+              <div className="loading-event w-full h-full">
+                <Skeleton variant="rounded" className="w-full h-full" />
+              </div>
+            )}
+          />
+        </ViewsDirective>
+        <Inject services={[TimelineViews]} />
+      </ScheduleComponent>
+    </>
   );
 }
 
@@ -351,6 +358,7 @@ function LoadingResultsTable(props: LoadingProps) {
 interface Props {
   rooms: GenericFetchedData<Rooms>;
   courseBookEvents: HierarchyStore<CourseBookEvent>;
+  astraEvents: HierarchyStore<AstraEvent>;
   search: string;
 }
 
@@ -385,13 +393,13 @@ function ResultsTable(props: Props) {
   } else {
     startTime = startTime ?? '09:00';
   }
-  const dayjsStartTime = dayjs(startTime, 'HH:mm');
+  const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
   let endTime = router.query.endTime;
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
   endTime = endTime ?? '22:00';
-  const dayjsEndTime = dayjs(endTime, 'HH:mm');
+  const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     state = 'error';
   }
@@ -402,6 +410,8 @@ function ResultsTable(props: Props) {
   }
 
   const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
+
+  const search = props.search.trim();
 
   if (state === 'error') {
     return null;
@@ -415,20 +425,104 @@ function ResultsTable(props: Props) {
 
   const rooms = props.rooms;
   const courseBookEvents = props.courseBookEvents[date as string];
+  const astraEvents = props.astraEvents[date as string];
 
   //Loading state
   if (
     typeof rooms === 'undefined' ||
     rooms.state === 'loading' ||
     typeof courseBookEvents === 'undefined' ||
-    courseBookEvents.state === 'loading'
+    courseBookEvents.state === 'loading' ||
+    typeof astraEvents === 'undefined' ||
+    astraEvents.state === 'loading'
   ) {
     return loading;
   }
 
-  if (rooms.state === 'error' || courseBookEvents.state === 'error') {
+  if (
+    rooms.state === 'error' ||
+    courseBookEvents.state === 'error' ||
+    astraEvents.state === 'error'
+  ) {
     return null;
   }
+
+  // Combine sources
+  const combinedEvents: Hierarchy<EventSourceNoResource> = {};
+  Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            combinedEvents[building][room].push({
+              Subject: 'Class',
+              StartTime: dayjs(
+                date + event.start_time,
+                'YYYY-MM-DDhh:mma',
+              ).toDate(),
+              EndTime: dayjs(
+                date + event.end_time,
+                'YYYY-MM-DDhh:mma',
+              ).toDate(),
+            });
+          });
+        }
+      });
+    }
+  });
+  Object.entries(astraEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            combinedEvents[building][room].push({
+              Subject: event.activity_name,
+              StartTime: dayjs(event.start_date).toDate(),
+              EndTime: dayjs(event.end_date).toDate(),
+            });
+          });
+        }
+      });
+    }
+  });
+
+  //Remove duplicates
+  Object.values(combinedEvents).forEach((rooms) => {
+    Object.entries(rooms).forEach(([room, events]) => {
+      const eventMap = new Map<string, EventSourceNoResource>();
+      events.forEach((event) => {
+        const key = `${event.StartTime.getTime()}-${event.EndTime.getTime()}`;
+        const existingEvent = eventMap.get(key);
+        if (!existingEvent) {
+          eventMap.set(key, event);
+        } else if (
+          existingEvent.Subject === 'Class' &&
+          event.Subject !== 'Class'
+        ) {
+          // overwrite "Class" event with a more descriptive event
+          eventMap.set(key, event);
+        } else if (existingEvent.Subject !== event.Subject) {
+          // merge subjects if they are different
+          existingEvent.Subject += `, ${event.Subject}`;
+        }
+      });
+      rooms[room] = Array.from(eventMap.values());
+    });
+  });
 
   // Generate resource groups
   //to pass into calendar
@@ -448,10 +542,9 @@ function ResultsTable(props: Props) {
         !excludedBuildings.includes(building) &&
         (!buildings.length || buildings.includes(building))
       ) {
-        const buildingText = buildingNames[
-          building as keyof typeof buildingNames
-        ]
-          ? `${building} (${buildingNames[building as keyof typeof buildingNames]})`
+        const buildingName = buildingNames[building];
+        const buildingText = buildingName
+          ? `${building} (${buildingName})`
           : building;
         buildingIdMap.set(building, buildingIdCounter++);
         buildingResources.push({
@@ -464,7 +557,7 @@ function ResultsTable(props: Props) {
           const roomName = `${building} ${room}`;
           if (!excludedRooms.includes(roomName)) {
             //Check if free
-            const events = courseBookEvents.data[building]?.[room] ?? [];
+            const events = combinedEvents?.[building]?.[room] ?? [];
             const [completelyFree, hasGap] = findAvailability(
               events,
               dayjsStartTime,
@@ -472,9 +565,11 @@ function ResultsTable(props: Props) {
             );
             if (completelyFree || (hasGap && !onlyAvailFullTime)) {
               if (
-                props.search === '' ||
-                roomName.toLowerCase().startsWith(props.search.toLowerCase()) ||
-                room.toLowerCase().startsWith(props.search.toLowerCase())
+                search === '' ||
+                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+                room.toLowerCase().startsWith(search.toLowerCase()) ||
+                (buildingName &&
+                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room}`;
@@ -493,39 +588,24 @@ function ResultsTable(props: Props) {
       }
     });
 
-  // Convert events to correct format
+  // Convert events to array
   const scheduleData: EventSource[] = [];
-  Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
-    if (
-      !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
-    ) {
-      Object.entries(rooms).forEach(([room, events]) => {
+  Object.entries(combinedEvents).forEach(([building, rooms]) => {
+    Object.entries(rooms).forEach(([room, events]) => {
+      events.forEach((event, index) => {
         const roomName = `${building} ${room}`;
-        if (!excludedRooms.includes(roomName)) {
-          const roomId = roomIdMap.get(roomName);
-          //If room exists (it doesn't when its been filtered out)
-          if (roomId) {
-            events.forEach((event, index) => {
-              scheduleData.push({
-                id: `${roomIdMap.get(roomName)}-${index}`, // Unique event ID
-                Subject: `Section ${event.section}`,
-                StartTime: dayjs(
-                  date + event.start_time,
-                  'YYYY-MM-DDhh:mma',
-                ).toDate(),
-                EndTime: dayjs(
-                  date + event.end_time,
-                  'YYYY-MM-DDhh:mma',
-                ).toDate(),
-                roomId: roomId,
-                buildingId: buildingIdMap.get(building),
-              });
-            });
-          }
+        const roomId = roomIdMap.get(roomName);
+        //If room exists (it doesn't when its been filtered out)
+        if (roomId) {
+          scheduleData.push({
+            id: `${roomId}-${index}`, // Unique event ID
+            roomId: roomId,
+            buildingId: buildingIdMap.get(building),
+            ...event,
+          });
         }
       });
-    }
+    });
   });
 
   return (
@@ -582,6 +662,7 @@ function ResultsTable(props: Props) {
             </div>
           );
         }}
+        className="-mx-4 -mb-4 sm:m-0"
       >
         <ResourcesDirective>
           <ResourceDirective
@@ -612,15 +693,15 @@ function ResultsTable(props: Props) {
 }
 
 function findAvailability(
-  events: CourseBookEvent[],
+  events: EventSourceNoResource[],
   calendarStart: Dayjs,
   calendarEnd: Dayjs,
 ): boolean[] {
   let times = Array(calendarEnd.diff(calendarStart, 'minute')).fill(true);
   let completelyFree = true;
   for (const event of events) {
-    const eventStart = dayjs(event.start_time, 'h:mma');
-    const eventEnd = dayjs(event.end_time, 'h:mma');
+    const eventStart = dayjs(event.StartTime);
+    const eventEnd = dayjs(event.EndTime);
     if (
       isBetween(eventStart, calendarStart, calendarEnd) ||
       isBetween(eventEnd, calendarStart, calendarEnd) ||

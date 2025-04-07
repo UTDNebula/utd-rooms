@@ -14,7 +14,7 @@ import resolveConfig from 'tailwindcss/resolveConfig';
 
 import tailwindConfig from '@/../tailwind.config.js';
 import useEventsStore from '@/modules/useEventsStore';
-import type { CourseBookEvent } from '@/types/Events';
+import type { AstraEvent, CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -162,6 +162,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [courseBookEvents, fetchAndStoreCourseBookEvents] =
     useEventsStore<CourseBookEvent>('events');
 
+  const [astraEvents, fetchAndStoreAstraEvents] =
+    useEventsStore<AstraEvent>('astra');
+
   if (typeof process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY !== 'undefined') {
     registerLicense(process.env.NEXT_PUBLIC_SYNCFUSION_LICENSE_KEY);
   }
@@ -206,6 +209,8 @@ function MyApp({ Component, pageProps }: AppProps) {
               rooms={rooms}
               courseBookEvents={courseBookEvents}
               fetchAndStoreCourseBookEvents={fetchAndStoreCourseBookEvents}
+              astraEvents={astraEvents}
+              fetchAndStoreAstraEvents={fetchAndStoreAstraEvents}
               {...pageProps}
             />
           </div>
