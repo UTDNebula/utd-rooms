@@ -37,7 +37,14 @@ export default function handler(
       .then((response) => response.json())
       .then((data) => {
         if (data.message !== 'success') {
-          throw new Error(data.message);
+          if (data.error === 'mongo: no documents in result') {
+            res.status(200).json({
+              message: 'success',
+              data: {},
+            });
+            resolve();
+          }
+          throw new Error(data.error ?? data.message);
         }
         // Convert from array to object
         const eventsMap: Hierarchy<unknown> = {};

@@ -70,6 +70,8 @@ export default buildingNames;
 export const mapLinkOverrides: {
   [key: string]: string;
 } = {
+  'https://locator.utdallas.edu/ATC_2.705E':
+    'https://map.concept3d.com/?id=1772#!m/579843',
   'https://locator.utdallas.edu/BSB_10.687':
     'https://map.concept3d.com/?id=1772#!m/587102',
   'https://locator.utdallas.edu/CB_1.102':
