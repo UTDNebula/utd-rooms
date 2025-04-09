@@ -3,7 +3,7 @@ import {
   CircularProgress,
   FormControl,
   FormControlLabel,
-  Grid2 as Grid,
+  Grid,
   InputLabel,
   ListItemText,
   MenuItem,
