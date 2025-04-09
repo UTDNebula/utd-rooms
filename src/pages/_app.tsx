@@ -10,9 +10,7 @@ import { Inter } from 'next/font/google';
 import localFont from 'next/font/local';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
-import resolveConfig from 'tailwindcss/resolveConfig';
 
-import tailwindConfig from '@/../tailwind.config.js';
 import useEventsStore from '@/modules/useEventsStore';
 import type { AstraEvent, CourseBookEvent } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
@@ -84,23 +82,19 @@ const kallisto = localFont({
   variable: '--font-kallisto',
 });
 
-const fullTailwindConfig = resolveConfig(tailwindConfig);
-
 function MyApp({ Component, pageProps }: AppProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const colors = fullTailwindConfig.theme.colors as any;
   const lightPalette = {
     palette: {
       //copied from tailwind.config.js
       primary: {
-        main: colors.royal as string,
+        main: '#573dff',
       },
       secondary: {
-        main: colors.royal as string,
-        light: colors.periwinkle as string,
+        main: '#573dff',
+        light: '#c2c8ff',
       },
       error: {
-        main: colors.persimmon['500'] as string,
+        main: '#ff5743',
       },
     },
   };
@@ -108,14 +102,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     palette: {
       //copied from tailwind.config.js
       primary: {
-        main: colors.cornflower['300'] as string,
+        main: '#a297fd',
       },
       secondary: {
-        main: colors.royal as string,
-        light: colors.periwinkle as string,
+        main: '#573dff',
+        light: '#c2c8ff',
       },
       error: {
-        main: colors.persimmon['500'] as string,
+        main: '#ff5743',
       },
     },
   };
@@ -130,11 +124,12 @@ function MyApp({ Component, pageProps }: AppProps) {
     },
     breakpoints: {
       values: {
+        //copied from tailwind.config.js
         xs: 0,
-        sm: parseInt(fullTailwindConfig.theme.screens.sm),
-        md: parseInt(fullTailwindConfig.theme.screens.md),
-        lg: parseInt(fullTailwindConfig.theme.screens.lg),
-        xl: parseInt(fullTailwindConfig.theme.screens.xl),
+        sm: 640,
+        md: 768,
+        lg: 1024,
+        xl: 1280,
       },
     },
   });

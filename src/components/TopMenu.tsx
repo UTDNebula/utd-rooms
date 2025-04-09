@@ -65,7 +65,7 @@ export function TopMenu(props: Props) {
         </Link>
         <TextField
           label="Filter results"
-          className="order-last basis-full sm:order-none sm:basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+          className="order-last basis-full sm:order-none sm:basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           value={props.search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             props.setSearch(event.target.value);

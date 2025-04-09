@@ -104,7 +104,7 @@ const Home: NextPage<Props> = (props: Props) => {
             label="Date *"
             value={selectedDate}
             onChange={(newValue) => setSelectedDate(newValue)}
-            className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+            className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
             slotProps={{
               actionBar: {
                 actions: ['today', 'accept'],
@@ -117,7 +117,7 @@ const Home: NextPage<Props> = (props: Props) => {
             label="Start time"
             value={startTime}
             onChange={(newValue) => setStartTime(newValue)}
-            className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+            className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
             slotProps={{
               actionBar: {
                 actions: ['clear', 'accept'],
@@ -134,7 +134,7 @@ const Home: NextPage<Props> = (props: Props) => {
             label="End time"
             value={endTime}
             onChange={(newValue) => setEndTime(newValue)}
-            className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+            className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
             slotProps={{
               actionBar: {
                 actions: ['clear', 'accept'],
@@ -147,7 +147,7 @@ const Home: NextPage<Props> = (props: Props) => {
             minTime={dayjs().hour(6)}
             maxTime={dayjs().hour(23)}
           />
-          <FormControl className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti">
+          <FormControl className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti">
             <InputLabel id="buildings">Buildings</InputLabel>
             <Select
               label="Buildings"

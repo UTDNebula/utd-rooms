@@ -1,21 +1,13 @@
 import { Head, Html, Main, NextScript } from 'next/document';
 import React from 'react';
-import resolveConfig from 'tailwindcss/resolveConfig';
-
-import tailwindConfig from '@/../tailwind.config.js';
-
-const fullTailwindConfig = resolveConfig(tailwindConfig);
 
 function Document() {
   return (
     <Html lang="en">
       <Head prefix="og: http://ogp.me/ns#">
         <meta name="description" content="Find open rooms at UT Dallas." />
-        <meta
-          name="theme-color"
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          content={(fullTailwindConfig.theme.colors as any).royal as string}
-        />
+        {/*copied from tailwind.config.js*/}
+        <meta name="theme-color" content="#a297fd" />
         <meta
           property="og:description"
           content="Find open rooms at UT Dallas."
