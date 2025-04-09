@@ -2,7 +2,7 @@
   "name": "UTD-Rooms",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "format": "prettier --write .",
@@ -16,26 +16,26 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@mui/x-date-pickers": "^7.28.3",
-    "@next/third-parties": "^14.2.15",
+    "@next/third-parties": "15.3.0",
     "@syncfusion/ej2-base": "^29.1.36",
     "@syncfusion/ej2-react-schedule": "^29.1.37",
     "@tailwindcss/postcss": "^4.1.3",
     "dayjs": "^1.11.13",
     "dotenv": "^16.0.0",
-    "next": "^14.2.26",
+    "next": "15.3.0",
     "postcss": "^8.5.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "sharp": "^0.34.1",
     "tailwindcss": "^4.1.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "@types/react": "^18.2.0",
+    "@types/react": "19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "@typescript-eslint/parser": "^8.29.1",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.14",
+    "eslint-config-next": "15.3.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-react": "^7.37.5",
@@ -83,6 +83,11 @@
       "import/first": "error",
       "import/newline-after-import": "error",
       "import/no-duplicates": "error"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.1.0"
     }
   }
 }
