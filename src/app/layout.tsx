@@ -95,7 +95,7 @@ export const metadata: Metadata = {
 export const viewport = {
   //copied from tailwind.config.js
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#a297fd' },
+    { media: '(prefers-color-scheme: light)', color: '#573dff' },
     { media: '(prefers-color-scheme: dark)', color: '#a297fd' },
   ],
 };
@@ -109,7 +109,7 @@ export default function RootLayout({
     <html lang="en">
       <GoogleAnalytics gaId="G-BKZ9JMC28B" />
       <body
-        className={`bg-white dark:bg-black ${inter.variable} font-inter ${kallisto.variable} h-full text-haiti dark:text-white`}
+        className={`bg-white dark:bg-black ${inter.variable} font-inter ${kallisto.variable} text-haiti dark:text-white`}
       >
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>

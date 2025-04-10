@@ -7,6 +7,9 @@ import Filters from '@/components/Filters';
 import { LoadingResultsTable } from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 
+/**
+ * Returns the loading results page with Nebula Branding, and room availability
+ */
 export default function Loading() {
   const searchParams = useSearchParams();
 
