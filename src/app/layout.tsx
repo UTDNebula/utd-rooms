@@ -108,22 +108,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <GoogleAnalytics gaId="G-BKZ9JMC28B" />
-      <body className="bg-white dark:bg-black">
+      <body
+        className={`bg-white dark:bg-black ${inter.variable} font-inter ${kallisto.variable} h-full text-haiti dark:text-white`}
+      >
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <ClientLocalizationProvider>
-              <SyncfusionWrapper>
-                <div
-                  className={
-                    inter.variable +
-                    ' font-inter ' +
-                    kallisto.variable +
-                    ' h-full text-haiti dark:text-white'
-                  }
-                >
-                  {children}
-                </div>
-              </SyncfusionWrapper>
+              <SyncfusionWrapper>{children}</SyncfusionWrapper>
             </ClientLocalizationProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
