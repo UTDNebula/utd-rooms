@@ -50,7 +50,7 @@ export function TopMenu(props: Props) {
 
   return (
     <>
-      <header className="relative overflow-hidden flex items-center gap-y-0 gap-x-4 md:gap-x-8 lg:gap-x-16 py-1 md:py-2 px-4 md:px-8 lg:px-16 bg-lighten dark:bg-darken flex-wrap sm:flex-nowrap">
+      <header className="relative overflow-hidden flex items-center gap-y-0 gap-x-4 md:gap-x-8 lg:gap-x-16 py-1 md:py-2 px-4 md:px-8 lg:px-16 bg-lighten dark:bg-darken">
         <Image
           src={Background}
           alt="gradient background"
@@ -65,7 +65,7 @@ export function TopMenu(props: Props) {
         </Link>
         <TextField
           label="Filter results"
-          className="order-last basis-full sm:order-none sm:basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
+          className="basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           value={props.search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             if (typeof props.setSearch !== 'undefined') {
