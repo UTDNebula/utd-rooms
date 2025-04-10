@@ -11,6 +11,7 @@ import {
   MenuItem,
   Radio,
   Select,
+  Tooltip,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -32,7 +33,7 @@ type Props =
       startTime: string | null;
       endTime: string | null;
       buildings: string[];
-      onlyAvailFullTime: boolean;
+      fullAvailability: boolean;
       rooms: Rooms;
     };
 
@@ -57,9 +58,7 @@ const Filters = (props: Props) => {
 
   const buildings = !props.roomsLoading ? props.buildings : [];
 
-  const onlyAvailFullTime = !props.roomsLoading
-    ? props.onlyAvailFullTime
-    : false;
+  const fullAvailability = !props.roomsLoading ? props.fullAvailability : false;
 
   return (
     <Grid container spacing={1}>
@@ -99,7 +98,7 @@ const Filters = (props: Props) => {
               params.set('startTime', newValue.format('HH:mm'));
             } else {
               params.delete('startTime');
-              params.delete('onlyAvailFullTime');
+              params.delete('fullAvailability');
             }
             window.history.replaceState(
               null,
@@ -134,7 +133,7 @@ const Filters = (props: Props) => {
               params.set('endTime', newValue.format('HH:mm'));
             } else {
               params.delete('endTime');
-              params.delete('onlyAvailFullTime');
+              params.delete('fullAvailability');
             }
             window.history.replaceState(
               null,
@@ -228,27 +227,29 @@ const Filters = (props: Props) => {
 
       {/*Only show rooms available the whole time checkbox*/}
       <Grid size={{ xs: 12, sm: 6, md: 12, lg: 2.4 }} className="px-2">
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={onlyAvailFullTime}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const params = new URLSearchParams(searchParams.toString());
-                if (event.target.checked) {
-                  params.set('onlyAvailFullTime', 'true');
-                } else {
-                  params.delete('onlyAvailFullTime');
-                }
-                window.history.replaceState(
-                  null,
-                  '',
-                  `${pathname}?${params.toString()}`,
-                );
-              }}
-            />
-          }
-          label="Only show rooms available the whole time"
-        />
+        <Tooltip title="Only show rooms available the whole time">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={fullAvailability}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  const params = new URLSearchParams(searchParams.toString());
+                  if (event.target.checked) {
+                    params.set('fullAvailability', 'true');
+                  } else {
+                    params.delete('fullAvailability');
+                  }
+                  window.history.replaceState(
+                    null,
+                    '',
+                    `${pathname}?${params.toString()}`,
+                  );
+                }}
+              />
+            }
+            label="Full availability"
+          />
+        </Tooltip>
       </Grid>
     </Grid>
   );

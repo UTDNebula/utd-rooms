@@ -36,7 +36,7 @@ export default function Results(props: Props) {
   const buildingsParam = searchParams.get('buildings');
   const buildings = buildingsParam ? buildingsParam.split(',') : [];
 
-  const onlyAvailFullTime = searchParams.get('onlyAvailFullTime') === 'true';
+  const fullAvailability = searchParams.get('fullAvailability') === 'true';
 
   return (
     <>
@@ -48,7 +48,7 @@ export default function Results(props: Props) {
           startTime={startTime}
           endTime={endTime}
           buildings={buildings}
-          onlyAvailFullTime={onlyAvailFullTime}
+          fullAvailability={fullAvailability}
           rooms={props.rooms}
         />
         <ResultsTable
@@ -56,7 +56,7 @@ export default function Results(props: Props) {
           startTime={startTime}
           endTime={endTime}
           buildings={buildings}
-          onlyAvailFullTime={onlyAvailFullTime}
+          fullAvailability={fullAvailability}
           rooms={props.rooms}
           courseBookEvents={props.courseBookEvents}
           astraEvents={props.astraEvents}

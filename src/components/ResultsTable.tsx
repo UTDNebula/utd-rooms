@@ -359,7 +359,7 @@ interface Props {
   startTime: string | null;
   endTime: string | null;
   buildings: string[];
-  onlyAvailFullTime: boolean;
+  fullAvailability: boolean;
   rooms: Rooms;
   courseBookEvents: Hierarchy<CourseBookEvent>;
   astraEvents: Hierarchy<AstraEvent>;
@@ -391,7 +391,7 @@ function ResultsTable(props: Props) {
 
   const buildings = props.buildings;
 
-  const onlyAvailFullTime = props.onlyAvailFullTime;
+  const fullAvailability = props.fullAvailability;
 
   const search = props.search.trim();
 
@@ -515,7 +515,7 @@ function ResultsTable(props: Props) {
               dayjsStartTime,
               dayjsEndTime,
             );
-            if (completelyFree || (hasGap && !onlyAvailFullTime)) {
+            if (completelyFree || (hasGap && !fullAvailability)) {
               if (
                 search === '' ||
                 roomName.toLowerCase().startsWith(search.toLowerCase()) ||
@@ -564,7 +564,7 @@ function ResultsTable(props: Props) {
     <>
       <p>
         {`Found ${roomResources.length}${
-          onlyAvailFullTime
+          fullAvailability
             ? roomResources.length === 1
               ? ' room that is completely free.'
               : ' rooms that are completely free.'
