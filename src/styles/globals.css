@@ -77,8 +77,7 @@
 
 @layer utilities {
   html,
-  body,
-  #__next {
+  body {
     padding: 0;
     margin: 0;
     height: 100%;
@@ -98,7 +97,7 @@
     display: none;
   }
   /*Resourse group width*/
-  @media (width >= theme(--breakpoint-sm)) {
+  @media (width < theme(--breakpoint-sm)) {
     .e-resource-left-td {
       width: 8rem !important;
     }
