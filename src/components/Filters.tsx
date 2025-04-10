@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Checkbox,
   CircularProgress,
@@ -14,16 +16,25 @@ import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
-import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
-interface Props {
-  rooms: GenericFetchedData<Rooms>;
-}
+type Props =
+  | {
+      roomsLoading: true;
+    }
+  | {
+      roomsLoading: false;
+      date: string;
+      startTime: string | null;
+      endTime: string | null;
+      buildings: string[];
+      onlyAvailFullTime: boolean;
+      rooms: Rooms;
+    };
 
 /**
  * This component returns a set of filters with which to sort results.
@@ -31,30 +42,24 @@ interface Props {
 const Filters = (props: Props) => {
   //For updating query
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
-  let date = router.query.date;
-  if (Array.isArray(date)) {
-    date = date[0]; // if date is an array, make it a string
-  }
+  const date = !props.roomsLoading ? props.date : undefined;
 
-  let startTime = router.query.startTime;
-  if (Array.isArray(startTime)) {
-    startTime = startTime[0];
-  }
-  let endTime = router.query.endTime;
-  if (Array.isArray(endTime)) {
-    endTime = endTime[0];
-  }
+  const startTime = !props.roomsLoading ? props.startTime : null;
+  const endTime = !props.roomsLoading ? props.endTime : null;
   const error = Boolean(
     startTime &&
       endTime &&
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
-  let buildings = router.query.buildings ?? [];
-  if (!Array.isArray(buildings)) {
-    buildings = buildings.split(','); // if buildings is a comma-delimited string, make it an array
-  }
+  const buildings = !props.roomsLoading ? props.buildings : [];
+
+  const onlyAvailFullTime = !props.roomsLoading
+    ? props.onlyAvailFullTime
+    : false;
 
   return (
     <Grid container spacing={1}>
@@ -64,22 +69,12 @@ const Filters = (props: Props) => {
           className="w-full"
           value={dayjs(date)}
           onChange={(newValue: Dayjs | null) => {
-            if (router.isReady) {
-              const newQuery = { ...router.query };
-              if (newValue !== null) {
-                newQuery.date = newValue.toISOString().split('T')[0];
-              } else {
-                //set to today
-                newQuery.date = dayjs().toISOString().split('T')[0];
-              }
-              router.replace(
-                {
-                  query: newQuery,
-                },
-                undefined,
-                { shallow: true },
-              );
-            }
+            const params = new URLSearchParams(searchParams.toString());
+            params.set(
+              'date',
+              newValue?.format('YYYY-MM-DD') ?? dayjs().format('YYYY-MM-DD'),
+            );
+            router.replace(`${pathname}?${params.toString()}`);
           }}
           slotProps={{
             actionBar: {
@@ -99,22 +94,18 @@ const Filters = (props: Props) => {
           className="w-full"
           value={startTime ? dayjs(startTime, 'HH:mm') : null}
           onChange={(newValue: Dayjs | null) => {
-            if (router.isReady) {
-              const newQuery = { ...router.query };
-              if (newValue !== null) {
-                newQuery.startTime = newValue.format('HH:mm');
-              } else {
-                delete newQuery.startTime;
-                delete newQuery.onlyAvailFullTime;
-              }
-              router.replace(
-                {
-                  query: newQuery,
-                },
-                undefined,
-                { shallow: true },
-              );
+            const params = new URLSearchParams(searchParams.toString());
+            if (newValue) {
+              params.set('startTime', newValue.format('HH:mm'));
+            } else {
+              params.delete('startTime');
+              params.delete('onlyAvailFullTime');
             }
+            window.history.replaceState(
+              null,
+              '',
+              `${pathname}?${params.toString()}`,
+            );
           }}
           slotProps={{
             actionBar: {
@@ -138,22 +129,18 @@ const Filters = (props: Props) => {
           className="w-full"
           value={endTime ? dayjs(endTime, 'HH:mm') : null}
           onChange={(newValue: Dayjs | null) => {
-            if (router.isReady) {
-              const newQuery = { ...router.query };
-              if (newValue !== null) {
-                newQuery.endTime = newValue.format('HH:mm');
-              } else {
-                delete newQuery.endTime;
-                delete newQuery.onlyAvailFullTime;
-              }
-              router.replace(
-                {
-                  query: newQuery,
-                },
-                undefined,
-                { shallow: true },
-              );
+            const params = new URLSearchParams(searchParams.toString());
+            if (newValue) {
+              params.set('endTime', newValue.format('HH:mm'));
+            } else {
+              params.delete('endTime');
+              params.delete('onlyAvailFullTime');
             }
+            window.history.replaceState(
+              null,
+              '',
+              `${pathname}?${params.toString()}`,
+            );
           }}
           slotProps={{
             actionBar: {
@@ -178,28 +165,23 @@ const Filters = (props: Props) => {
             label="Buildings"
             labelId="buildings"
             multiple
-            disabled={props.rooms.state !== 'done'}
+            disabled={props.roomsLoading}
             value={buildings}
             onChange={(event: SelectChangeEvent<string[]>) => {
-              if (router.isReady) {
-                const newQuery = { ...router.query };
-                let newValue = event.target.value;
-                if (typeof newValue === 'string') {
-                  newValue = [newValue];
-                }
-                if (!newValue.includes('any')) {
-                  newQuery.buildings = newValue.toSorted().join(',');
-                } else {
-                  delete newQuery.buildings;
-                }
-                router.replace(
-                  {
-                    query: newQuery,
-                  },
-                  undefined,
-                  { shallow: true },
-                );
+              const newValue = Array.isArray(event.target.value)
+                ? event.target.value
+                : [event.target.value];
+              const params = new URLSearchParams(searchParams.toString());
+              if (newValue.includes('any')) {
+                params.delete('buildings');
+              } else {
+                params.set('buildings', newValue.sort().join(','));
               }
+              window.history.replaceState(
+                null,
+                '',
+                `${pathname}?${params.toString()}`,
+              );
             }}
             renderValue={(selected) => {
               if (!selected.length) {
@@ -210,21 +192,17 @@ const Filters = (props: Props) => {
             // loading icon on building dropdown
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
             endAdornment={
-              props.rooms.state === 'loading' ? (
-                <CircularProgress size={20} />
-              ) : null
+              props.roomsLoading ? <CircularProgress size={20} /> : null
             }
-            IconComponent={
-              props.rooms.state === 'loading' ? () => null : undefined
-            }
+            IconComponent={props.roomsLoading ? () => null : undefined}
           >
             <MenuItem className="h-10" value="any">
               <Radio checked={!buildings.length} />
               <ListItemText primary="Any" />
             </MenuItem>
             {/* dropdown options*/}
-            {props.rooms.state === 'done' &&
-              Object.keys(props.rooms.data)
+            {!props.roomsLoading &&
+              Object.keys(props.rooms)
                 .toSorted()
                 .map((value) => {
                   if (excludedBuildings.includes(value)) {
@@ -253,23 +231,19 @@ const Filters = (props: Props) => {
         <FormControlLabel
           control={
             <Checkbox
-              checked={router.query.onlyAvailFullTime === 'true'}
+              checked={onlyAvailFullTime}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                if (router.isReady) {
-                  const newQuery = { ...router.query };
-                  if (event.target.checked) {
-                    newQuery.onlyAvailFullTime = 'true';
-                  } else {
-                    delete newQuery.onlyAvailFullTime;
-                  }
-                  router.replace(
-                    {
-                      query: newQuery,
-                    },
-                    undefined,
-                    { shallow: true },
-                  );
+                const params = new URLSearchParams(searchParams.toString());
+                if (event.target.checked) {
+                  params.set('onlyAvailFullTime', 'true');
+                } else {
+                  params.delete('onlyAvailFullTime');
                 }
+                window.history.replaceState(
+                  null,
+                  '',
+                  `${pathname}?${params.toString()}`,
+                );
               }}
             />
           }
