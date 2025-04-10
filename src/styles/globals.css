@@ -63,8 +63,9 @@
   --color-cornflower-900: #28254d;
   --color-periwinkle: #c2c8ff; /* brand secondary (light)*/
   --color-shade: #101828; /* drop shadow color from shipfaster ui*/
-  --font-kallisto: 'var(--font-kallisto)', 'Roboto', 'sans-serif';
-  --font-inter: 'var(--font-inter)', 'Roboto', 'sans-serif';
+
+  --font-kallisto: var(--font-kallisto), Roboto, sans-serif;
+  --font-inter: var(--font-inter), Roboto, sans-serif;
 }
 
 @utility bg-lighten {
