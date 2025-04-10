@@ -91,7 +91,7 @@ export default function Home(props: Props) {
           UTD ROOMS
         </h1>
         <p className="mb-5 text-gray-700 dark:text-gray-300 leading-7">
-          Find available rooms on campus
+          Find available rooms at UT Dallas
         </p>
       </div>
       <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-8">
