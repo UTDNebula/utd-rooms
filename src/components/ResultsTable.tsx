@@ -23,6 +23,7 @@ import type { HierarchyStore } from '@/modules/useEventsStore';
 import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
+import Button from '@mui/material/Button';
 
 interface BuildingResource {
   type: 'building';
@@ -433,7 +434,21 @@ function ResultsTable(props: Props) {
       courseBookEvents.state === 'error') ||
     (typeof astraEvents !== 'undefined' && astraEvents.state === 'error')
   ) {
-    return null;
+    return(   //print error message
+      <div className="flex flex-col justify-center items-center  px-8 py-16">
+        <p className="mb-5 text-xl text-gray-700 dark:text-gray-300">
+                Error. Please reload the page.
+        </p>
+        <Button   //button to reload page
+
+          onClick={() => window.location.reload()}
+          variant="contained"
+          className="w-fit"
+        >
+          Reload
+        </Button>
+      </div>
+    );
   }
 
   //Loading state
