@@ -36,7 +36,7 @@
 @import '@syncfusion/ej2-react-schedule/styles/material3-dark.css'
   layer(components) screen and (prefers-color-scheme: dark);
 
-/*If changing be sure to update in _app.tsx too*/
+/*If changing be sure to update in layout.tsx too*/
 @theme {
   --color-haiti: #090b2c;
   --color-persimmon-50: #ffe5de;

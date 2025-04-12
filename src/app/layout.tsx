@@ -93,7 +93,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  //copied from tailwind.config.js
+  //copied from globals.css
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#573dff' },
     { media: '(prefers-color-scheme: dark)', color: '#a297fd' },

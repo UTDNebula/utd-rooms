@@ -4,7 +4,7 @@ import { createTheme } from '@mui/material/styles';
 
 const lightPalette = {
   palette: {
-    //copied from tailwind.config.js
+    //copied from globals.css
     primary: {
       main: '#573dff',
     },
@@ -19,7 +19,7 @@ const lightPalette = {
 };
 const darkPalette = {
   palette: {
-    //copied from tailwind.config.js
+    //copied from globals.css
     primary: {
       main: '#a297fd',
     },
@@ -43,7 +43,7 @@ const theme = createTheme({
   },
   breakpoints: {
     values: {
-      //copied from tailwind.config.js
+      //copied from globals.css
       xs: 0,
       sm: 640,
       md: 768,
