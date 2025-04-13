@@ -55,8 +55,16 @@ const Home: NextPage<Props> = (props: Props) => {
         pathname: '/results',
         query: {
           date: formattedDate,
-          ...(startTime && { startTime: extractTime(startTime) }),
-          ...(endTime && { endTime: extractTime(endTime) }),
+          ...(startTime && {
+            startTime: dayjs(startTime, 'HH:mm').isBefore(dayjs().hour(6))
+              ? extractTime(dayjs().hour(6).minute(0))
+              : extractTime(startTime),
+          }),
+          ...(endTime && {
+            endTime: dayjs(endTime, 'HH:mm').isAfter(dayjs().hour(22))
+              ? extractTime(dayjs().hour(22).minute(0))
+              : extractTime(endTime),
+          }),
           ...(buildings.length && { buildings: buildings.join(',') }),
         },
       });
@@ -116,6 +124,7 @@ const Home: NextPage<Props> = (props: Props) => {
           <TimePicker
             label="Start time"
             value={startTime}
+            timeSteps={{ minutes: 15 }}
             onChange={(newValue) => setStartTime(newValue)}
             className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
             slotProps={{
@@ -127,12 +136,11 @@ const Home: NextPage<Props> = (props: Props) => {
                 helperText: error && 'Start time must be before end time',
               },
             }}
-            minTime={dayjs().hour(6)}
-            maxTime={dayjs().hour(23)}
           />
           <TimePicker
             label="End time"
             value={endTime}
+            timeSteps={{ minutes: 15 }}
             onChange={(newValue) => setEndTime(newValue)}
             className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
             slotProps={{
@@ -144,8 +152,6 @@ const Home: NextPage<Props> = (props: Props) => {
                 helperText: error && 'Start time must be before end time',
               },
             }}
-            minTime={dayjs().hour(6)}
-            maxTime={dayjs().hour(23)}
           />
           <FormControl className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti">
             <InputLabel id="buildings">Buildings</InputLabel>
@@ -215,7 +221,7 @@ const Home: NextPage<Props> = (props: Props) => {
             variant="contained"
             className="w-fit"
             onClick={searchRooms}
-            disabled={selectedDate === null}
+            disabled={selectedDate === null || error}
           >
             Search Rooms
           </Button>
