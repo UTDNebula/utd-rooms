@@ -20,7 +20,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
-import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
+import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
 import type { Rooms } from '@/types/Rooms';
 
 type Props =

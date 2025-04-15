@@ -19,7 +19,7 @@ import buildingNames, {
   excludedRooms,
   mapLinkOverrides,
   mergedBuildings,
-} from '@/modules/buildingInfo';
+} from '@/lib/buildingInfo';
 import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
 import type { Rooms } from '@/types/Rooms';
 

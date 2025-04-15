@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 import Background from '@/../public/background.png';
-import buildingNames, { excludedBuildings } from '@/modules/buildingInfo';
+import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
 import type { Rooms } from '@/types/Rooms';
 
 type Props =
