@@ -18,6 +18,7 @@ export default async function fetchRooms(): Promise<Data> {
         'x-api-key': API_KEY,
         Accept: 'application/json',
       },
+      next: { revalidate: 3600 },
     });
 
     const data = await res.json();

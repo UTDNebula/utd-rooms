@@ -22,6 +22,7 @@ export default async function fetchEvents<T>(
         'x-api-key': API_KEY,
         Accept: 'application/json',
       },
+      next: { revalidate: 3600 },
     });
 
     const data = await res.json();
