@@ -1,8 +1,9 @@
+'use client';
+
 import { Share } from '@mui/icons-material';
 import { IconButton, Snackbar, TextField, Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
 import Background from '@/../public/background.png';
@@ -11,15 +12,14 @@ import Background from '@/../public/background.png';
  * Props type used by the TopMenu component
  */
 interface Props {
-  search: string;
-  setSearch: (arg0: string) => void;
+  search?: string;
+  setSearch?: (arg0: string) => void;
 }
 
 /**
  * This is a component to hold UTD Rooms branding and basic navigation
  */
 export function TopMenu(props: Props) {
-  const router = useRouter();
   const [openCopied, setOpenCopied] = useState(false);
 
   function shareLink(url: string) {
@@ -50,7 +50,7 @@ export function TopMenu(props: Props) {
 
   return (
     <>
-      <div className="relative overflow-hidden flex items-center gap-y-0 gap-x-4 md:gap-x-8 lg:gap-x-16 py-1 md:py-2 px-4 md:px-8 lg:px-16 bg-lighten dark:bg-darken flex-wrap sm:flex-nowrap">
+      <header className="relative overflow-hidden flex items-center gap-y-0 gap-x-4 md:gap-x-8 lg:gap-x-16 py-1 md:py-2 px-4 md:px-8 lg:px-16 bg-lighten dark:bg-darken">
         <Image
           src={Background}
           alt="gradient background"
@@ -65,32 +65,24 @@ export function TopMenu(props: Props) {
         </Link>
         <TextField
           label="Filter results"
-          className="order-last basis-full sm:order-none sm:basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
+          className="basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           value={props.search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            props.setSearch(event.target.value);
+            if (typeof props.setSearch !== 'undefined') {
+              props.setSearch(event.target.value);
+            }
           }}
         />
         <Tooltip title="Share link to search" className="ml-auto">
           <IconButton
             className="aspect-square"
             size="medium"
-            onClick={() => {
-              let url = window.location.href;
-              if (
-                router.query &&
-                Object.keys(router.query).length === 0 &&
-                Object.getPrototypeOf(router.query) === Object.prototype
-              ) {
-                url = 'https://rooms.utdnebula.com/';
-              }
-              shareLink(url);
-            }}
+            onClick={() => shareLink(window.location.href)}
           >
             <Share className="text-3xl mr-1" />
           </IconButton>
         </Tooltip>
-      </div>
+      </header>
       <Snackbar
         open={openCopied}
         autoHideDuration={6000}

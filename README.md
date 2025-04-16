@@ -24,7 +24,7 @@ our [Discord](https://discord.utdnebula.com/) section.
 
 ### Set-up
 
-This project requires a working [Node.js](https://nodejs.org/en/) and [pnpm](https://pnpm.io/)
+This project requires a working [Node.js](https://nodejs.org/en/) v22 and [pnpm](https://pnpm.io/)
 installation. To start, clone the repository, install dependencies, and then run `pnpm dev` to launch
 a local development server at [`localhost:3000`](https://localhost:3000) by default.
 

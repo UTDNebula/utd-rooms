@@ -1,3 +1,5 @@
+'use client';
+
 import { Skeleton, Tooltip } from '@mui/material';
 import {
   Inject,
@@ -10,7 +12,6 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
 
 import buildingNames, {
@@ -18,10 +19,8 @@ import buildingNames, {
   excludedRooms,
   mapLinkOverrides,
   mergedBuildings,
-} from '@/modules/buildingInfo';
-import type { HierarchyStore } from '@/modules/useEventsStore';
+} from '@/lib/buildingInfo';
 import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
-import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
 interface BuildingResource {
@@ -52,7 +51,7 @@ interface LoadingProps {
   endTime: string;
 }
 
-function LoadingResultsTable(props: LoadingProps) {
+export function LoadingResultsTable(props: LoadingProps) {
   const buildingResources = [
     {
       type: 'building',
@@ -356,9 +355,14 @@ function LoadingResultsTable(props: LoadingProps) {
  * Props type used by the ResultsTable component
  */
 interface Props {
-  rooms: GenericFetchedData<Rooms>;
-  courseBookEvents: HierarchyStore<CourseBookEvent>;
-  astraEvents: HierarchyStore<AstraEvent>;
+  date: string;
+  startTime: string | null;
+  endTime: string | null;
+  buildings: string[];
+  fullAvailability: boolean;
+  rooms: Rooms;
+  courseBookEvents: Hierarchy<CourseBookEvent>;
+  astraEvents: Hierarchy<AstraEvent>;
   search: string;
 }
 
@@ -366,91 +370,38 @@ interface Props {
  * This is a component to hold results for room availablity in a table
  */
 function ResultsTable(props: Props) {
-  let state = 'done';
+  const date = props.date;
 
-  //For getting filters
-  const router = useRouter();
-
-  let date = router.query.date;
-  if (Array.isArray(date)) {
-    date = date[0]; // if date is an array, make it a string
-  }
-  if (typeof date === 'undefined') {
-    state = 'loading';
-  }
-
-  let startTime = router.query.startTime;
-  if (Array.isArray(startTime)) {
-    startTime = startTime[0];
-  }
-  if (
-    typeof date !== 'undefined' &&
-    date === dayjs().format('YYYY-MM-DD') &&
-    dayjs().hour() < 20
-  ) {
+  let startTime = props.startTime;
+  if (date === dayjs().format('YYYY-MM-DD') && dayjs().hour() < 20) {
     //if looking at today and not too late, set start time to now
     startTime = startTime ?? dayjs().format('HH') + ':00';
   } else {
     startTime = startTime ?? '09:00';
   }
   const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
-  let endTime = router.query.endTime;
-  if (Array.isArray(endTime)) {
-    endTime = endTime[0];
-  }
+
+  let endTime = props.endTime;
   endTime = endTime ?? '22:00';
   const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
+
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
-    state = 'error';
+    return null;
   }
 
-  let buildings = router.query.buildings ?? [];
-  if (!Array.isArray(buildings)) {
-    buildings = buildings.split(','); // if buildings is a comma-delimited string, make it an array
-  }
+  const buildings = props.buildings;
 
-  const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
+  const fullAvailability = props.fullAvailability;
 
   const search = props.search.trim();
 
-  if (state === 'error') {
-    return null;
-  }
-  const loading = (
-    <LoadingResultsTable startTime={startTime} endTime={endTime} />
-  );
-  if (state === 'loading') {
-    return loading;
-  }
-
   const rooms = props.rooms;
-  const courseBookEvents = props.courseBookEvents[date as string];
-  const astraEvents = props.astraEvents[date as string];
-
-  if (
-    (typeof rooms !== 'undefined' && rooms.state === 'error') ||
-    (typeof courseBookEvents !== 'undefined' &&
-      courseBookEvents.state === 'error') ||
-    (typeof astraEvents !== 'undefined' && astraEvents.state === 'error')
-  ) {
-    return null;
-  }
-
-  //Loading state
-  if (
-    typeof rooms === 'undefined' ||
-    rooms.state === 'loading' ||
-    typeof courseBookEvents === 'undefined' ||
-    courseBookEvents.state === 'loading' ||
-    typeof astraEvents === 'undefined' ||
-    astraEvents.state === 'loading'
-  ) {
-    return loading;
-  }
+  const courseBookEvents = props.courseBookEvents;
+  const astraEvents = props.astraEvents;
 
   // Combine sources
   const combinedEvents: Hierarchy<EventSourceNoResource> = {};
-  Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
+  Object.entries(courseBookEvents).forEach(([building, rooms]) => {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
@@ -478,7 +429,7 @@ function ResultsTable(props: Props) {
       });
     }
   });
-  Object.entries(astraEvents.data).forEach(([building, rooms]) => {
+  Object.entries(astraEvents).forEach(([building, rooms]) => {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
@@ -536,7 +487,7 @@ function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms.data)
+  Object.entries(rooms)
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
       if (
@@ -564,7 +515,7 @@ function ResultsTable(props: Props) {
               dayjsStartTime,
               dayjsEndTime,
             );
-            if (completelyFree || (hasGap && !onlyAvailFullTime)) {
+            if (completelyFree || (hasGap && !fullAvailability)) {
               if (
                 search === '' ||
                 roomName.toLowerCase().startsWith(search.toLowerCase()) ||
@@ -613,7 +564,7 @@ function ResultsTable(props: Props) {
     <>
       <p>
         {`Found ${roomResources.length}${
-          onlyAvailFullTime
+          fullAvailability
             ? roomResources.length === 1
               ? ' room that is completely free.'
               : ' rooms that are completely free.'
