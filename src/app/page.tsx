@@ -19,5 +19,10 @@ export const metadata: Metadata = {
  */
 export default async function Page() {
   const rooms = await fetchRooms();
-  return <Home roomsLoading={false} rooms={rooms.data ?? {}} />;
+  return (
+    <Home
+      roomsLoading={false}
+      rooms={rooms.message === 'success' ? rooms.data : {}}
+    />
+  );
 }

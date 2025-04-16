@@ -1,14 +1,10 @@
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
-type Data = {
-  message: string;
-  data?: Rooms;
-};
-
-export default async function fetchRooms(): Promise<Data> {
+export default async function fetchRooms(): Promise<GenericFetchedData<Rooms>> {
   const API_KEY = process.env.REACT_APP_NEBULA_API_KEY;
   if (typeof API_KEY !== 'string') {
-    return { message: 'API key is undefined' };
+    return { message: 'error', error: 'API key is undefined' };
   }
 
   try {
@@ -36,7 +32,8 @@ export default async function fetchRooms(): Promise<Data> {
     return { message: 'success', data: roomsMap };
   } catch (error) {
     return {
-      message:
+      message: 'error',
+      error:
         error instanceof Error ? error.message : 'An unknown error occurred',
     };
   }

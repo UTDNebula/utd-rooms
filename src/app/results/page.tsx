@@ -4,7 +4,7 @@ import React from 'react';
 
 import fetchEvents from '@/lib/fetchEvents';
 import fetchRooms from '@/lib/fetchRooms';
-import type { AstraEvent, CourseBookEvent } from '@/types/Events';
+import type { AstraEvent, CourseBookEvent, MazevoEvent } from '@/types/Events';
 
 import Results from './Results';
 
@@ -39,17 +39,22 @@ export default async function Page(props: {
     date = date[0];
   }
 
-  const [rooms, courseBookEvents, astraEvents] = await Promise.all([
-    fetchRooms(),
-    fetchEvents<CourseBookEvent>('events', date),
-    fetchEvents<AstraEvent>('astra', date),
-  ]);
+  const [rooms, courseBookEvents, astraEvents, mazevoEvents] =
+    await Promise.all([
+      fetchRooms(),
+      fetchEvents<CourseBookEvent>('events', date),
+      fetchEvents<AstraEvent>('astra', date),
+      fetchEvents<MazevoEvent>('mazevo', date),
+    ]);
   return (
     <Results
       date={date}
-      rooms={rooms.data ?? {}}
-      courseBookEvents={courseBookEvents.data ?? {}}
-      astraEvents={astraEvents.data ?? {}}
+      rooms={rooms.message === 'success' ? rooms.data : {}}
+      courseBookEvents={
+        courseBookEvents.message === 'success' ? courseBookEvents.data : {}
+      }
+      astraEvents={astraEvents.message === 'success' ? astraEvents.data : {}}
+      mazevoEvents={mazevoEvents.message === 'success' ? mazevoEvents.data : {}}
     />
   );
 }
