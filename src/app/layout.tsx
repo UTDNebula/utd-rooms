@@ -107,7 +107,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <GoogleAnalytics gaId="G-BKZ9JMC28B" />
+      {process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' && (
+        <GoogleAnalytics gaId="G-BKZ9JMC28B" />
+      )}
       <body
         className={`bg-white dark:bg-black ${inter.variable} font-inter ${kallisto.variable} text-haiti dark:text-white`}
       >
