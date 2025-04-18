@@ -20,7 +20,12 @@ import buildingNames, {
   mapLinkOverrides,
   mergedBuildings,
 } from '@/lib/buildingInfo';
-import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
+import type {
+  AstraEvent,
+  CourseBookEvent,
+  Hierarchy,
+  MazevoEvent,
+} from '@/types/Events';
 import type { Rooms } from '@/types/Rooms';
 
 interface BuildingResource {
@@ -363,6 +368,7 @@ interface Props {
   rooms: Rooms;
   courseBookEvents: Hierarchy<CourseBookEvent>;
   astraEvents: Hierarchy<AstraEvent>;
+  mazevoEvents: Hierarchy<MazevoEvent>;
   search: string;
 }
 
@@ -398,6 +404,7 @@ function ResultsTable(props: Props) {
   const rooms = props.rooms;
   const courseBookEvents = props.courseBookEvents;
   const astraEvents = props.astraEvents;
+  const mazevoEvents = props.mazevoEvents;
 
   // Combine sources
   const combinedEvents: Hierarchy<EventSourceNoResource> = {};
@@ -445,6 +452,28 @@ function ResultsTable(props: Props) {
               Subject: event.activity_name,
               StartTime: dayjs(event.start_date).toDate(),
               EndTime: dayjs(event.end_date).toDate(),
+            });
+          });
+        }
+      });
+    }
+  });
+  Object.entries(mazevoEvents).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            combinedEvents[building][room].push({
+              Subject: `${event.eventName} (${event.organizationName})`,
+              StartTime: dayjs(event.dateTimeStart).toDate(),
+              EndTime: dayjs(event.dateTimeEnd).toDate(),
             });
           });
         }

@@ -6,7 +6,12 @@ import React, { useState } from 'react';
 import Filters from '@/components/Filters';
 import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
-import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
+import type {
+  AstraEvent,
+  CourseBookEvent,
+  Hierarchy,
+  MazevoEvent,
+} from '@/types/Events';
 import type { Rooms } from '@/types/Rooms';
 
 interface Props {
@@ -14,6 +19,7 @@ interface Props {
   rooms: Rooms;
   courseBookEvents: Hierarchy<CourseBookEvent>;
   astraEvents: Hierarchy<AstraEvent>;
+  mazevoEvents: Hierarchy<MazevoEvent>;
 }
 
 /**
@@ -60,6 +66,7 @@ export default function Results(props: Props) {
           rooms={props.rooms}
           courseBookEvents={props.courseBookEvents}
           astraEvents={props.astraEvents}
+          mazevoEvents={props.mazevoEvents}
           search={search}
         />
       </main>

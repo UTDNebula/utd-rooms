@@ -1,17 +1,13 @@
 import type { Hierarchy } from '@/types/Events';
-
-type Data<T> = {
-  message: string;
-  data?: Hierarchy<T>;
-};
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
 
 export default async function fetchEvents<T>(
   route: string,
   date: string,
-): Promise<Data<T>> {
+): Promise<GenericFetchedData<Hierarchy<T>>> {
   const API_KEY = process.env.REACT_APP_NEBULA_API_KEY;
   if (typeof API_KEY !== 'string') {
-    return { message: 'API key is undefined' };
+    return { message: 'error', error: 'API key is undefined' };
   }
 
   try {
@@ -46,7 +42,8 @@ export default async function fetchEvents<T>(
     return { message: 'success', data: eventsMap };
   } catch (error) {
     return {
-      message:
+      message: 'error',
+      error:
         error instanceof Error ? error.message : 'An unknown error occurred',
     };
   }
