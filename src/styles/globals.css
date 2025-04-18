@@ -125,4 +125,29 @@
   .e-appointment .e-appointment-details:has(div .loading-event) .e-indicator {
     display: none;
   }
+  /*Pending event*/
+  .e-appointment:has(.e-appointment-details div .pending-event) {
+    background-color: transparent;
+    outline-width: 2px;
+    outline-style: solid;
+    color: var(--color-haiti);
+    @variant dark {
+      color: white;
+    }
+  }
+  /*All events*/
+  .e-appointment {
+    background-color: var(--color-royal);
+    outline-color: var(--color-royal);
+    @variant dark {
+      background-color: var(--color-cornflower-300);
+      outline-color: var(--color-cornflower-300);
+    }
+  }
+  .e-appointment .e-appointment-details div:not(.e-indicator) {
+    display: contents;
+  }
+  .e-appointment .e-appointment-details div:not(.e-indicator) div {
+    display: block;
+  }
 }

@@ -44,6 +44,7 @@ interface EventSourceNoResource {
   Subject: string;
   StartTime: Date;
   EndTime: Date;
+  pending?: boolean;
 }
 type EventSource = EventSourceNoResource & {
   id: string;
@@ -452,6 +453,11 @@ function ResultsTable(props: Props) {
               Subject: event.activity_name,
               StartTime: dayjs(event.start_date).toDate(),
               EndTime: dayjs(event.end_date).toDate(),
+              // null current_state is a class
+              ...(event.current_state !== 'Scheduled' &&
+              event.current_state != null
+                ? { pending: true }
+                : {}),
             });
           });
         }
@@ -474,6 +480,9 @@ function ResultsTable(props: Props) {
               Subject: `${event.eventName} (${event.organizationName})`,
               StartTime: dayjs(event.dateTimeStart).toDate(),
               EndTime: dayjs(event.dateTimeEnd).toDate(),
+              ...(event.statusDescription !== 'Confirmed'
+                ? { pending: true }
+                : {}),
             });
           });
         }
@@ -663,7 +672,26 @@ function ResultsTable(props: Props) {
           />
         </ResourcesDirective>
         <ViewsDirective>
-          <ViewDirective option="TimelineDay" />
+          <ViewDirective
+            option="TimelineDay"
+            eventTemplate={(props: EventSource) => {
+              const timeString = `${props.pending ? 'Pending: ' : ''}${dayjs(props.StartTime).format('h:mm a')} - ${dayjs(props.EndTime).format('h:mm a')}`;
+              return (
+                <div
+                  className={
+                    'e-inner-wrap' + (props.pending ? ' pending-event' : '')
+                  }
+                >
+                  <Tooltip title={props.Subject}>
+                    <div className="e-subject">{props.Subject}</div>
+                  </Tooltip>
+                  <Tooltip title={timeString}>
+                    <div className="e-time">{timeString}</div>
+                  </Tooltip>
+                </div>
+              );
+            }}
+          />
         </ViewsDirective>
         <Inject services={[TimelineViews]} />
       </ScheduleComponent>
