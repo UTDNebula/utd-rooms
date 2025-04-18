@@ -40,7 +40,7 @@ type Props =
 /**
  * This component returns a set of filters with which to sort results.
  */
-const Filters = (props: Props) => {
+export default function Filters(props: Props) {
   //For updating query
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -253,6 +253,4 @@ const Filters = (props: Props) => {
       </Grid>
     </Grid>
   );
-};
-
-export default Filters;
+}
