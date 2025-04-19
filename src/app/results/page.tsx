@@ -49,12 +49,10 @@ export default async function Page(props: {
   return (
     <Results
       date={date}
-      rooms={rooms.message === 'success' ? rooms.data : {}}
-      courseBookEvents={
-        courseBookEvents.message === 'success' ? courseBookEvents.data : {}
-      }
-      astraEvents={astraEvents.message === 'success' ? astraEvents.data : {}}
-      mazevoEvents={mazevoEvents.message === 'success' ? mazevoEvents.data : {}}
+      rooms={rooms}
+      courseBookEvents={courseBookEvents}
+      astraEvents={astraEvents}
+      mazevoEvents={mazevoEvents}
     />
   );
 }
