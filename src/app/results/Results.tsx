@@ -56,7 +56,7 @@ export default function Results(props: Props) {
           endTime={endTime}
           buildings={buildings}
           fullAvailability={fullAvailability}
-          rooms={props.rooms}
+          rooms={props.rooms.message === 'success' ? props.rooms.data : {}}
         />
         <ResultsTable
           date={props.date}
