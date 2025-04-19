@@ -1,6 +1,6 @@
 'use client';
 
-import { Skeleton, Tooltip } from '@mui/material';
+import { Button, Skeleton, Tooltip } from '@mui/material';
 import {
   Inject,
   ResourceDirective,
@@ -26,6 +26,7 @@ import type {
   Hierarchy,
   MazevoEvent,
 } from '@/types/Events';
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
 interface BuildingResource {
@@ -365,10 +366,10 @@ interface Props {
   endTime: string | null;
   buildings: string[];
   fullAvailability: boolean;
-  rooms: Rooms;
-  courseBookEvents: Hierarchy<CourseBookEvent>;
-  astraEvents: Hierarchy<AstraEvent>;
-  mazevoEvents: Hierarchy<MazevoEvent>;
+  rooms: GenericFetchedData<Rooms>;
+  courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
+  astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
+  mazevoEvents: GenericFetchedData<Hierarchy<MazevoEvent>>;
   search: string;
 }
 
@@ -402,13 +403,33 @@ export default function ResultsTable(props: Props) {
   const search = props.search.trim();
 
   const rooms = props.rooms;
+
   const courseBookEvents = props.courseBookEvents;
   const astraEvents = props.astraEvents;
   const mazevoEvents = props.mazevoEvents;
 
+  if (
+    rooms.message !== 'success' ||
+    courseBookEvents.message !== 'success' ||
+    astraEvents.message !== 'success' ||
+    mazevoEvents.message !== 'success'
+  ) {
+    //print error message
+    return (
+      <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
+        <p className="text-xl text-gray-700 dark:text-gray-300">
+          Error. Please reload the page.
+        </p>
+        <Button onClick={() => window.location.reload()} variant="contained">
+          Reload
+        </Button>
+      </div>
+    );
+  }
+
   // Combine sources
   const combinedEvents: Hierarchy<EventSourceNoResource> = {};
-  Object.entries(courseBookEvents).forEach(([building, rooms]) => {
+  Object.entries(courseBookEvents.data).forEach(([building, rooms]) => {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
@@ -436,7 +457,7 @@ export default function ResultsTable(props: Props) {
       });
     }
   });
-  Object.entries(astraEvents).forEach(([building, rooms]) => {
+  Object.entries(astraEvents.data).forEach(([building, rooms]) => {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
@@ -458,7 +479,7 @@ export default function ResultsTable(props: Props) {
       });
     }
   });
-  Object.entries(mazevoEvents).forEach(([building, rooms]) => {
+  Object.entries(mazevoEvents.data).forEach(([building, rooms]) => {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
@@ -516,7 +537,7 @@ export default function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms)
+  Object.entries(rooms.data)
     .toSorted(([a], [b]) => a.localeCompare(b))
     .forEach(([building, rooms]) => {
       if (

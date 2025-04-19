@@ -12,14 +12,15 @@ import type {
   Hierarchy,
   MazevoEvent,
 } from '@/types/Events';
+import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
 interface Props {
   date: string;
-  rooms: Rooms;
-  courseBookEvents: Hierarchy<CourseBookEvent>;
-  astraEvents: Hierarchy<AstraEvent>;
-  mazevoEvents: Hierarchy<MazevoEvent>;
+  rooms: GenericFetchedData<Rooms>;
+  courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
+  astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
+  mazevoEvents: GenericFetchedData<Hierarchy<MazevoEvent>>;
 }
 
 /**
@@ -55,7 +56,7 @@ export default function Results(props: Props) {
           endTime={endTime}
           buildings={buildings}
           fullAvailability={fullAvailability}
-          rooms={props.rooms}
+          rooms={props.rooms.message === 'success' ? props.rooms.data : {}}
         />
         <ResultsTable
           date={props.date}
