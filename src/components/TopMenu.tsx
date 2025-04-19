@@ -19,7 +19,7 @@ interface Props {
 /**
  * This is a component to hold UTD Rooms branding and basic navigation
  */
-export function TopMenu(props: Props) {
+export default function TopMenu(props: Props) {
   const [openCopied, setOpenCopied] = useState(false);
 
   function shareLink(url: string) {
@@ -92,5 +92,3 @@ export function TopMenu(props: Props) {
     </>
   );
 }
-
-export default TopMenu;

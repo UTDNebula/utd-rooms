@@ -375,7 +375,7 @@ interface Props {
 /**
  * This is a component to hold results for room availablity in a table
  */
-function ResultsTable(props: Props) {
+export default function ResultsTable(props: Props) {
   const date = props.date;
 
   let startTime = props.startTime;
@@ -681,12 +681,7 @@ function findAvailability(
   for (const event of events) {
     const eventStart = dayjs(event.StartTime);
     const eventEnd = dayjs(event.EndTime);
-    if (
-      isBetween(eventStart, calendarStart, calendarEnd) ||
-      isBetween(eventEnd, calendarStart, calendarEnd) ||
-      //event covers whole time
-      (eventStart.isBefore(calendarStart) && eventEnd.isAfter(calendarEnd))
-    ) {
+    if (eventStart.isBefore(calendarEnd) && eventEnd.isAfter(calendarStart)) {
       completelyFree = false;
       let fillStart = 0;
       if (eventStart.isAfter(calendarStart)) {
@@ -715,9 +710,3 @@ function findAvailability(
   }
   return [false, false];
 }
-
-function isBetween(test: Dayjs, start: Dayjs, end: Dayjs) {
-  return test.isAfter(start) && test.isBefore(end);
-}
-
-export default ResultsTable;
