@@ -20,3 +20,15 @@ export type AstraEvent = {
   usage_color: string;
   capacity: number;
 };
+
+export type MazevoEvent = {
+  eventName: string;
+  organizationName: string;
+  contactName: string;
+  setupMinutes: number;
+  dateTimeStart: string;
+  dateTimeEnd: string;
+  teardownMinutes: number;
+  statusDescription: string;
+  statusColor: string;
+};
