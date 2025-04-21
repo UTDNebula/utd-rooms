@@ -60,6 +60,9 @@ body,
   .e-resource-left-td {
     width: 8rem !important;
   }
+  .e-resource-cells {
+    padding-left: 0 !important;
+  }
 }
 /*Resourse group height*/
 tr .e-parent-node,

@@ -98,7 +98,7 @@ const Filters = (props: Props) => {
           timeSteps={{ minutes: 15 }}
           label="Start time"
           className="w-full"
-          value={startTime ? dayjs(startTime, 'HH.mm') : null}
+          value={startTime ? dayjs(startTime, 'HH:mm') : null}
           onChange={(newValue: Dayjs | null) => {
             if (router.isReady) {
               const newQuery = { ...router.query };
@@ -136,7 +136,7 @@ const Filters = (props: Props) => {
           timeSteps={{ minutes: 15 }}
           label="End time"
           className="w-full"
-          value={endTime ? dayjs(endTime, 'HH.mm') : null}
+          value={endTime ? dayjs(endTime, 'HH:mm') : null}
           onChange={(newValue: Dayjs | null) => {
             if (router.isReady) {
               const newQuery = { ...router.query };
