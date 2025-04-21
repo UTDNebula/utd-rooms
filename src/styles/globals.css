@@ -1,86 +1,128 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
+@import 'tailwindcss' important;
 
-@import '@syncfusion/ej2-base/styles/material3.css' screen;
-@import '@syncfusion/ej2-buttons/styles/material3.css' screen;
-@import '@syncfusion/ej2-calendars/styles/material3.css' screen;
-@import '@syncfusion/ej2-dropdowns/styles/material3.css' screen;
-@import '@syncfusion/ej2-inputs/styles/material3.css' screen;
-@import '@syncfusion/ej2-lists/styles/material3.css' screen;
-@import '@syncfusion/ej2-navigations/styles/material3.css' screen;
-@import '@syncfusion/ej2-popups/styles/material3.css' screen;
-@import '@syncfusion/ej2-splitbuttons/styles/material3.css' screen;
-@import '@syncfusion/ej2-react-schedule/styles/material3.css' screen;
-@import '@syncfusion/ej2-base/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-buttons/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-calendars/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-dropdowns/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-inputs/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-lists/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-navigations/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-popups/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-splitbuttons/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
-@import '@syncfusion/ej2-react-schedule/styles/material3-dark.css' screen and
-  (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-base/styles/material3.css' layer(components) screen;
+@import '@syncfusion/ej2-buttons/styles/material3.css' layer(components) screen;
+@import '@syncfusion/ej2-calendars/styles/material3.css' layer(components)
+  screen;
+@import '@syncfusion/ej2-dropdowns/styles/material3.css' layer(components)
+  screen;
+@import '@syncfusion/ej2-inputs/styles/material3.css' layer(components) screen;
+@import '@syncfusion/ej2-lists/styles/material3.css' layer(components) screen;
+@import '@syncfusion/ej2-navigations/styles/material3.css' layer(components)
+  screen;
+@import '@syncfusion/ej2-popups/styles/material3.css' layer(components) screen;
+@import '@syncfusion/ej2-splitbuttons/styles/material3.css' layer(components)
+  screen;
+@import '@syncfusion/ej2-react-schedule/styles/material3.css' layer(components)
+  screen;
+@import '@syncfusion/ej2-base/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-buttons/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-calendars/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-dropdowns/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-inputs/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-lists/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-navigations/styles/material3-dark.css'
+  layer(components) screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-popups/styles/material3-dark.css' layer(components)
+  screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-splitbuttons/styles/material3-dark.css'
+  layer(components) screen and (prefers-color-scheme: dark);
+@import '@syncfusion/ej2-react-schedule/styles/material3-dark.css'
+  layer(components) screen and (prefers-color-scheme: dark);
 
-@import 'tailwindcss/utilities';
+/*If changing be sure to update in layout.tsx too*/
+@theme {
+  --color-haiti: #090b2c;
+  --color-persimmon-50: #ffe5de;
+  --color-persimmon-100: #ffcabd;
+  --color-persimmon-200: #ffb09d;
+  --color-persimmon-300: #ff947e;
+  --color-persimmon-400: #ff7760;
+  --color-persimmon-500: #ff5743; /* brand accent, danger*/
+  --color-persimmon-600: #d14a39;
+  --color-persimmon-700: #a43d2e;
+  --color-persimmon-800: #793025;
+  --color-persimmon-900: #51231b;
+  --color-royal: #573dff; /* brand secondary (dark)*/
+  --color-royalDark: #3c2ab2;
+  --color-cornflower-50: #eae4ff;
+  --color-cornflower-100: #d3caff; /* ~periwinkle*/
+  --color-cornflower-200: #bcb0fe;
+  --color-cornflower-300: #a297fd;
+  --color-cornflower-400: #857efc;
+  --color-cornflower-500: #6266fa; /* brand primary*/
+  --color-cornflower-600: #5455cc;
+  --color-cornflower-700: #45449f; /* ~royal*/
+  --color-cornflower-800: #363475;
+  --color-cornflower-900: #28254d;
+  --color-periwinkle: #c2c8ff; /* brand secondary (light)*/
+  --color-shade: #101828; /* drop shadow color from shipfaster ui*/
 
-html,
-body,
-#__next {
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgb(var(--light-DEFAULT));
+  --font-kallisto: var(--font-kallisto), Roboto, sans-serif;
+  --font-inter: var(--font-inter), Roboto, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
+@utility bg-lighten {
+  background-color: rgba(255, 255, 255, 0.6);
 }
 
-/*Hide header*/
-.e-header-row:first-of-type {
-  display: none;
-}
-/*Resourse group width*/
-@media not screen(sm) {
-  .e-resource-left-td {
-    width: 8rem !important;
-  }
-  .e-resource-cells {
-    padding-left: 0 !important;
-  }
-}
-/*Loading skeleton*/
-.e-appointment:has(.e-appointment-details div .loading-event) {
-  background-color: transparent;
-  border: none;
-}
-.e-appointment .e-appointment-details:has(div .loading-event) {
-  padding: 0 !important;
-}
-.e-appointment .e-appointment-details div:has(.loading-event) {
-  flex-grow: 1;
-}
-.e-appointment .e-appointment-details:has(div .loading-event) .e-indicator {
-  display: none;
+@utility bg-darken {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 @layer utilities {
-  .bg-lighten {
-    background-color: rgba(255, 255, 255, 0.6);
+  html,
+  body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
   }
-  .bg-darken {
-    background-color: rgba(0, 0, 0, 0.6);
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /*Font*/
+  .e-control {
+    font-family: inherit;
+  }
+  /*Hide header*/
+  .e-header-row:first-of-type {
+    display: none;
+  }
+  /*Resourse group width*/
+  @media (width < theme(--breakpoint-sm)) {
+    .e-resource-left-td {
+      width: 8rem !important;
+    }
+    .e-resource-cells {
+      padding-left: 0 !important;
+    }
+  }
+  /*Resourse group height*/
+  tr .e-parent-node,
+  tr .e-resource-group-cells {
+    height: 2.5rem !important;
+  }
+  /*Loading skeleton*/
+  .e-appointment:has(.e-appointment-details div .loading-event) {
+    background-color: transparent;
+    border: none;
+  }
+  .e-appointment .e-appointment-details:has(div .loading-event) {
+    padding: 0 !important;
+  }
+  .e-appointment .e-appointment-details div:has(.loading-event) {
+    flex-grow: 1;
+  }
+  .e-appointment .e-appointment-details:has(div .loading-event) .e-indicator {
+    display: none;
   }
 }
