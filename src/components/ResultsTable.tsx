@@ -537,58 +537,63 @@ export default function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms.data)
-    .toSorted(([a], [b]) => a.localeCompare(b))
-    .forEach(([building, rooms]) => {
-      if (
-        !excludedBuildings.includes(building) &&
-        (!buildings.length || buildings.includes(building))
-      ) {
-        const buildingName = buildingNames[building];
-        const buildingText = buildingName
-          ? `${building} (${buildingName})`
-          : building;
-        buildingIdMap.set(building, buildingIdCounter++);
-        buildingResources.push({
-          type: 'building',
-          id: buildingIdMap.get(building),
-          text: buildingText,
-        });
+  Object.entries(rooms.data).forEach(([building, rooms]) => {
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      const buildingName = buildingNames[building];
+      const buildingText = buildingName
+        ? `${building} (${buildingName})`
+        : building;
+      buildingIdMap.set(building, buildingIdCounter++);
+      buildingResources.push({
+        type: 'building',
+        id: buildingIdMap.get(building),
+        text: buildingText,
+      });
 
-        rooms.toSorted().forEach((room) => {
-          const roomName = `${building} ${room}`;
-          if (!excludedRooms.includes(roomName)) {
-            //Check if free
-            const events = combinedEvents?.[building]?.[room] ?? [];
-            const [completelyFree, hasGap] = findAvailability(
-              events,
-              dayjsStartTime,
-              dayjsEndTime,
-            );
-            if (completelyFree || (hasGap && !fullAvailability)) {
-              if (
-                search === '' ||
-                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-                room.toLowerCase().startsWith(search.toLowerCase()) ||
-                (buildingName &&
-                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
-              ) {
-                roomIdMap.set(roomName, roomIdCounter++);
-                let link = `https://locator.utdallas.edu/${building}_${room}`;
-                link = mapLinkOverrides[link] ?? link;
-                roomResources.push({
-                  type: 'room',
-                  id: roomIdMap.get(roomName),
-                  text: room,
-                  link: link,
-                  buildingId: buildingIdMap.get(building), // Assign room to its building
-                });
-              }
+      rooms.toSorted().forEach((room) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          //Check if free
+          const events = combinedEvents?.[building]?.[room] ?? [];
+          const [completelyFree, hasGap] = findAvailability(
+            events,
+            dayjsStartTime,
+            dayjsEndTime,
+          );
+          if (completelyFree || (hasGap && !fullAvailability)) {
+            if (
+              search === '' ||
+              roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+              room.toLowerCase().startsWith(search.toLowerCase()) ||
+              (buildingName &&
+                buildingName.toLowerCase().startsWith(search.toLowerCase()))
+            ) {
+              roomIdMap.set(roomName, roomIdCounter++);
+              let link = `https://locator.utdallas.edu/${building}_${room}`;
+              link = mapLinkOverrides[link] ?? link;
+              roomResources.push({
+                type: 'room',
+                id: roomIdMap.get(roomName),
+                text: room,
+                link: link,
+                buildingId: buildingIdMap.get(building), // Assign room to its building
+              });
             }
           }
-        });
-      }
-    });
+        }
+      });
+    }
+  });
+
+  // Sort buildings by the number of open rooms
+  buildingResources.sort(
+    (a, b) =>
+      roomResources.filter((room) => room.buildingId === b.id).length -
+      roomResources.filter((room) => room.buildingId === a.id).length,
+  );
 
   // Convert events to array
   const scheduleData: EventSource[] = [];
