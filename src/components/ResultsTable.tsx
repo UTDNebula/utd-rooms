@@ -537,9 +537,10 @@ function ResultsTable(props: Props) {
 
   // Sort buildings by the number of open rooms
   const sortedBuildings = Object.entries(rooms.data)
-    .filter(([building]) => 
-      !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+    .filter(
+      ([building]) =>
+        !excludedBuildings.includes(building) &&
+        (!buildings.length || buildings.includes(building)),
     )
     .map(([building, rooms]) => {
       const openRoomsCount = rooms.filter((room) => {
@@ -574,7 +575,7 @@ function ResultsTable(props: Props) {
     rooms.toSorted().forEach((room) => {
       const roomName = `${building} ${room}`;
       if (!excludedRooms.includes(roomName)) {
-          // Check if free
+        // Check if free
         const events = combinedEvents?.[building]?.[room] ?? [];
         const [completelyFree, hasGap] = findAvailability(
           events,
