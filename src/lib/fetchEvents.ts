@@ -7,7 +7,7 @@ export default async function fetchEvents<T>(
 ): Promise<GenericFetchedData<Hierarchy<T>>> {
   const API_KEY = process.env.REACT_APP_NEBULA_API_KEY;
   if (typeof API_KEY !== 'string') {
-    return { message: 'error', error: 'API key is undefined' };
+    return { message: 'error', data: 'API key is undefined' };
   }
 
   try {
@@ -24,10 +24,10 @@ export default async function fetchEvents<T>(
     const data = await res.json();
 
     if (data.message !== 'success') {
-      if (data.error === 'mongo: no documents in result') {
+      if (data.data === 'mongo: no documents in result') {
         return { message: 'success', data: {} };
       }
-      throw new Error(data.error ?? data.message);
+      throw new Error(data.data ?? data.message);
     }
 
     // Convert from array to object
@@ -43,7 +43,7 @@ export default async function fetchEvents<T>(
   } catch (error) {
     return {
       message: 'error',
-      error:
+      data:
         error instanceof Error ? error.message : 'An unknown error occurred',
     };
   }
