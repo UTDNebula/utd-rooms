@@ -60,14 +60,19 @@ body,
   .e-resource-left-td {
     width: 8rem !important;
   }
-  .e-resource-cells {
-    padding-left: 0 !important;
-  }
 }
 /*Resourse group height*/
 tr .e-parent-node,
 tr .e-resource-group-cells {
   height: 2.5rem !important;
+}
+tr .e-parent-node .e-resource-text {
+  padding-left: 0 !important;
+}
+.e-child-node,
+.e-work-cells {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
 }
 /*Loading skeleton*/
 .e-appointment:has(.e-appointment-details div .loading-event) {

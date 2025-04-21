@@ -2,7 +2,7 @@
   "name": "UTD-Rooms",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
     "start": "next start",
     "format": "prettier --write .",

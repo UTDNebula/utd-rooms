@@ -98,13 +98,7 @@ const Filters = (props: Props) => {
           timeSteps={{ minutes: 15 }}
           label="Start time"
           className="w-full"
-          value={
-            endTime
-              ? dayjs(startTime, 'HH:mm').isBefore(dayjs().hour(6))
-                ? dayjs().hour(6).minute(0)
-                : dayjs(startTime, 'HH.mm')
-              : null
-          }
+          value={startTime ? dayjs(startTime, 'HH.mm') : null}
           onChange={(newValue: Dayjs | null) => {
             if (router.isReady) {
               const newQuery = { ...router.query };
@@ -142,13 +136,7 @@ const Filters = (props: Props) => {
           timeSteps={{ minutes: 15 }}
           label="End time"
           className="w-full"
-          value={
-            endTime
-              ? dayjs(endTime, 'HH:mm').isAfter(dayjs().hour(22))
-                ? dayjs().hour(22).minute(0)
-                : dayjs(endTime, 'HH.mm')
-              : null
-          }
+          value={endTime ? dayjs(endTime, 'HH.mm') : null}
           onChange={(newValue: Dayjs | null) => {
             if (router.isReady) {
               const newQuery = { ...router.query };

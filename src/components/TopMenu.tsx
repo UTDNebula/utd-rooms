@@ -39,13 +39,24 @@ export function TopMenu(props: Props) {
       navigator.clipboard
         .writeText(url)
         .then(() => setOpenCopied(true))
-        .catch(() => alertLink(url));
+        .catch((err) => {
+          // fail silently if error due to user closing the share menu w/o doing anything, switching tabs, etc.
+          if (
+            err.name === 'NotAllowedError' &&
+            err.message.includes('Document is not focused')
+          ) {
+            return;
+          }
+          {
+            alertLink(url);
+          }
+        });
     } else {
       alertLink(url);
     }
   }
   function alertLink(url: string) {
-    alert(url);
+    alert("Couldn't copy link automatically, copy this URL: \n" + url);
   }
 
   return (

@@ -284,7 +284,8 @@ function LoadingResultsTable(props: LoadingProps) {
         currentView="TimelineDay"
         readonly
         showHeaderBar={false}
-        eventSettings={{ dataSource: scheduleData }}
+        rowAutoHeight={true}
+        eventSettings={{ dataSource: scheduleData, ignoreWhitespace: true }}
         quickInfoTemplates={{ footer: () => <></> }}
         group={{
           resources: ['Buildings', 'Rooms'],
@@ -626,7 +627,8 @@ function ResultsTable(props: Props) {
         currentView="TimelineDay"
         readonly
         showHeaderBar={false}
-        eventSettings={{ dataSource: scheduleData }}
+        rowAutoHeight={true}
+        eventSettings={{ dataSource: scheduleData, ignoreWhitespace: true }}
         quickInfoTemplates={{ footer: () => <></> }}
         group={{
           resources: ['Buildings', 'Rooms'],
@@ -650,15 +652,17 @@ function ResultsTable(props: Props) {
             );
           }
           return (
-            <div className="e-resource-text ml-[25px] text-clip">
-              <Link
-                href={data.link}
-                target="_blank"
-                className="font-bold text-lg text-blue-400 hover:text-blue-800 visited:text-purple-600"
-              >
-                {data.text}
-              </Link>
-            </div>
+            <Tooltip title={data.text}>
+              <div className="e-resource-text ml-[25px] overflow-hidden text-ellipsis">
+                <Link
+                  href={data.link}
+                  target="_blank"
+                  className="font-bold text-lg text-purple-300 hover:text-purple-400 visited:text-purple-600"
+                >
+                  {data.text}
+                </Link>
+              </div>
+            </Tooltip>
           );
         }}
         className="-mx-4 -mb-4 sm:m-0"
