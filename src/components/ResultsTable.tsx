@@ -535,58 +535,75 @@ function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms.data)
-    .toSorted(([a], [b]) => a.localeCompare(b))
-    .forEach(([building, rooms]) => {
-      if (
-        !excludedBuildings.includes(building) &&
-        (!buildings.length || buildings.includes(building))
-      ) {
-        const buildingName = buildingNames[building];
-        const buildingText = buildingName
-          ? `${buildingName} (${building})`
-          : building;
-        buildingIdMap.set(building, buildingIdCounter++);
-        buildingResources.push({
-          type: 'building',
-          id: buildingIdMap.get(building),
-          text: buildingText,
-        });
+  // Sort buildings by the number of open rooms
+  const sortedBuildings = Object.entries(rooms.data)
+    .filter(([building]) => 
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    )
+    .map(([building, rooms]) => {
+      const openRoomsCount = rooms.filter((room) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          const events = combinedEvents?.[building]?.[room] ?? [];
+          const [completelyFree, hasGap] = findAvailability(
+            events,
+            dayjsStartTime,
+            dayjsEndTime,
+          );
+          return completelyFree || (hasGap && !onlyAvailFullTime);
+        }
+        return false;
+      }).length;
+      return { building, rooms, openRoomsCount };
+    })
+    .sort((a, b) => b.openRoomsCount - a.openRoomsCount); // Sort by most open rooms
 
-        rooms.toSorted().forEach((room) => {
-          const roomName = `${building} ${room}`;
-          if (!excludedRooms.includes(roomName)) {
-            //Check if free
-            const events = combinedEvents?.[building]?.[room] ?? [];
-            const [completelyFree, hasGap] = findAvailability(
-              events,
-              dayjsStartTime,
-              dayjsEndTime,
-            );
-            if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-              if (
-                search === '' ||
-                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-                room.toLowerCase().startsWith(search.toLowerCase()) ||
-                (buildingName &&
-                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
-              ) {
-                roomIdMap.set(roomName, roomIdCounter++);
-                let link = `https://locator.utdallas.edu/${building}_${room}`;
-                link = mapLinkOverrides[link] ?? link;
-                roomResources.push({
-                  type: 'room',
-                  id: roomIdMap.get(roomName),
-                  text: room,
-                  link: link,
-                  buildingId: buildingIdMap.get(building), // Assign room to its building
-                });
-              }
-            }
+  sortedBuildings.forEach(({ building, rooms }) => {
+    const buildingName = buildingNames[building];
+    const buildingText = buildingName
+      ? `${buildingName} (${building})`
+      : building;
+    buildingIdMap.set(building, buildingIdCounter++);
+    buildingResources.push({
+      type: 'building',
+      id: buildingIdMap.get(building),
+      text: buildingText,
+    });
+
+    rooms.toSorted().forEach((room) => {
+      const roomName = `${building} ${room}`;
+      if (!excludedRooms.includes(roomName)) {
+          // Check if free
+        const events = combinedEvents?.[building]?.[room] ?? [];
+        const [completelyFree, hasGap] = findAvailability(
+          events,
+          dayjsStartTime,
+          dayjsEndTime,
+        );
+        if (completelyFree || (hasGap && !onlyAvailFullTime)) {
+          if (
+            search === '' ||
+            roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+            room.toLowerCase().startsWith(search.toLowerCase()) ||
+            (buildingName &&
+              buildingName.toLowerCase().startsWith(search.toLowerCase()))
+          ) {
+            roomIdMap.set(roomName, roomIdCounter++);
+            let link = `https://locator.utdallas.edu/${building}_${room}`;
+            link = mapLinkOverrides[link] ?? link;
+            roomResources.push({
+              type: 'room',
+              id: roomIdMap.get(roomName),
+              text: room,
+              link: link,
+              buildingId: buildingIdMap.get(building), // Assign room to its building
+            });
           }
-        });
+        }
       }
     });
+  });
 
   // Convert events to array
   const scheduleData: EventSource[] = [];
