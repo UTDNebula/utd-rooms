@@ -99,11 +99,13 @@ const Filters = (props: Props) => {
           label="Start time"
           className="w-full"
           value={startTime ? dayjs(startTime, 'HH:mm') : null}
-          onChange={(newValue: Dayjs | null) => {
+          onAccept={(newValue: Dayjs | null) => {
             if (router.isReady) {
               const newQuery = { ...router.query };
               if (newValue !== null) {
-                newQuery.startTime = newValue.format('HH:mm');
+                newQuery.startTime = newValue.isBefore(dayjs().hour(6))
+                  ? dayjs().hour(6).minute(0).format('HH:mm')
+                  : newValue.format('HH:mm');
               } else {
                 delete newQuery.startTime;
                 delete newQuery.onlyAvailFullTime;
@@ -137,11 +139,13 @@ const Filters = (props: Props) => {
           label="End time"
           className="w-full"
           value={endTime ? dayjs(endTime, 'HH:mm') : null}
-          onChange={(newValue: Dayjs | null) => {
+          onAccept={(newValue: Dayjs | null) => {
             if (router.isReady) {
               const newQuery = { ...router.query };
               if (newValue !== null) {
-                newQuery.endTime = newValue.format('HH:mm');
+                newQuery.endTime = newValue.isAfter(dayjs().hour(23))
+                  ? dayjs().hour(23).minute(0).format('HH:mm')
+                  : newValue.format('HH:mm');
               } else {
                 delete newQuery.endTime;
                 delete newQuery.onlyAvailFullTime;

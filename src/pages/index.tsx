@@ -61,8 +61,8 @@ const Home: NextPage<Props> = (props: Props) => {
               : extractTime(startTime),
           }),
           ...(endTime && {
-            endTime: dayjs(endTime, 'HH:mm').isAfter(dayjs().hour(22))
-              ? extractTime(dayjs().hour(22).minute(0))
+            endTime: dayjs(endTime, 'HH:mm').isAfter(dayjs().hour(23))
+              ? extractTime(dayjs().hour(23).minute(0))
               : extractTime(endTime),
           }),
           ...(buildings.length && { buildings: buildings.join(',') }),
@@ -125,7 +125,13 @@ const Home: NextPage<Props> = (props: Props) => {
             label="Start time"
             value={startTime}
             timeSteps={{ minutes: 15 }}
-            onChange={(newValue) => setStartTime(newValue)}
+            onAccept={(newValue) =>
+              setStartTime(
+                newValue.isBefore(dayjs().hour(6))
+                  ? dayjs().hour(6).minute(0)
+                  : newValue,
+              )
+            }
             className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
             slotProps={{
               actionBar: {
@@ -141,7 +147,13 @@ const Home: NextPage<Props> = (props: Props) => {
             label="End time"
             value={endTime}
             timeSteps={{ minutes: 15 }}
-            onChange={(newValue) => setEndTime(newValue)}
+            onAccept={(newValue) =>
+              setEndTime(
+                newValue.isAfter(dayjs().hour(23))
+                  ? dayjs().hour(23).minute(0)
+                  : newValue,
+              )
+            }
             className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
             slotProps={{
               actionBar: {
