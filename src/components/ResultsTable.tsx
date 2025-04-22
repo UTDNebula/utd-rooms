@@ -20,7 +20,7 @@ import buildingNames, {
   mapLinkOverrides,
   mergedBuildings,
 } from '@/lib/buildingInfo';
-import { defaultEndTime,defaultStartTime } from '@/lib/snapTime';
+import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import type {
   AstraEvent,
   CourseBookEvent,

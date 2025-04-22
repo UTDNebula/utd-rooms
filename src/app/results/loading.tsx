@@ -6,7 +6,7 @@ import React from 'react';
 import Filters from '@/components/Filters';
 import { LoadingResultsTable } from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
-import { defaultEndTime,defaultStartTime } from '@/lib/snapTime';
+import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 
 /**
  * Returns the loading results page with Nebula Branding, and room availability
