@@ -174,4 +174,22 @@ export const mapLinkOverrides: {
     'https://locator.utdallas.edu/JO_2.702',
   'https://locator.utdallas.edu/VCB_1.201':
     'https://map.concept3d.com/?id=1772#!m/954137',
+  'https://locator.utdallas.edu/SCI_Atrium':
+    'https://map.concept3d.com/?id=1772#!ce/52360?ct/42147,52360?m/510259?s/Sciences%20Building',
+  'https://locator.utdallas.edu/SCI_Awning Area':
+    'https://map.concept3d.com/?id=1772#!ce/52360?ct/42147,52360?m/510259?s/Sciences%20Building',
+  'https://locator.utdallas.edu/SCI_Courtyard':
+    'https://map.concept3d.com/?id=1772#!ce/52360?ct/42147,52360?m/510259?s/Sciences%20Building',
+  'https://locator.utdallas.edu/ATC_2.908':
+    'https://map.concept3d.com/?id=1772#!ce/42138?m/530477?s/ATC%202.908',
+  'https://locator.utdallas.edu/ATC_3.805':
+    'https://map.concept3d.com/?id=1772#!ce/42138?m/541848?s/ATC%203.805',
+  'https://locator.utdallas.edu/FN_2.102':
+    'https://map.concept3d.com/?id=1772#!m/533592?s/FN%202.102',
+  'https://locator.utdallas.edu/SLC_1.206':
+    'https://map.concept3d.com/?id=1772#!ce/43194?m/1023820?s/SLC%201.206',
+  'https://locator.utdallas.edu/SPN_1.221':
+    'https://map.concept3d.com/?id=1772#!ce/43194?m/550498?s/SPN%201.221',
+  'https://locator.utdallas.edu/ATC_1.801A':
+    'https://map.concept3d.com/?id=1772#!ce/43194?m/541763?s/ATC%201.801',
 };

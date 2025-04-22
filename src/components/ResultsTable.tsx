@@ -1,4 +1,6 @@
-import { Skeleton, Tooltip } from '@mui/material';
+'use client';
+
+import { Button, Skeleton, Tooltip } from '@mui/material';
 import {
   Inject,
   ResourceDirective,
@@ -10,7 +12,6 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import React from 'react';
 
 import buildingNames, {
@@ -18,9 +19,14 @@ import buildingNames, {
   excludedRooms,
   mapLinkOverrides,
   mergedBuildings,
-} from '@/modules/buildingInfo';
-import type { HierarchyStore } from '@/modules/useEventsStore';
-import type { AstraEvent, CourseBookEvent, Hierarchy } from '@/types/Events';
+} from '@/lib/buildingInfo';
+import { defaultEndTime,defaultStartTime } from '@/lib/snapTime';
+import type {
+  AstraEvent,
+  CourseBookEvent,
+  Hierarchy,
+  MazevoEvent,
+} from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
@@ -52,7 +58,7 @@ interface LoadingProps {
   endTime: string;
 }
 
-function LoadingResultsTable(props: LoadingProps) {
+export function LoadingResultsTable(props: LoadingProps) {
   const buildingResources = [
     {
       type: 'building',
@@ -357,96 +363,70 @@ function LoadingResultsTable(props: LoadingProps) {
  * Props type used by the ResultsTable component
  */
 interface Props {
+  date: string;
+  startTime: string | null;
+  endTime: string | null;
+  buildings: string[];
+  fullAvailability: boolean;
   rooms: GenericFetchedData<Rooms>;
-  courseBookEvents: HierarchyStore<CourseBookEvent>;
-  astraEvents: HierarchyStore<AstraEvent>;
+  courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
+  astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
+  mazevoEvents: GenericFetchedData<Hierarchy<MazevoEvent>>;
   search: string;
 }
 
 /**
  * This is a component to hold results for room availablity in a table
  */
-function ResultsTable(props: Props) {
-  let state = 'done';
+export default function ResultsTable(props: Props) {
+  const date = props.date;
 
-  //For getting filters
-  const router = useRouter();
-
-  let date = router.query.date;
-  if (Array.isArray(date)) {
-    date = date[0]; // if date is an array, make it a string
-  }
-  if (typeof date === 'undefined') {
-    state = 'loading';
-  }
-
-  let startTime = router.query.startTime;
-  if (Array.isArray(startTime)) {
-    startTime = startTime[0];
-  }
-  if (
-    typeof date !== 'undefined' &&
-    date === dayjs().format('YYYY-MM-DD') &&
-    dayjs().hour() < 20
-  ) {
+  let startTime = props.startTime;
+  if (date === dayjs().format('YYYY-MM-DD') && dayjs().hour() < 20) {
     //if looking at today and not too late, set start time to now
     startTime = startTime ?? dayjs().format('HH') + ':00';
   } else {
-    startTime = startTime ?? '09:00';
+    startTime = startTime ?? defaultStartTime;
   }
   const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
-  let endTime = router.query.endTime;
-  if (Array.isArray(endTime)) {
-    endTime = endTime[0];
-  }
-  endTime = endTime ?? '22:00';
+
+  let endTime = props.endTime;
+  endTime = endTime ?? defaultEndTime;
   const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
+
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
-    state = 'error';
+    return null;
   }
 
-  let buildings = router.query.buildings ?? [];
-  if (!Array.isArray(buildings)) {
-    buildings = buildings.split(','); // if buildings is a comma-delimited string, make it an array
-  }
+  const buildings = props.buildings;
 
-  const onlyAvailFullTime = router.query.onlyAvailFullTime === 'true';
+  const fullAvailability = props.fullAvailability;
 
   const search = props.search.trim();
 
-  if (state === 'error') {
-    return null;
-  }
-  const loading = (
-    <LoadingResultsTable startTime={startTime} endTime={endTime} />
-  );
-  if (state === 'loading') {
-    return loading;
-  }
-
   const rooms = props.rooms;
-  const courseBookEvents = props.courseBookEvents[date as string];
-  const astraEvents = props.astraEvents[date as string];
+
+  const courseBookEvents = props.courseBookEvents;
+  const astraEvents = props.astraEvents;
+  const mazevoEvents = props.mazevoEvents;
 
   if (
-    (typeof rooms !== 'undefined' && rooms.state === 'error') ||
-    (typeof courseBookEvents !== 'undefined' &&
-      courseBookEvents.state === 'error') ||
-    (typeof astraEvents !== 'undefined' && astraEvents.state === 'error')
+    rooms.message !== 'success' ||
+    courseBookEvents.message !== 'success' ||
+    astraEvents.message !== 'success' ||
+    mazevoEvents.message !== 'success'
   ) {
-    return null;
-  }
-
-  //Loading state
-  if (
-    typeof rooms === 'undefined' ||
-    rooms.state === 'loading' ||
-    typeof courseBookEvents === 'undefined' ||
-    courseBookEvents.state === 'loading' ||
-    typeof astraEvents === 'undefined' ||
-    astraEvents.state === 'loading'
-  ) {
-    return loading;
+    //print error message
+    return (
+      <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
+        <p className="text-xl text-gray-700 dark:text-gray-300">
+          Error. Please reload the page.
+        </p>
+        <Button onClick={() => window.location.reload()} variant="contained">
+          Reload
+        </Button>
+      </div>
+    );
   }
 
   // Combine sources
@@ -501,6 +481,28 @@ function ResultsTable(props: Props) {
       });
     }
   });
+  Object.entries(mazevoEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            combinedEvents[building][room].push({
+              Subject: `${event.eventName} (${event.organizationName})`,
+              StartTime: dayjs(event.dateTimeStart).toDate(),
+              EndTime: dayjs(event.dateTimeEnd).toDate(),
+            });
+          });
+        }
+      });
+    }
+  });
 
   //Remove duplicates
   Object.values(combinedEvents).forEach((rooms) => {
@@ -537,58 +539,63 @@ function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms.data)
-    .toSorted(([a], [b]) => a.localeCompare(b))
-    .forEach(([building, rooms]) => {
-      if (
-        !excludedBuildings.includes(building) &&
-        (!buildings.length || buildings.includes(building))
-      ) {
-        const buildingName = buildingNames[building];
-        const buildingText = buildingName
-          ? `${building} (${buildingName})`
-          : building;
-        buildingIdMap.set(building, buildingIdCounter++);
-        buildingResources.push({
-          type: 'building',
-          id: buildingIdMap.get(building),
-          text: buildingText,
-        });
+  Object.entries(rooms.data).forEach(([building, rooms]) => {
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || buildings.includes(building))
+    ) {
+      const buildingName = buildingNames[building];
+      const buildingText = buildingName
+        ? `${building} (${buildingName})`
+        : building;
+      buildingIdMap.set(building, buildingIdCounter++);
+      buildingResources.push({
+        type: 'building',
+        id: buildingIdMap.get(building),
+        text: buildingText,
+      });
 
-        rooms.toSorted().forEach((room) => {
-          const roomName = `${building} ${room}`;
-          if (!excludedRooms.includes(roomName)) {
-            //Check if free
-            const events = combinedEvents?.[building]?.[room] ?? [];
-            const [completelyFree, hasGap] = findAvailability(
-              events,
-              dayjsStartTime,
-              dayjsEndTime,
-            );
-            if (completelyFree || (hasGap && !onlyAvailFullTime)) {
-              if (
-                search === '' ||
-                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-                room.toLowerCase().startsWith(search.toLowerCase()) ||
-                (buildingName &&
-                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
-              ) {
-                roomIdMap.set(roomName, roomIdCounter++);
-                let link = `https://locator.utdallas.edu/${building}_${room}`;
-                link = mapLinkOverrides[link] ?? link;
-                roomResources.push({
-                  type: 'room',
-                  id: roomIdMap.get(roomName),
-                  text: room,
-                  link: link,
-                  buildingId: buildingIdMap.get(building), // Assign room to its building
-                });
-              }
+      rooms.toSorted().forEach((room) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName)) {
+          //Check if free
+          const events = combinedEvents?.[building]?.[room] ?? [];
+          const [completelyFree, hasGap] = findAvailability(
+            events,
+            dayjsStartTime,
+            dayjsEndTime,
+          );
+          if (completelyFree || (hasGap && !fullAvailability)) {
+            if (
+              search === '' ||
+              roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+              room.toLowerCase().startsWith(search.toLowerCase()) ||
+              (buildingName &&
+                buildingName.toLowerCase().startsWith(search.toLowerCase()))
+            ) {
+              roomIdMap.set(roomName, roomIdCounter++);
+              let link = `https://locator.utdallas.edu/${building}_${room}`;
+              link = mapLinkOverrides[link] ?? link;
+              roomResources.push({
+                type: 'room',
+                id: roomIdMap.get(roomName),
+                text: room,
+                link: link,
+                buildingId: buildingIdMap.get(building), // Assign room to its building
+              });
             }
           }
-        });
-      }
-    });
+        }
+      });
+    }
+  });
+
+  // Sort buildings by the number of open rooms
+  buildingResources.sort(
+    (a, b) =>
+      roomResources.filter((room) => room.buildingId === b.id).length -
+      roomResources.filter((room) => room.buildingId === a.id).length,
+  );
 
   // Convert events to array
   const scheduleData: EventSource[] = [];
@@ -614,7 +621,7 @@ function ResultsTable(props: Props) {
     <>
       <p>
         {`Found ${roomResources.length}${
-          onlyAvailFullTime
+          fullAvailability
             ? roomResources.length === 1
               ? ' room that is completely free.'
               : ' rooms that are completely free.'
@@ -705,12 +712,7 @@ function findAvailability(
   for (const event of events) {
     const eventStart = dayjs(event.StartTime);
     const eventEnd = dayjs(event.EndTime);
-    if (
-      isBetween(eventStart, calendarStart, calendarEnd) ||
-      isBetween(eventEnd, calendarStart, calendarEnd) ||
-      //event covers whole time
-      (eventStart.isBefore(calendarStart) && eventEnd.isAfter(calendarEnd))
-    ) {
+    if (eventStart.isBefore(calendarEnd) && eventEnd.isAfter(calendarStart)) {
       completelyFree = false;
       let fillStart = 0;
       if (eventStart.isAfter(calendarStart)) {
@@ -739,9 +741,3 @@ function findAvailability(
   }
   return [false, false];
 }
-
-function isBetween(test: Dayjs, start: Dayjs, end: Dayjs) {
-  return test.isAfter(start) && test.isBefore(end);
-}
-
-export default ResultsTable;
