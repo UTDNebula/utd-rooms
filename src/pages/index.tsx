@@ -127,9 +127,11 @@ const Home: NextPage<Props> = (props: Props) => {
             timeSteps={{ minutes: 15 }}
             onAccept={(newValue) =>
               setStartTime(
-                newValue.isBefore(dayjs().hour(6))
-                  ? dayjs().hour(6).minute(0)
-                  : newValue,
+                newValue
+                  ? newValue.isBefore(dayjs().hour(6))
+                    ? dayjs().hour(6).minute(0)
+                    : newValue
+                  : null,
               )
             }
             className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
@@ -149,9 +151,11 @@ const Home: NextPage<Props> = (props: Props) => {
             timeSteps={{ minutes: 15 }}
             onAccept={(newValue) =>
               setEndTime(
-                newValue.isAfter(dayjs().hour(23))
-                  ? dayjs().hour(23).minute(0)
-                  : newValue,
+                newValue
+                  ? newValue.isAfter(dayjs().hour(23))
+                    ? dayjs().hour(23).minute(0)
+                    : newValue
+                  : null,
               )
             }
             className="w-full [&>.MuiInputBase-root]:bg-white [&>.MuiInputBase-root]:dark:bg-haiti"
