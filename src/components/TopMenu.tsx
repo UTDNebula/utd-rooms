@@ -41,10 +41,7 @@ export function TopMenu(props: Props) {
         .then(() => setOpenCopied(true))
         .catch((err) => {
           // fail silently if error due to user closing the share menu w/o doing anything, switching tabs, etc.
-          if (
-            err.name === 'NotAllowedError' &&
-            err.message.includes('Document is not focused')
-          ) {
+          if (err.name === 'NotAllowedError') {
             return;
           }
           {
