@@ -37,6 +37,7 @@ interface RoomResource {
   type: 'room';
   id: number;
   text: string;
+  capacity: number | null;
   link: string;
   buildingId: number;
 }
@@ -543,38 +544,41 @@ function ResultsTable(props: Props) {
           text: buildingText,
         });
 
-        rooms.toSorted().forEach((room) => {
-          const roomName = `${building} ${room}`;
-          if (!excludedRooms.includes(roomName)) {
-            //Check if free
-            const events = combinedEvents?.[building]?.[room] ?? [];
-            const [completelyFree, hasGap] = findAvailability(
-              events,
-              dayjsStartTime,
-              dayjsEndTime,
-            );
-            if (completelyFree || (hasGap && !fullAvailability)) {
-              if (
-                search === '' ||
-                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-                room.toLowerCase().startsWith(search.toLowerCase()) ||
-                (buildingName &&
-                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
-              ) {
-                roomIdMap.set(roomName, roomIdCounter++);
-                let link = `https://locator.utdallas.edu/${building}_${room}`;
-                link = mapLinkOverrides[link] ?? link;
-                roomResources.push({
-                  type: 'room',
-                  id: roomIdMap.get(roomName),
-                  text: room,
-                  link: link,
-                  buildingId: buildingIdMap.get(building), // Assign room to its building
-                });
+        rooms
+          .toSorted((a, b) => a.room.localeCompare(b.room))
+          .forEach((room) => {
+            const roomName = `${building} ${room.room}`;
+            if (!excludedRooms.includes(roomName)) {
+              //Check if free
+              const events = combinedEvents?.[building]?.[room.room] ?? [];
+              const [completelyFree, hasGap] = findAvailability(
+                events,
+                dayjsStartTime,
+                dayjsEndTime,
+              );
+              if (completelyFree || (hasGap && !fullAvailability)) {
+                if (
+                  search === '' ||
+                  roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+                  room.room.toLowerCase().startsWith(search.toLowerCase()) ||
+                  (buildingName &&
+                    buildingName.toLowerCase().startsWith(search.toLowerCase()))
+                ) {
+                  roomIdMap.set(roomName, roomIdCounter++);
+                  let link = `https://locator.utdallas.edu/${building}_${room.room}`;
+                  link = mapLinkOverrides[link] ?? link;
+                  roomResources.push({
+                    type: 'room',
+                    id: roomIdMap.get(roomName),
+                    text: room.room,
+                    capacity: room.capacity,
+                    link: link,
+                    buildingId: buildingIdMap.get(building), // Assign room to its building
+                  });
+                }
               }
             }
-          }
-        });
+          });
       }
     });
 
@@ -647,6 +651,7 @@ function ResultsTable(props: Props) {
               >
                 {data.text}
               </Link>
+              {data.capacity ? <p>Capacity: {data.capacity}</p> : null}
             </div>
           );
         }}

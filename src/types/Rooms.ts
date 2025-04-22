@@ -1,3 +1,6 @@
 export type Rooms = {
-  [key: string]: string[];
+  [key: string]: {
+    room: string;
+    capacity: number | null;
+  }[];
 };
