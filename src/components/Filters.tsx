@@ -21,6 +21,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
+import snapTime from '@/lib/snapTime';
 import type { Rooms } from '@/types/Rooms';
 
 type Props =
@@ -40,7 +41,7 @@ type Props =
 /**
  * This component returns a set of filters with which to sort results.
  */
-const Filters = (props: Props) => {
+export default function Filters(props: Props) {
   //For updating query
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -67,7 +68,7 @@ const Filters = (props: Props) => {
         <DatePicker
           className="w-full"
           value={dayjs(date)}
-          onChange={(newValue: Dayjs | null) => {
+          onAccept={(newValue: Dayjs | null) => {
             const params = new URLSearchParams(searchParams.toString());
             params.set(
               'date',
@@ -89,13 +90,14 @@ const Filters = (props: Props) => {
       {/*Start time dropdown*/}
       <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
         <TimePicker
+          timeSteps={{ minutes: 15 }}
           label="Start time"
           className="w-full"
           value={startTime ? dayjs(startTime, 'HH:mm') : null}
-          onChange={(newValue: Dayjs | null) => {
+          onAccept={(newValue: Dayjs | null) => {
             const params = new URLSearchParams(searchParams.toString());
             if (newValue) {
-              params.set('startTime', newValue.format('HH:mm'));
+              params.set('startTime', snapTime(newValue).format('HH:mm'));
             } else {
               params.delete('startTime');
               params.delete('fullAvailability');
@@ -116,21 +118,20 @@ const Filters = (props: Props) => {
               helperText: error && 'Start time must be before end time',
             },
           }}
-          minTime={dayjs().hour(6)}
-          maxTime={dayjs().hour(23)}
         />
       </Grid>
 
       {/*End time dropdown*/}
       <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
         <TimePicker
+          timeSteps={{ minutes: 15 }}
           label="End time"
           className="w-full"
           value={endTime ? dayjs(endTime, 'HH:mm') : null}
-          onChange={(newValue: Dayjs | null) => {
+          onAccept={(newValue: Dayjs | null) => {
             const params = new URLSearchParams(searchParams.toString());
             if (newValue) {
-              params.set('endTime', newValue.format('HH:mm'));
+              params.set('endTime', snapTime(newValue).format('HH:mm'));
             } else {
               params.delete('endTime');
               params.delete('fullAvailability');
@@ -151,8 +152,6 @@ const Filters = (props: Props) => {
               helperText: error && 'Start time must be before end time',
             },
           }}
-          minTime={dayjs().hour(6)}
-          maxTime={dayjs().hour(23)}
         />
       </Grid>
 
@@ -253,6 +252,4 @@ const Filters = (props: Props) => {
       </Grid>
     </Grid>
   );
-};
-
-export default Filters;
+}

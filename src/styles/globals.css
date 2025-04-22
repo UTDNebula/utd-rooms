@@ -98,6 +98,9 @@
     display: none;
   }
   /*Resourse group width*/
+  tr .e-resource-cells .e-resource-text {
+    padding-left: 0 !important;
+  }
   @media (width < theme(--breakpoint-sm)) {
     .e-resource-left-td {
       width: 8rem !important;

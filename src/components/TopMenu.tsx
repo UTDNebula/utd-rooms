@@ -19,7 +19,7 @@ interface Props {
 /**
  * This is a component to hold UTD Rooms branding and basic navigation
  */
-export function TopMenu(props: Props) {
+export default function TopMenu(props: Props) {
   const [openCopied, setOpenCopied] = useState(false);
 
   function shareLink(url: string) {
@@ -39,13 +39,21 @@ export function TopMenu(props: Props) {
       navigator.clipboard
         .writeText(url)
         .then(() => setOpenCopied(true))
-        .catch(() => alertLink(url));
+        .catch((err) => {
+          // fail silently if error due to user closing the share menu w/o doing anything, switching tabs, etc.
+          if (err.name === 'NotAllowedError') {
+            return;
+          }
+          {
+            alertLink(url);
+          }
+        });
     } else {
       alertLink(url);
     }
   }
   function alertLink(url: string) {
-    alert(url);
+    alert("Couldn't copy link automatically, copy this URL: \n" + url);
   }
 
   return (
@@ -92,5 +100,3 @@ export function TopMenu(props: Props) {
     </>
   );
 }
-
-export default TopMenu;

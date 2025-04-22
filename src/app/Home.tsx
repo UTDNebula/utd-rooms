@@ -21,6 +21,7 @@ import React, { useState } from 'react';
 
 import Background from '@/../public/background.png';
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
+import snapTime from '@/lib/snapTime';
 import type { Rooms } from '@/types/Rooms';
 
 type Props =
@@ -98,7 +99,7 @@ export default function Home(props: Props) {
         <DatePicker
           label="Date *"
           value={selectedDate}
-          onChange={(newValue) => setSelectedDate(newValue)}
+          onAccept={(newValue) => setSelectedDate(newValue)}
           className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           slotProps={{
             actionBar: {
@@ -111,7 +112,10 @@ export default function Home(props: Props) {
         <TimePicker
           label="Start time"
           value={startTime}
-          onChange={(newValue) => setStartTime(newValue)}
+          timeSteps={{ minutes: 15 }}
+          onAccept={(newValue) =>
+            setStartTime(newValue == null ? null : snapTime(newValue))
+          }
           className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           slotProps={{
             actionBar: {
@@ -122,13 +126,14 @@ export default function Home(props: Props) {
               helperText: error && 'Start time must be before end time',
             },
           }}
-          minTime={dayjs().hour(6)}
-          maxTime={dayjs().hour(23)}
         />
         <TimePicker
           label="End time"
           value={endTime}
-          onChange={(newValue) => setEndTime(newValue)}
+          timeSteps={{ minutes: 15 }}
+          onAccept={(newValue) =>
+            setEndTime(newValue == null ? null : snapTime(newValue))
+          }
           className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           slotProps={{
             actionBar: {
@@ -139,8 +144,6 @@ export default function Home(props: Props) {
               helperText: error && 'Start time must be before end time',
             },
           }}
-          minTime={dayjs().hour(6)}
-          maxTime={dayjs().hour(23)}
         />
         <FormControl className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti">
           <InputLabel id="buildings">Buildings</InputLabel>
@@ -206,7 +209,7 @@ export default function Home(props: Props) {
           variant="contained"
           className="w-fit"
           onClick={searchRooms}
-          disabled={selectedDate === null}
+          disabled={selectedDate === null || error}
         >
           Search Rooms
         </Button>
