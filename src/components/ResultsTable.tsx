@@ -374,10 +374,7 @@ export default function ResultsTable(props: Props) {
                 roomName.toLowerCase().startsWith(search) ||
                 room.room.toLowerCase().startsWith(search) ||
                 (buildingName &&
-                  buildingName
-                    .split(' (')[1]
-                    .toLowerCase()
-                    .startsWith(search))
+                  buildingName.split(' (')[1].toLowerCase().startsWith(search))
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room.room}`;
