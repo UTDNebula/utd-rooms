@@ -193,7 +193,7 @@ export default function ResultsTable(props: Props) {
 
   const fullAvailability = props.fullAvailability;
 
-  const search = props.search.trim();
+  const search = props.search.trim().toLowerCase();
 
   const rooms = props.rooms;
 
@@ -371,13 +371,13 @@ export default function ResultsTable(props: Props) {
             if (completelyFree || (hasGap && !fullAvailability)) {
               if (
                 search === '' ||
-                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-                room.room.toLowerCase().startsWith(search.toLowerCase()) ||
+                roomName.toLowerCase().startsWith(search) ||
+                room.room.toLowerCase().startsWith(search) ||
                 (buildingName &&
                   buildingName
-                    .split(') ')[1]
+                    .split(' (')[1]
                     .toLowerCase()
-                    .startsWith(search.toLowerCase()))
+                    .startsWith(search))
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room.room}`;
