@@ -20,6 +20,11 @@ import buildingNames, {
   mapLinkOverrides,
   mergedBuildings,
 } from '@/lib/buildingInfo';
+import {
+  dummyBuildingResources,
+  dummyRoomResources,
+  dummyScheduleData,
+} from '@/lib/dummyLoadingData';
 import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import type {
   AstraEvent,
@@ -61,230 +66,6 @@ interface LoadingProps {
 }
 
 export function LoadingResultsTable(props: LoadingProps) {
-  const buildingResources = [
-    {
-      type: 'building',
-      id: 1,
-      text: 'Activity Center (AB)',
-    },
-    {
-      type: 'building',
-      id: 2,
-      text: 'Administration Building (AD)',
-    },
-  ];
-  const roomResources = [
-    {
-      type: 'room',
-      id: 1,
-      text: '1.138',
-      link: '',
-      buildingId: 1,
-    },
-    {
-      type: 'room',
-      id: 2,
-      text: '2.216',
-      link: '',
-      buildingId: 2,
-    },
-    {
-      type: 'room',
-      id: 3,
-      text: '2.232',
-      link: '',
-      buildingId: 2,
-    },
-    {
-      type: 'room',
-      id: 4,
-      text: '2.238',
-      link: '',
-      buildingId: 2,
-    },
-    {
-      type: 'room',
-      id: 5,
-      text: '3.214',
-      link: '',
-      buildingId: 2,
-    },
-    {
-      type: 'room',
-      id: 6,
-      text: '3.216',
-      link: '',
-      buildingId: 2,
-    },
-    {
-      type: 'room',
-      id: 7,
-      text: '2.216',
-      link: '',
-      buildingId: 2,
-    },
-    {
-      type: 'room',
-      id: 8,
-      text: '2.218',
-      link: '',
-      buildingId: 2,
-    },
-  ];
-  const scheduleData: EventSource[] = [
-    {
-      id: '1',
-      Subject: 'Class',
-      StartTime: dayjs('08:30', 'HH:mm').toDate(),
-      EndTime: dayjs('09:45', 'HH:mm').toDate(),
-      roomId: 1,
-      buildingId: 1,
-    },
-    {
-      id: '2',
-      Subject: 'Class',
-      StartTime: dayjs('11:30', 'HH:mm').toDate(),
-      EndTime: dayjs('12:45', 'HH:mm').toDate(),
-      roomId: 1,
-      buildingId: 1,
-    },
-    {
-      id: '3',
-      Subject: 'Class',
-      StartTime: dayjs('13:00', 'HH:mm').toDate(),
-      EndTime: dayjs('14:15', 'HH:mm').toDate(),
-      roomId: 1,
-      buildingId: 1,
-    },
-    {
-      id: '4',
-      Subject: 'Class',
-      StartTime: dayjs('16:00', 'HH:mm').toDate(),
-      EndTime: dayjs('17:15', 'HH:mm').toDate(),
-      roomId: 1,
-      buildingId: 1,
-    },
-    {
-      id: '5',
-      Subject: 'Class',
-      StartTime: dayjs('10:00', 'HH:mm').toDate(),
-      EndTime: dayjs('11:15', 'HH:mm').toDate(),
-      roomId: 2,
-      buildingId: 2,
-    },
-    {
-      id: '6',
-      Subject: 'Class',
-      StartTime: dayjs('11:30', 'HH:mm').toDate(),
-      EndTime: dayjs('12:45', 'HH:mm').toDate(),
-      roomId: 2,
-      buildingId: 2,
-    },
-    {
-      id: '7',
-      Subject: 'Class',
-      StartTime: dayjs('19:00', 'HH:mm').toDate(),
-      EndTime: dayjs('21:45', 'HH:mm').toDate(),
-      roomId: 2,
-      buildingId: 2,
-    },
-    {
-      id: '8',
-      Subject: 'Class',
-      StartTime: dayjs('13:00', 'HH:mm').toDate(),
-      EndTime: dayjs('14:15', 'HH:mm').toDate(),
-      roomId: 3,
-      buildingId: 2,
-    },
-    {
-      id: '9',
-      Subject: 'Class',
-      StartTime: dayjs('17:30', 'HH:mm').toDate(),
-      EndTime: dayjs('18:45', 'HH:mm').toDate(),
-      roomId: 3,
-      buildingId: 2,
-    },
-    {
-      id: '10',
-      Subject: 'Class',
-      StartTime: dayjs('08:30', 'HH:mm').toDate(),
-      EndTime: dayjs('9:45', 'HH:mm').toDate(),
-      roomId: 4,
-      buildingId: 2,
-    },
-    {
-      id: '11',
-      Subject: 'Class',
-      StartTime: dayjs('13:00', 'HH:mm').toDate(),
-      EndTime: dayjs('14:15', 'HH:mm').toDate(),
-      roomId: 4,
-      buildingId: 2,
-    },
-    {
-      id: '12',
-      Subject: 'Class',
-      StartTime: dayjs('14:30', 'HH:mm').toDate(),
-      EndTime: dayjs('15:45', 'HH:mm').toDate(),
-      roomId: 4,
-      buildingId: 2,
-    },
-    {
-      id: '13',
-      Subject: 'Class',
-      StartTime: dayjs('11:30', 'HH:mm').toDate(),
-      EndTime: dayjs('12:45', 'HH:mm').toDate(),
-      roomId: 5,
-      buildingId: 2,
-    },
-    {
-      id: '14',
-      Subject: 'Class',
-      StartTime: dayjs('13:00', 'HH:mm').toDate(),
-      EndTime: dayjs('14:15', 'HH:mm').toDate(),
-      roomId: 5,
-      buildingId: 2,
-    },
-    {
-      id: '15',
-      Subject: 'Class',
-      StartTime: dayjs('17:30', 'HH:mm').toDate(),
-      EndTime: dayjs('18:45', 'HH:mm').toDate(),
-      roomId: 6,
-      buildingId: 2,
-    },
-    {
-      id: '16',
-      Subject: 'Class',
-      StartTime: dayjs('19:00', 'HH:mm').toDate(),
-      EndTime: dayjs('21:45', 'HH:mm').toDate(),
-      roomId: 6,
-      buildingId: 2,
-    },
-    {
-      id: '17',
-      Subject: 'Class',
-      StartTime: dayjs('08:30', 'HH:mm').toDate(),
-      EndTime: dayjs('09:45', 'HH:mm').toDate(),
-      roomId: 7,
-      buildingId: 2,
-    },
-    {
-      id: '18',
-      Subject: 'Class',
-      StartTime: dayjs('11:30', 'HH:mm').toDate(),
-      EndTime: dayjs('12:45', 'HH:mm').toDate(),
-      roomId: 7,
-      buildingId: 2,
-    },
-    {
-      id: '19',
-      Subject: 'Class',
-      StartTime: dayjs('14:30', 'HH:mm').toDate(),
-      EndTime: dayjs('15:45', 'HH:mm').toDate(),
-      roomId: 8,
-      buildingId: 2,
-    },
-  ];
   return (
     <>
       <p>Loading rooms...</p>
@@ -293,7 +74,10 @@ export function LoadingResultsTable(props: LoadingProps) {
         readonly
         showHeaderBar={false}
         rowAutoHeight={true}
-        eventSettings={{ dataSource: scheduleData, ignoreWhitespace: true }}
+        eventSettings={{
+          dataSource: dummyScheduleData,
+          ignoreWhitespace: true,
+        }}
         quickInfoTemplates={{ footer: () => <></> }}
         group={{
           resources: ['Buildings', 'Rooms'],
@@ -330,7 +114,7 @@ export function LoadingResultsTable(props: LoadingProps) {
             field="buildingId"
             title="Building"
             name="Buildings"
-            dataSource={buildingResources}
+            dataSource={dummyBuildingResources}
             textField="text"
             idField="id"
           />
@@ -338,7 +122,7 @@ export function LoadingResultsTable(props: LoadingProps) {
             field="roomId"
             title="Room"
             name="Rooms"
-            dataSource={roomResources}
+            dataSource={dummyRoomResources}
             textField="text"
             idField="id"
             groupIDField="buildingId"
