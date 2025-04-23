@@ -39,6 +39,7 @@ interface RoomResource {
   type: 'room';
   id: number;
   text: string;
+  capacity: number | null;
   link: string;
   buildingId: number;
 }
@@ -46,6 +47,7 @@ interface EventSourceNoResource {
   Subject: string;
   StartTime: Date;
   EndTime: Date;
+  pending?: boolean;
 }
 type EventSource = EventSourceNoResource & {
   id: string;
@@ -366,6 +368,7 @@ interface Props {
   date: string;
   startTime: string | null;
   endTime: string | null;
+  minCapacity: string;
   buildings: string[];
   fullAvailability: boolean;
   rooms: GenericFetchedData<Rooms>;
@@ -397,6 +400,10 @@ export default function ResultsTable(props: Props) {
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     return null;
   }
+
+  const minCapacity = isNaN(parseInt(props.minCapacity))
+    ? 0
+    : parseInt(props.minCapacity);
 
   const buildings = props.buildings;
 
@@ -475,6 +482,11 @@ export default function ResultsTable(props: Props) {
               Subject: event.activity_name,
               StartTime: dayjs(event.start_date).toDate(),
               EndTime: dayjs(event.end_date).toDate(),
+              // null current_state is a class
+              ...(event.current_state !== 'Scheduled' &&
+              event.current_state != null
+                ? { pending: true }
+                : {}),
             });
           });
         }
@@ -497,6 +509,9 @@ export default function ResultsTable(props: Props) {
               Subject: `${event.eventName} (${event.organizationName})`,
               StartTime: dayjs(event.dateTimeStart).toDate(),
               EndTime: dayjs(event.dateTimeEnd).toDate(),
+              ...(event.statusDescription !== 'Confirmed'
+                ? { pending: true }
+                : {}),
             });
           });
         }
@@ -545,9 +560,7 @@ export default function ResultsTable(props: Props) {
       (!buildings.length || buildings.includes(building))
     ) {
       const buildingName = buildingNames[building];
-      const buildingText = buildingName
-        ? `${building} (${buildingName})`
-        : building;
+      const buildingText = buildingName ? buildingName : building;
       buildingIdMap.set(building, buildingIdCounter++);
       buildingResources.push({
         type: 'building',
@@ -555,38 +568,48 @@ export default function ResultsTable(props: Props) {
         text: buildingText,
       });
 
-      rooms.toSorted().forEach((room) => {
-        const roomName = `${building} ${room}`;
-        if (!excludedRooms.includes(roomName)) {
-          //Check if free
-          const events = combinedEvents?.[building]?.[room] ?? [];
-          const [completelyFree, hasGap] = findAvailability(
-            events,
-            dayjsStartTime,
-            dayjsEndTime,
-          );
-          if (completelyFree || (hasGap && !fullAvailability)) {
-            if (
-              search === '' ||
-              roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-              room.toLowerCase().startsWith(search.toLowerCase()) ||
-              (buildingName &&
-                buildingName.toLowerCase().startsWith(search.toLowerCase()))
-            ) {
-              roomIdMap.set(roomName, roomIdCounter++);
-              let link = `https://locator.utdallas.edu/${building}_${room}`;
-              link = mapLinkOverrides[link] ?? link;
-              roomResources.push({
-                type: 'room',
-                id: roomIdMap.get(roomName),
-                text: room,
-                link: link,
-                buildingId: buildingIdMap.get(building), // Assign room to its building
-              });
+      rooms
+        .toSorted((a, b) => a.room.localeCompare(b.room))
+        .forEach((room) => {
+          const roomName = `${building} ${room.room}`;
+          if (
+            !excludedRooms.includes(roomName) &&
+            (minCapacity === 0 ||
+              (room.capacity !== 0 && room.capacity >= minCapacity))
+          ) {
+            //Check if free
+            const events = combinedEvents?.[building]?.[room.room] ?? [];
+            const [completelyFree, hasGap] = findAvailability(
+              events,
+              dayjsStartTime,
+              dayjsEndTime,
+            );
+            if (completelyFree || (hasGap && !fullAvailability)) {
+              if (
+                search === '' ||
+                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+                room.room.toLowerCase().startsWith(search.toLowerCase()) ||
+                (buildingName &&
+                  buildingName
+                    .split(') ')[1]
+                    .toLowerCase()
+                    .startsWith(search.toLowerCase()))
+              ) {
+                roomIdMap.set(roomName, roomIdCounter++);
+                let link = `https://locator.utdallas.edu/${building}_${room.room}`;
+                link = mapLinkOverrides[link] ?? link;
+                roomResources.push({
+                  type: 'room',
+                  id: roomIdMap.get(roomName),
+                  text: room.room,
+                  capacity: room.capacity,
+                  link: link,
+                  buildingId: buildingIdMap.get(building), // Assign room to its building
+                });
+              }
             }
           }
-        }
-      });
+        });
     }
   });
 
@@ -628,7 +651,7 @@ export default function ResultsTable(props: Props) {
             : roomResources.length === 1
               ? ' room that has free time.'
               : ' rooms that have free time.'
-        }`}
+        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"
@@ -659,7 +682,15 @@ export default function ResultsTable(props: Props) {
             );
           }
           return (
-            <Tooltip title={data.text}>
+            <Tooltip
+              title={
+                <>
+                  {data.text}
+                  <br />
+                  Capacity: {data.capacity !== 0 ? data.capacity : 'unknown'}
+                </>
+              }
+            >
               <div className="e-resource-text ml-[25px] overflow-hidden text-ellipsis">
                 <Link
                   href={data.link}
@@ -694,7 +725,26 @@ export default function ResultsTable(props: Props) {
           />
         </ResourcesDirective>
         <ViewsDirective>
-          <ViewDirective option="TimelineDay" />
+          <ViewDirective
+            option="TimelineDay"
+            eventTemplate={(props: EventSource) => {
+              const timeString = `${props.pending ? 'Pending: ' : ''}${dayjs(props.StartTime).format('h:mm a')} - ${dayjs(props.EndTime).format('h:mm a')}`;
+              return (
+                <div
+                  className={
+                    'e-inner-wrap' + (props.pending ? ' pending-event' : '')
+                  }
+                >
+                  <Tooltip title={props.Subject}>
+                    <div className="e-subject">{props.Subject}</div>
+                  </Tooltip>
+                  <Tooltip title={timeString}>
+                    <div className="e-time">{timeString}</div>
+                  </Tooltip>
+                </div>
+              );
+            }}
+          />
         </ViewsDirective>
         <Inject services={[TimelineViews]} />
       </ScheduleComponent>

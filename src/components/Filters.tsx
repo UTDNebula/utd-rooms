@@ -11,6 +11,7 @@ import {
   MenuItem,
   Radio,
   Select,
+  TextField,
   Tooltip,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
@@ -33,6 +34,7 @@ type Props =
       date: string;
       startTime: string | null;
       endTime: string | null;
+      minCapacity: string | null;
       buildings: string[];
       fullAvailability: boolean;
       rooms: Rooms;
@@ -57,6 +59,8 @@ export default function Filters(props: Props) {
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
+  const minCapacity = !props.roomsLoading ? props.minCapacity : '';
+
   const buildings = !props.roomsLoading ? props.buildings : [];
 
   const fullAvailability = !props.roomsLoading ? props.fullAvailability : false;
@@ -64,7 +68,7 @@ export default function Filters(props: Props) {
   return (
     <Grid container spacing={1}>
       {/*Date picker*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
+      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
         <DatePicker
           className="w-full"
           value={dayjs(date)}
@@ -88,7 +92,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*Start time dropdown*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
+      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
         <TimePicker
           timeSteps={{ minutes: 15 }}
           label="Start time"
@@ -122,7 +126,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*End time dropdown*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2.4 }}>
+      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
         <TimePicker
           timeSteps={{ minutes: 15 }}
           label="End time"
@@ -156,7 +160,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*Building dropdown*/}
-      <Grid size={{ xs: 6, sm: 6, md: 3, lg: 2.4 }}>
+      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
         <FormControl size="small" className="w-full">
           <InputLabel id="buildings">Buildings</InputLabel>
           <Select
@@ -212,9 +216,7 @@ export default function Filters(props: Props) {
                       <ListItemText
                         className="text-wrap"
                         primary={
-                          buildingNames[value]
-                            ? `${value} (${buildingNames[value]})`
-                            : value
+                          buildingNames[value] ? buildingNames[value] : value
                         }
                       />
                     </MenuItem>
@@ -224,8 +226,31 @@ export default function Filters(props: Props) {
         </FormControl>
       </Grid>
 
+      {/*Capacity input*/}
+      <Grid size={{ xs: 6, sm: 4, md: 6, lg: 2 }}>
+        <TextField
+          label="Min Capacity"
+          size="small"
+          className="w-full"
+          value={minCapacity}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            const params = new URLSearchParams(searchParams.toString());
+            if (event.target.value !== '') {
+              params.set('minCapacity', event.target.value);
+            } else {
+              params.delete('minCapacity');
+            }
+            window.history.replaceState(
+              null,
+              '',
+              `${pathname}?${params.toString()}`,
+            );
+          }}
+        />
+      </Grid>
+
       {/*Only show rooms available the whole time checkbox*/}
-      <Grid size={{ xs: 12, sm: 6, md: 12, lg: 2.4 }} className="px-2">
+      <Grid size={{ xs: 6, sm: 4, md: 6, lg: 2 }} className="px-2">
         <Tooltip title="Only show rooms available the whole time">
           <FormControlLabel
             control={

@@ -43,6 +43,12 @@ export default function Results(props: Props) {
   const buildingsParam = searchParams.get('buildings');
   const buildings = buildingsParam ? buildingsParam.split(',') : [];
 
+  let minCapacity = searchParams.get('minCapacity');
+  if (Array.isArray(minCapacity)) {
+    minCapacity = minCapacity[0];
+  }
+  minCapacity = minCapacity ?? '';
+
   const fullAvailability = searchParams.get('fullAvailability') === 'true';
 
   return (
@@ -55,6 +61,7 @@ export default function Results(props: Props) {
           startTime={startTime}
           endTime={endTime}
           buildings={buildings}
+          minCapacity={minCapacity}
           fullAvailability={fullAvailability}
           rooms={props.rooms.message === 'success' ? props.rooms.data : {}}
         />
@@ -63,6 +70,7 @@ export default function Results(props: Props) {
           startTime={startTime}
           endTime={endTime}
           buildings={buildings}
+          minCapacity={minCapacity}
           fullAvailability={fullAvailability}
           rooms={props.rooms}
           courseBookEvents={props.courseBookEvents}

@@ -1,7 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs';
 
 export const defaultStartTime = '09:00';
-export const defaultEndTime = '09:00';
+export const defaultEndTime = '22:00';
 
 const minTime = 6;
 const maxTime = 23;
