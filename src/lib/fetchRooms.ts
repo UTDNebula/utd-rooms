@@ -18,7 +18,6 @@ export default async function fetchRooms(): Promise<GenericFetchedData<Rooms>> {
     });
 
     const data = await res.json();
-    console.log(data);
 
     if (data.message !== 'success') {
       throw new Error(data.message);

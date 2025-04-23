@@ -368,6 +368,7 @@ interface Props {
   date: string;
   startTime: string | null;
   endTime: string | null;
+  minCapacity: string;
   buildings: string[];
   fullAvailability: boolean;
   rooms: GenericFetchedData<Rooms>;
@@ -399,6 +400,10 @@ export default function ResultsTable(props: Props) {
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
     return null;
   }
+
+  const minCapacity = isNaN(parseInt(props.minCapacity))
+    ? 0
+    : parseInt(props.minCapacity);
 
   const buildings = props.buildings;
 
@@ -565,39 +570,44 @@ export default function ResultsTable(props: Props) {
         text: buildingText,
       });
 
-      rooms.toSorted((a, b) => a.room.localeCompare(b.room)).forEach((room) => {
-        const roomName = `${building} ${room.room}`;
-        if (!excludedRooms.includes(roomName)) {
-          //Check if free
-          const events = combinedEvents?.[building]?.[room.room] ?? [];
-          const [completelyFree, hasGap] = findAvailability(
-            events,
-            dayjsStartTime,
-            dayjsEndTime,
-          );
-          if (completelyFree || (hasGap && !fullAvailability)) {
-            if (
-              search === '' ||
-              roomName.toLowerCase().startsWith(search.toLowerCase()) ||
-              room.room.toLowerCase().startsWith(search.toLowerCase()) ||
-              (buildingName &&
-                buildingName.toLowerCase().startsWith(search.toLowerCase()))
-            ) {
-              roomIdMap.set(roomName, roomIdCounter++);
-              let link = `https://locator.utdallas.edu/${building}_${room.room}`;
-              link = mapLinkOverrides[link] ?? link;
-              roomResources.push({
-                type: 'room',
-                id: roomIdMap.get(roomName),
-                text: room.room,
-                capacity: room.capacity,
-                link: link,
-                buildingId: buildingIdMap.get(building), // Assign room to its building
-              });
+      rooms
+        .toSorted((a, b) => a.room.localeCompare(b.room))
+        .forEach((room) => {
+          const roomName = `${building} ${room.room}`;
+          if (
+            !excludedRooms.includes(roomName) &&
+            (room.capacity === 0 || room.capacity >= minCapacity)
+          ) {
+            //Check if free
+            const events = combinedEvents?.[building]?.[room.room] ?? [];
+            const [completelyFree, hasGap] = findAvailability(
+              events,
+              dayjsStartTime,
+              dayjsEndTime,
+            );
+            if (completelyFree || (hasGap && !fullAvailability)) {
+              if (
+                search === '' ||
+                roomName.toLowerCase().startsWith(search.toLowerCase()) ||
+                room.room.toLowerCase().startsWith(search.toLowerCase()) ||
+                (buildingName &&
+                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
+              ) {
+                roomIdMap.set(roomName, roomIdCounter++);
+                let link = `https://locator.utdallas.edu/${building}_${room.room}`;
+                link = mapLinkOverrides[link] ?? link;
+                roomResources.push({
+                  type: 'room',
+                  id: roomIdMap.get(roomName),
+                  text: room.room,
+                  capacity: room.capacity,
+                  link: link,
+                  buildingId: buildingIdMap.get(building), // Assign room to its building
+                });
+              }
             }
           }
-        }
-      });
+        });
     }
   });
 
@@ -670,7 +680,15 @@ export default function ResultsTable(props: Props) {
             );
           }
           return (
-            <Tooltip title={<>{data.text}<br />Capacity: {data.capacity}</>}>
+            <Tooltip
+              title={
+                <>
+                  {data.text}
+                  <br />
+                  Capacity: {data.capacity !== 0 ? data.capacity : 'unknown'}
+                </>
+              }
+            >
               <div className="e-resource-text ml-[25px] overflow-hidden text-ellipsis">
                 <Link
                   href={data.link}
