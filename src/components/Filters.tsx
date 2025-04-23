@@ -59,7 +59,7 @@ export default function Filters(props: Props) {
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
-  const minCapacity = !props.roomsLoading ? props.minCapacity : null;
+  const minCapacity = !props.roomsLoading ? props.minCapacity : '';
 
   const buildings = !props.roomsLoading ? props.buildings : [];
 
@@ -216,9 +216,7 @@ export default function Filters(props: Props) {
                       <ListItemText
                         className="text-wrap"
                         primary={
-                          buildingNames[value]
-                            ? `${value} (${buildingNames[value]})`
-                            : value
+                          buildingNames[value] ? buildingNames[value] : value
                         }
                       />
                     </MenuItem>

@@ -560,9 +560,7 @@ export default function ResultsTable(props: Props) {
       (!buildings.length || buildings.includes(building))
     ) {
       const buildingName = buildingNames[building];
-      const buildingText = buildingName
-        ? `${building} (${buildingName})`
-        : building;
+      const buildingText = buildingName ? buildingName : building;
       buildingIdMap.set(building, buildingIdCounter++);
       buildingResources.push({
         type: 'building',
@@ -576,7 +574,9 @@ export default function ResultsTable(props: Props) {
           const roomName = `${building} ${room.room}`;
           if (
             !excludedRooms.includes(roomName) &&
-            (room.capacity === 0 || room.capacity >= minCapacity)
+            (minCapacity === 0 || (
+            room.capacity !== 0 &&
+            room.capacity >= minCapacity))
           ) {
             //Check if free
             const events = combinedEvents?.[building]?.[room.room] ?? [];
@@ -591,7 +591,10 @@ export default function ResultsTable(props: Props) {
                 roomName.toLowerCase().startsWith(search.toLowerCase()) ||
                 room.room.toLowerCase().startsWith(search.toLowerCase()) ||
                 (buildingName &&
-                  buildingName.toLowerCase().startsWith(search.toLowerCase()))
+                  buildingName
+                    .split(') ')[1]
+                    .toLowerCase()
+                    .startsWith(search.toLowerCase()))
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room.room}`;
@@ -649,7 +652,7 @@ export default function ResultsTable(props: Props) {
             : roomResources.length === 1
               ? ' room that has free time.'
               : ' rooms that have free time.'
-        }`}
+        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"

@@ -195,9 +195,7 @@ export default function Home(props: Props) {
                       <ListItemText
                         className="text-wrap"
                         primary={
-                          buildingNames[value]
-                            ? `${buildingNames[value]} (${value})`
-                            : value
+                          buildingNames[value] ? buildingNames[value] : value
                         }
                       />
                     </MenuItem>
