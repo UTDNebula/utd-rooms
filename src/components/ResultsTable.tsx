@@ -574,9 +574,8 @@ export default function ResultsTable(props: Props) {
           const roomName = `${building} ${room.room}`;
           if (
             !excludedRooms.includes(roomName) &&
-            (minCapacity === 0 || (
-            room.capacity !== 0 &&
-            room.capacity >= minCapacity))
+            (minCapacity === 0 ||
+              (room.capacity !== 0 && room.capacity >= minCapacity))
           ) {
             //Check if free
             const events = combinedEvents?.[building]?.[room.room] ?? [];
