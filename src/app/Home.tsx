@@ -17,7 +17,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 
 import Background from '@/../public/background.png';
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
@@ -39,6 +39,9 @@ type Props =
 export default function Home(props: Props) {
   const router = useRouter();
 
+  //for spinner after router.push
+  const [isPending, startTransition] = useTransition();
+
   function extractTime(dateTime: Dayjs) {
     return dateTime.format('HH:mm');
   }
@@ -53,18 +56,20 @@ export default function Home(props: Props) {
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
-  async function searchRooms() {
+  function searchRooms() {
     if (selectedDate !== null) {
       const formattedDate = selectedDate.format('YYYY-MM-DD');
-      await router.push(
-        '/results?' +
-          new URLSearchParams({
-            date: formattedDate,
-            ...(startTime && { startTime: extractTime(startTime) }),
-            ...(endTime && { endTime: extractTime(endTime) }),
-            ...(buildings.length && { buildings: buildings.join(',') }),
-          }).toString(),
-      );
+      startTransition(() => {
+        router.push(
+          '/results?' +
+            new URLSearchParams({
+              date: formattedDate,
+              ...(startTime && { startTime: extractTime(startTime) }),
+              ...(endTime && { endTime: extractTime(endTime) }),
+              ...(buildings.length && { buildings: buildings.join(',') }),
+            }).toString(),
+        );
+      });
     }
   }
 
@@ -205,11 +210,17 @@ export default function Home(props: Props) {
         </FormControl>
         <Button
           variant="contained"
-          className="w-fit"
+          className="h-11 relative"
           onClick={searchRooms}
           disabled={selectedDate === null || error}
         >
-          Search Rooms
+          {isPending && (
+            <CircularProgress
+              color="inherit"
+              className="absolute left-0 right-0 m-auto h-6 w-6 text-cornflower-50 dark:text-haiti"
+            />
+          )}
+          <span className={isPending ? 'opacity-0' : ''}>Search Rooms</span>
         </Button>
       </div>
     </div>
