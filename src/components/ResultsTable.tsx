@@ -169,8 +169,12 @@ export default function ResultsTable(props: Props) {
   const date = props.date;
 
   let startTime = props.startTime;
-  if (date === dayjs().format('YYYY-MM-DD') && dayjs().hour() < 20) {
-    //if looking at today and not too late, set start time to now
+  if (
+    date === dayjs().format('YYYY-MM-DD') &&
+    dayjs().hour() < 20 &&
+    dayjs().hour() > 6
+  ) {
+    //if looking at today and not too early or too late, set start time to now
     startTime = startTime ?? dayjs().format('HH') + ':00';
   } else {
     startTime = startTime ?? defaultStartTime;
@@ -374,7 +378,13 @@ export default function ResultsTable(props: Props) {
                 roomName.toLowerCase().startsWith(search) ||
                 room.room.toLowerCase().startsWith(search) ||
                 (buildingName &&
-                  buildingName.split(' (')[1].toLowerCase().startsWith(search))
+                  buildingName
+                    .split(' (')[1]
+                    .toLowerCase()
+                    .startsWith(search)) ||
+                combinedEvents[building]?.[room.room]?.some((event) =>
+                  event.Subject.toLowerCase().includes(search),
+                )
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
                 let link = `https://locator.utdallas.edu/${building}_${room.room}`;
