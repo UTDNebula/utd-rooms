@@ -68,7 +68,7 @@ export default function Filters(props: Props) {
   return (
     <Grid container spacing={1}>
       {/*Date picker*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <DatePicker
           className="w-full"
           value={dayjs(date)}
@@ -92,7 +92,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*Start time dropdown*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <TimePicker
           timeSteps={{ minutes: 15 }}
           label="Start time"
@@ -126,7 +126,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*End time dropdown*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <TimePicker
           timeSteps={{ minutes: 15 }}
           label="End time"
@@ -160,7 +160,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*Building dropdown*/}
-      <Grid size={{ xs: 6, sm: 4, md: 3, lg: 2 }}>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <FormControl size="small" className="w-full">
           <InputLabel id="buildings">Buildings</InputLabel>
           <Select
@@ -227,7 +227,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*Capacity input*/}
-      <Grid size={{ xs: 6, sm: 4, md: 6, lg: 2 }}>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <TextField
           label="Min Capacity"
           size="small"
@@ -250,7 +250,7 @@ export default function Filters(props: Props) {
       </Grid>
 
       {/*Only show rooms available the whole time checkbox*/}
-      <Grid size={{ xs: 6, sm: 4, md: 6, lg: 2 }} className="px-2">
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }} className="px-2">
         <Tooltip title="Only show rooms available the whole time">
           <FormControlLabel
             control={
