@@ -228,7 +228,7 @@ export default function Home(props: Props) {
         <a
           href="https://www.linkedin.com/in/mithil-viradia/"
           target="_blank"
-          rel="noopener"
+          rel="noreferrer"
           className="underline decoration-transparent hover:decoration-inherit transition"
         >
           Mithil Viradia
