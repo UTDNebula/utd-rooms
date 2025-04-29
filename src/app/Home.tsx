@@ -223,6 +223,17 @@ export default function Home(props: Props) {
           <span className={isPending ? 'opacity-0' : ''}>Search Rooms</span>
         </Button>
       </div>
+      <p className="absolute bottom-2 text-sm text-slate-600 dark:text-slate-400">
+        Originally brought to you by{' '}
+        <a
+          href="https://www.linkedin.com/in/mithil-viradia/"
+          target="_blank"
+          rel="noreferrer"
+          className="underline decoration-transparent hover:decoration-inherit transition"
+        >
+          Mithil Viradia
+        </a>
+      </p>
     </div>
   );
 }
