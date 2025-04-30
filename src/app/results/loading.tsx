@@ -14,11 +14,11 @@ import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 export default function Loading() {
   const searchParams = useSearchParams();
 
-  let startTime = searchParams.get('startTime') ?? defaultStartTime;
+  let startTime = searchParams.get('startTime') ?? defaultStartTime + ':00';
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
-  let endTime = searchParams.get('endTime') ?? defaultEndTime;
+  let endTime = searchParams.get('endTime') ?? defaultEndTime + ':00';
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }

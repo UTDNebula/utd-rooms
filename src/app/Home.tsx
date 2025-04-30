@@ -21,7 +21,7 @@ import React, { useState, useTransition } from 'react';
 
 import Background from '@/../public/background.png';
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
+import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import type { Rooms } from '@/types/Rooms';
 
 type Props =
@@ -46,9 +46,19 @@ export default function Home(props: Props) {
     return dateTime.format('HH:mm');
   }
 
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
-  const [startTime, setStartTime] = useState<Dayjs | null>(null);
-  const [endTime, setEndTime] = useState<Dayjs | null>(null);
+  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  // set to current hour
+  const [startTime, setStartTime] = useState<Dayjs | null>(
+    dayjs().hour() >= defaultStartTime && dayjs().hour() <= defaultEndTime - 2
+      ? dayjs().minute(0)
+      : dayjs().hour(defaultStartTime).minute(0),
+  );
+  // set to current hour+2
+  const [endTime, setEndTime] = useState<Dayjs | null>(
+    dayjs().hour() >= defaultStartTime && dayjs().hour() <= defaultEndTime - 2
+      ? dayjs().add(2, 'hour').minute(0)
+      : dayjs().hour(defaultEndTime).minute(0),
+  );
   const [buildings, setBuildings] = useState<string[]>([]);
   const error = Boolean(
     startTime &&
@@ -57,8 +67,8 @@ export default function Home(props: Props) {
   );
 
   function searchRooms() {
-    if (selectedDate !== null) {
-      const formattedDate = selectedDate.format('YYYY-MM-DD');
+    if (date !== null) {
+      const formattedDate = date.format('YYYY-MM-DD');
       startTransition(() => {
         router.push(
           '/results?' +
@@ -103,8 +113,8 @@ export default function Home(props: Props) {
       <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-8">
         <DatePicker
           label="Date *"
-          value={selectedDate}
-          onAccept={(newValue) => setSelectedDate(newValue)}
+          value={date}
+          onAccept={(newValue) => setDate(newValue)}
           className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           slotProps={{
             actionBar: {
@@ -151,7 +161,9 @@ export default function Home(props: Props) {
           }}
         />
         <FormControl className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti">
-          <InputLabel id="buildings">Buildings</InputLabel>
+          <InputLabel id="buildings" shrink>
+            Buildings
+          </InputLabel>
           <Select
             label="Buildings"
             labelId="buildings"
@@ -171,10 +183,11 @@ export default function Home(props: Props) {
             }}
             renderValue={(selected) => {
               if (!selected.length) {
-                return '';
+                return 'Any';
               }
               return selected.join(', ');
             }}
+            displayEmpty
             // loading icon on building dropdown
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
             endAdornment={
@@ -212,7 +225,7 @@ export default function Home(props: Props) {
           variant="contained"
           className="h-11 relative"
           onClick={searchRooms}
-          disabled={selectedDate === null || error}
+          disabled={date === null || error}
         >
           {isPending && (
             <CircularProgress
