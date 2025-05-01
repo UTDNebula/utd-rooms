@@ -17,7 +17,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useState, useTransition } from 'react';
+import React, { useRef, useState, useTransition } from 'react';
 
 import Background from '@/../public/background.png';
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
@@ -42,10 +42,6 @@ export default function Home(props: Props) {
   //for spinner after router.push
   const [isPending, startTransition] = useTransition();
 
-  function extractTime(dateTime: Dayjs) {
-    return dateTime.format('HH:mm');
-  }
-
   const [date, setDate] = useState<Dayjs | null>(dayjs());
   // set to current hour
   const [startTime, setStartTime] = useState<Dayjs | null>(
@@ -59,12 +55,17 @@ export default function Home(props: Props) {
       ? dayjs().add(2, 'hour').minute(0)
       : dayjs().hour(defaultEndTime).minute(0),
   );
-  const [buildings, setBuildings] = useState<string[]>([]);
   const error = Boolean(
     startTime &&
       endTime &&
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
+
+  // for saving the input values on change but only updating them onBlur or onKeyDown+enter
+  const startTimeChange = useRef<Dayjs | null>(startTime);
+  const endTimeChange = useRef<Dayjs | null>(endTime);
+
+  const [buildings, setBuildings] = useState<string[]>([]);
 
   function searchRooms() {
     if (date !== null) {
@@ -74,8 +75,8 @@ export default function Home(props: Props) {
           '/results?' +
             new URLSearchParams({
               date: formattedDate,
-              ...(startTime && { startTime: extractTime(startTime) }),
-              ...(endTime && { endTime: extractTime(endTime) }),
+              ...(startTime && { startTime: startTime.format('HH:mm') }),
+              ...(endTime && { endTime: endTime.format('HH:mm') }),
               ...(buildings.length && { buildings: buildings.join(',') }),
             }).toString(),
         );
@@ -114,7 +115,11 @@ export default function Home(props: Props) {
         <DatePicker
           label="Date *"
           value={date}
-          onAccept={(newValue) => setDate(newValue)}
+          onChange={(newValue, context) => {
+            if (context.validationError == null) {
+              setDate(newValue);
+            }
+          }}
           className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           slotProps={{
             actionBar: {
@@ -128,6 +133,7 @@ export default function Home(props: Props) {
           label="Start time"
           value={startTime}
           timeSteps={{ minutes: 15 }}
+          onChange={(newValue) => (startTimeChange.current = newValue)}
           onAccept={(newValue) =>
             setStartTime(newValue == null ? null : snapTime(newValue))
           }
@@ -139,6 +145,24 @@ export default function Home(props: Props) {
             textField: {
               error: error,
               helperText: error && 'Start time must be before end time',
+              onBlur: () => {
+                setStartTime(
+                  startTimeChange.current == null ||
+                    !startTimeChange.current.isValid()
+                    ? null
+                    : snapTime(startTimeChange.current),
+                );
+              },
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') {
+                  setStartTime(
+                    startTimeChange.current == null ||
+                      !startTimeChange.current.isValid()
+                      ? null
+                      : snapTime(startTimeChange.current),
+                  );
+                }
+              },
             },
           }}
         />
@@ -146,6 +170,7 @@ export default function Home(props: Props) {
           label="End time"
           value={endTime}
           timeSteps={{ minutes: 15 }}
+          onChange={(newValue) => (endTimeChange.current = newValue)}
           onAccept={(newValue) =>
             setEndTime(newValue == null ? null : snapTime(newValue))
           }
@@ -157,6 +182,25 @@ export default function Home(props: Props) {
             textField: {
               error: error,
               helperText: error && 'Start time must be before end time',
+              onBlur: () => {
+                console.log(endTimeChange.current);
+                setEndTime(
+                  endTimeChange.current == null ||
+                    !endTimeChange.current.isValid()
+                    ? null
+                    : snapTime(endTimeChange.current),
+                );
+              },
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') {
+                  setEndTime(
+                    endTimeChange.current == null ||
+                      !endTimeChange.current.isValid()
+                      ? null
+                      : snapTime(endTimeChange.current),
+                  );
+                }
+              },
             },
           }}
         />
@@ -225,7 +269,7 @@ export default function Home(props: Props) {
           variant="contained"
           className="h-11 relative"
           onClick={searchRooms}
-          disabled={date === null || error}
+          disabled={date === null || !date.isValid() || error}
         >
           {isPending && (
             <CircularProgress

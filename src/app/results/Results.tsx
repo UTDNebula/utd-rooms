@@ -56,7 +56,6 @@ export default function Results(props: Props) {
       <TopMenu search={search} setSearch={setSearch} />
       <main className="p-4 flex flex-col gap-4">
         <Filters
-          roomsLoading={false}
           date={props.date}
           startTime={startTime}
           endTime={endTime}
