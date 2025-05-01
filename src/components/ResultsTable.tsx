@@ -169,16 +169,11 @@ export default function ResultsTable(props: Props) {
   const date = props.date;
 
   let startTime = props.startTime;
-  if (date === dayjs().format('YYYY-MM-DD') && dayjs().hour() < 20) {
-    //if looking at today and not too late, set start time to now
-    startTime = startTime ?? dayjs().format('HH') + ':00';
-  } else {
-    startTime = startTime ?? defaultStartTime;
-  }
+  startTime = startTime ?? defaultStartTime + ':00';
   const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
 
   let endTime = props.endTime;
-  endTime = endTime ?? defaultEndTime;
+  endTime = endTime ?? defaultEndTime + ':00';
   const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
 
   if (dayjsEndTime.isBefore(dayjsStartTime)) {

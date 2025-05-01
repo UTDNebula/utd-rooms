@@ -70,6 +70,7 @@ export default function Filters(props: Props) {
       {/*Date picker*/}
       <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <DatePicker
+          label="Date *"
           className="w-full"
           value={dayjs(date)}
           onAccept={(newValue: Dayjs | null) => {
@@ -162,7 +163,9 @@ export default function Filters(props: Props) {
       {/*Building dropdown*/}
       <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
         <FormControl size="small" className="w-full">
-          <InputLabel id="buildings">Buildings</InputLabel>
+          <InputLabel id="buildings" shrink>
+            Buildings
+          </InputLabel>
           <Select
             label="Buildings"
             labelId="buildings"
@@ -187,10 +190,11 @@ export default function Filters(props: Props) {
             }}
             renderValue={(selected) => {
               if (!selected.length) {
-                return '';
+                return 'Any';
               }
               return selected.join(', ');
             }}
+            displayEmpty
             // loading icon on building dropdown
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
             endAdornment={
