@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
-import Filters from '@/components/Filters';
+import { LoadingFilters } from '@/components/Filters';
 import { LoadingResultsTable } from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
@@ -27,7 +27,7 @@ export default function Loading() {
     <>
       <TopMenu />
       <main className="p-4 flex flex-col gap-4">
-        <Filters roomsLoading />
+        <LoadingFilters />
         <LoadingResultsTable startTime={startTime} endTime={endTime} />
       </main>
     </>
