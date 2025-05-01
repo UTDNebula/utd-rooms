@@ -19,7 +19,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
 import snapTime from '@/lib/snapTime';
@@ -129,6 +129,12 @@ export default function Filters(props: Props) {
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
+  const minCapacity = props.minCapacity;
+
+  const buildings = props.buildings;
+
+  const fullAvailability = props.fullAvailability;
+
   // for saving the input values on change but only updating them onBlur or onKeyDown+enter
   const dateChange = useRef<Dayjs | null>(dayjsDate);
   const startTimeChange = useRef<Dayjs | null>(
@@ -137,12 +143,7 @@ export default function Filters(props: Props) {
   const endTimeChange = useRef<Dayjs | null>(
     dayjs(date + endTime, 'YYYY-MM-DDHH:mm'),
   );
-
-  const minCapacity = props.minCapacity;
-
-  const buildings = props.buildings;
-
-  const fullAvailability = props.fullAvailability;
+  const [minCapacityChange, setMinCapacityChange] = useState(minCapacity ?? '');
 
   function setDate(newValue: Dayjs | null) {
     const params = new URLSearchParams(searchParams.toString());
@@ -171,6 +172,16 @@ export default function Filters(props: Props) {
     } else {
       params.delete('endTime');
       params.delete('fullAvailability');
+    }
+    window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
+  }
+
+  function setMinCapacity(newValue: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (newValue !== '') {
+      params.set('minCapacity', newValue);
+    } else {
+      params.delete('minCapacity');
     }
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }
@@ -368,19 +379,17 @@ export default function Filters(props: Props) {
           label="Min Capacity"
           size="small"
           className="w-full"
-          value={minCapacity}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            const params = new URLSearchParams(searchParams.toString());
-            if (event.target.value !== '') {
-              params.set('minCapacity', event.target.value);
-            } else {
-              params.delete('minCapacity');
+          value={minCapacityChange}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setMinCapacityChange(event.target.value)
+          }
+          onBlur={() => {
+            setMinCapacity(minCapacityChange);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              setMinCapacity(minCapacityChange);
             }
-            window.history.replaceState(
-              null,
-              '',
-              `${pathname}?${params.toString()}`,
-            );
           }}
         />
       </Grid>
