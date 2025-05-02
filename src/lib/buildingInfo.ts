@@ -1,4 +1,10 @@
+//These are the same building so all JSOM rooms become SOM rooms
+export const mergedBuildings: { [key: string]: string } = {
+  JSOM: 'SOM',
+};
+
 export const excludedBuildings = [
+  //API errors
   '',
   'See',
   'ONLINE',
@@ -10,17 +16,36 @@ export const excludedBuildings = [
   'CCTC',
   //All offices
   'SSB',
-  //Merged with JSOM
-  'JSOM',
+  //All labs
+  'ML1',
+  'BE',
+  //Merged
+  ...Object.keys(mergedBuildings),
 ];
 export const excludedRooms = [
   //Cannot find where this room is
   'Student Services Addition (SSA) SSA Green Room',
+  //Labs
+  'ECSN 3.108',
+  'ECSN 3.110',
+  'ECSN 3.112',
+  'ECSN 3.114',
+  'ECSN 3.118',
+  'ECSN 3.120',
+  'ECSW 2.315',
+  'ECSW 2.335',
+  'ECSW 3.315',
+  'ECSW 3.325',
+  'ECSW 3.335',
+  'ECSW 4.315',
+  'ECSW 4.335',
+  'GR 3.206',
+  'GR 3.402A',
+  'GR 3.402B',
+  'GR 3.602',
+  'JO 1.206',
+  'JO 1.216',
 ];
-
-export const mergedBuildings: { [key: string]: string } = {
-  JSOM: 'SOM',
-};
 
 const buildingNames: { [key: string]: string } = {
   AB: 'AB (Activity Center)',
@@ -67,9 +92,20 @@ const buildingNames: { [key: string]: string } = {
 
 export default buildingNames;
 
+//Map doesn't recognize these buildings
+export const buildingMapLinkOverrides: {
+  [key: string]: string;
+} = {
+  SOM: 'JSOM',
+  TH: 'JO',
+};
+
+//Override specific room links
 export const mapLinkOverrides: {
   [key: string]: string;
 } = {
+  'https://locator.utdallas.edu/ATC_1.910':
+    'https://map.concept3d.com/?id=1772#!m/541788',
   'https://locator.utdallas.edu/ATC_2.705E':
     'https://map.concept3d.com/?id=1772#!m/579843',
   'https://locator.utdallas.edu/BSB_10.687':
@@ -170,8 +206,6 @@ export const mapLinkOverrides: {
     'https://map.concept3d.com/?id=1772#!m/545124',
   'https://locator.utdallas.edu/Student Union_Upper Level Booth 4':
     'https://map.concept3d.com/?id=1772#!m/545124',
-  'https://locator.utdallas.edu/TH_2.702':
-    'https://locator.utdallas.edu/JO_2.702',
   'https://locator.utdallas.edu/VCB_1.201':
     'https://map.concept3d.com/?id=1772#!m/954137',
   'https://locator.utdallas.edu/SCI_Atrium':
