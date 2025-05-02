@@ -15,6 +15,7 @@ import Link from 'next/link';
 import React from 'react';
 
 import buildingNames, {
+  buildingMapLinkOverrides,
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
@@ -378,7 +379,9 @@ export default function ResultsTable(props: Props) {
                 )
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
-                let link = `https://locator.utdallas.edu/${building}_${room.room}`;
+                const mapBuilding =
+                  buildingMapLinkOverrides[building] ?? building;
+                let link = `https://locator.utdallas.edu/${mapBuilding}_${room.room}`;
                 link = mapLinkOverrides[link] ?? link;
                 roomResources.push({
                   type: 'room',
