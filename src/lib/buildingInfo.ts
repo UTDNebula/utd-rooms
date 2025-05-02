@@ -25,7 +25,7 @@ export const excludedBuildings = [
 export const excludedRooms = [
   //Cannot find where this room is
   'Student Services Addition (SSA) SSA Green Room',
-  //Labs
+  //Labs on map
   'ECSN 3.108',
   'ECSN 3.110',
   'ECSN 3.112',
@@ -45,6 +45,27 @@ export const excludedRooms = [
   'GR 3.602',
   'JO 1.206',
   'JO 1.216',
+  //Not labs on map but checked and are locked labs
+  'SCI 1.119',
+  'SCI 1.129',
+  'SCI 1.139',
+  'SCI 1.159',
+  'SCI 1.169',
+  'SCI 1.179',
+  'SCI 1.188',
+  'SLC 1.205',
+  'SLC 1.206',
+  'SLC 1.211',
+  'SLC 1.214',
+  'SLC 2.206',
+  'SLC 2.207',
+  'SLC 2.215',
+  'SLC 2.216',
+  'SLC 3.202',
+  'SLC 3.203',
+  'SLC 3.210',
+  'SLC 3.215',
+  'SLC 3.216',
 ];
 
 const buildingNames: { [key: string]: string } = {
