@@ -157,7 +157,7 @@ export default function Filters(props: Props) {
   function setStartTime(newValue: Dayjs | null) {
     const params = new URLSearchParams(searchParams.toString());
     if (newValue) {
-      params.set('startTime', newValue.format('HH:mm'));
+      params.set('startTime', snapTime(newValue).format('HH:mm'));
     } else {
       params.delete('startTime');
       params.delete('fullAvailability');
@@ -168,7 +168,7 @@ export default function Filters(props: Props) {
   function setEndTime(newValue: Dayjs | null) {
     const params = new URLSearchParams(searchParams.toString());
     if (newValue) {
-      params.set('endTime', newValue.format('HH:mm'));
+      params.set('endTime', snapTime(newValue).format('HH:mm'));
     } else {
       params.delete('endTime');
       params.delete('fullAvailability');
@@ -251,7 +251,7 @@ export default function Filters(props: Props) {
                   startTimeChange.current == null ||
                     !startTimeChange.current.isValid()
                     ? null
-                    : snapTime(startTimeChange.current),
+                    : startTimeChange.current,
                 );
               },
               onKeyDown: (e) => {
@@ -260,7 +260,7 @@ export default function Filters(props: Props) {
                     startTimeChange.current == null ||
                       !startTimeChange.current.isValid()
                       ? null
-                      : snapTime(startTimeChange.current),
+                      : startTimeChange.current,
                   );
                 }
               },
@@ -291,7 +291,7 @@ export default function Filters(props: Props) {
                   endTimeChange.current == null ||
                     !endTimeChange.current.isValid()
                     ? null
-                    : snapTime(endTimeChange.current),
+                    : endTimeChange.current,
                 );
               },
               onKeyDown: (e) => {
@@ -300,7 +300,7 @@ export default function Filters(props: Props) {
                     endTimeChange.current == null ||
                       !endTimeChange.current.isValid()
                       ? null
-                      : snapTime(endTimeChange.current),
+                      : endTimeChange.current,
                   );
                 }
               },

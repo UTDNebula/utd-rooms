@@ -85,7 +85,7 @@ export function LoadingResultsTable(props: LoadingProps) {
           byGroupID: true,
           enableCompactView: false,
         }}
-        startHour={props.startTime}
+        startHour={props.startTime.split(':')[0] + ':00'}
         endHour={props.endTime}
         resourceHeaderTemplate={(props: {
           resourceData: BuildingResource | RoomResource;
@@ -109,6 +109,12 @@ export function LoadingResultsTable(props: LoadingProps) {
           );
         }}
         className="-mx-4 -mb-4 sm:m-0"
+        workHours={{
+          //buildings open/close times
+          highlight: true,
+          start: '6:00',
+          end: '22:00',
+        }}
       >
         <ResourcesDirective>
           <ResourceDirective
@@ -451,7 +457,7 @@ export default function ResultsTable(props: Props) {
           enableCompactView: false,
         }}
         selectedDate={dayjs(date).toDate()}
-        startHour={startTime}
+        startHour={startTime.split(':')[0] + ':00'}
         endHour={endTime}
         resourceHeaderTemplate={(props: {
           resourceData: BuildingResource | RoomResource;
@@ -489,6 +495,12 @@ export default function ResultsTable(props: Props) {
           );
         }}
         className="-mx-4 -mb-4 sm:m-0"
+        workHours={{
+          //buildings open/close times
+          highlight: true,
+          start: '6:00',
+          end: '22:00',
+        }}
       >
         <ResourcesDirective>
           <ResourceDirective
