@@ -15,6 +15,7 @@ import Link from 'next/link';
 import React from 'react';
 
 import buildingNames, {
+  buildingMapLinkOverrides,
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
@@ -84,7 +85,7 @@ export function LoadingResultsTable(props: LoadingProps) {
           byGroupID: true,
           enableCompactView: false,
         }}
-        startHour={props.startTime}
+        startHour={props.startTime.split(':')[0] + ':00'}
         endHour={props.endTime}
         resourceHeaderTemplate={(props: {
           resourceData: BuildingResource | RoomResource;
@@ -108,6 +109,12 @@ export function LoadingResultsTable(props: LoadingProps) {
           );
         }}
         className="-mx-4 -mb-4 sm:m-0"
+        workHours={{
+          //buildings open/close times
+          highlight: true,
+          start: '6:00',
+          end: '22:00',
+        }}
       >
         <ResourcesDirective>
           <ResourceDirective
@@ -169,16 +176,11 @@ export default function ResultsTable(props: Props) {
   const date = props.date;
 
   let startTime = props.startTime;
-  if (date === dayjs().format('YYYY-MM-DD') && dayjs().hour() < 20) {
-    //if looking at today and not too late, set start time to now
-    startTime = startTime ?? dayjs().format('HH') + ':00';
-  } else {
-    startTime = startTime ?? defaultStartTime;
-  }
+  startTime = startTime ?? defaultStartTime + ':00';
   const dayjsStartTime = dayjs(date + startTime, 'YYYY-MM-DDHH:mm');
 
   let endTime = props.endTime;
-  endTime = endTime ?? defaultEndTime;
+  endTime = endTime ?? defaultEndTime + ':00';
   const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
 
   if (dayjsEndTime.isBefore(dayjsStartTime)) {
@@ -374,10 +376,18 @@ export default function ResultsTable(props: Props) {
                 roomName.toLowerCase().startsWith(search) ||
                 room.room.toLowerCase().startsWith(search) ||
                 (buildingName &&
-                  buildingName.split(' (')[1].toLowerCase().startsWith(search))
+                  buildingName
+                    .split(' (')[1]
+                    .toLowerCase()
+                    .startsWith(search)) ||
+                events.some((event) =>
+                  event.Subject.toLowerCase().startsWith(search),
+                )
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
-                let link = `https://locator.utdallas.edu/${building}_${room.room}`;
+                const mapBuilding =
+                  buildingMapLinkOverrides[building] ?? building;
+                let link = `https://locator.utdallas.edu/${mapBuilding}_${room.room}`;
                 link = mapLinkOverrides[link] ?? link;
                 roomResources.push({
                   type: 'room',
@@ -447,7 +457,7 @@ export default function ResultsTable(props: Props) {
           enableCompactView: false,
         }}
         selectedDate={dayjs(date).toDate()}
-        startHour={startTime}
+        startHour={startTime.split(':')[0] + ':00'}
         endHour={endTime}
         resourceHeaderTemplate={(props: {
           resourceData: BuildingResource | RoomResource;
@@ -485,6 +495,12 @@ export default function ResultsTable(props: Props) {
           );
         }}
         className="-mx-4 -mb-4 sm:m-0"
+        workHours={{
+          //buildings open/close times
+          highlight: true,
+          start: '6:00',
+          end: '22:00',
+        }}
       >
         <ResourcesDirective>
           <ResourceDirective

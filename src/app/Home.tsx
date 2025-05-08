@@ -17,11 +17,11 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useRef, useState, useTransition } from 'react';
 
 import Background from '@/../public/background.png';
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
+import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import type { Rooms } from '@/types/Rooms';
 
 type Props =
@@ -39,32 +39,48 @@ type Props =
 export default function Home(props: Props) {
   const router = useRouter();
 
-  function extractTime(dateTime: Dayjs) {
-    return dateTime.format('HH:mm');
-  }
+  //for spinner after router.push
+  const [isPending, startTransition] = useTransition();
 
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
-  const [startTime, setStartTime] = useState<Dayjs | null>(null);
-  const [endTime, setEndTime] = useState<Dayjs | null>(null);
-  const [buildings, setBuildings] = useState<string[]>([]);
+  const [date, setDate] = useState<Dayjs | null>(dayjs());
+  // set to current hour
+  const [startTime, setStartTime] = useState<Dayjs | null>(
+    dayjs().hour() >= defaultStartTime && dayjs().hour() <= defaultEndTime - 2
+      ? dayjs().minute(0)
+      : dayjs().hour(defaultStartTime).minute(0),
+  );
+  // set to current hour+2
+  const [endTime, setEndTime] = useState<Dayjs | null>(
+    dayjs().hour() >= defaultStartTime && dayjs().hour() <= defaultEndTime - 2
+      ? dayjs().add(2, 'hour').minute(0)
+      : dayjs().hour(defaultEndTime).minute(0),
+  );
   const error = Boolean(
     startTime &&
       endTime &&
       dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
-  async function searchRooms() {
-    if (selectedDate !== null) {
-      const formattedDate = selectedDate.format('YYYY-MM-DD');
-      await router.push(
-        '/results?' +
-          new URLSearchParams({
-            date: formattedDate,
-            ...(startTime && { startTime: extractTime(startTime) }),
-            ...(endTime && { endTime: extractTime(endTime) }),
-            ...(buildings.length && { buildings: buildings.join(',') }),
-          }).toString(),
-      );
+  // for saving the input values on change but only updating them onBlur or onKeyDown+enter
+  const startTimeChange = useRef<Dayjs | null>(startTime);
+  const endTimeChange = useRef<Dayjs | null>(endTime);
+
+  const [buildings, setBuildings] = useState<string[]>([]);
+
+  function searchRooms() {
+    if (date !== null) {
+      const formattedDate = date.format('YYYY-MM-DD');
+      startTransition(() => {
+        router.push(
+          '/results?' +
+            new URLSearchParams({
+              date: formattedDate,
+              ...(startTime && { startTime: startTime.format('HH:mm') }),
+              ...(endTime && { endTime: endTime.format('HH:mm') }),
+              ...(buildings.length && { buildings: buildings.join(',') }),
+            }).toString(),
+        );
+      });
     }
   }
 
@@ -98,8 +114,12 @@ export default function Home(props: Props) {
       <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-8">
         <DatePicker
           label="Date *"
-          value={selectedDate}
-          onAccept={(newValue) => setSelectedDate(newValue)}
+          value={date}
+          onChange={(newValue, context) => {
+            if (context.validationError == null) {
+              setDate(newValue);
+            }
+          }}
           className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
           slotProps={{
             actionBar: {
@@ -113,6 +133,7 @@ export default function Home(props: Props) {
           label="Start time"
           value={startTime}
           timeSteps={{ minutes: 15 }}
+          onChange={(newValue) => (startTimeChange.current = newValue)}
           onAccept={(newValue) =>
             setStartTime(newValue == null ? null : snapTime(newValue))
           }
@@ -124,6 +145,24 @@ export default function Home(props: Props) {
             textField: {
               error: error,
               helperText: error && 'Start time must be before end time',
+              onBlur: () => {
+                setStartTime(
+                  startTimeChange.current == null ||
+                    !startTimeChange.current.isValid()
+                    ? null
+                    : snapTime(startTimeChange.current),
+                );
+              },
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') {
+                  setStartTime(
+                    startTimeChange.current == null ||
+                      !startTimeChange.current.isValid()
+                      ? null
+                      : snapTime(startTimeChange.current),
+                  );
+                }
+              },
             },
           }}
         />
@@ -131,6 +170,7 @@ export default function Home(props: Props) {
           label="End time"
           value={endTime}
           timeSteps={{ minutes: 15 }}
+          onChange={(newValue) => (endTimeChange.current = newValue)}
           onAccept={(newValue) =>
             setEndTime(newValue == null ? null : snapTime(newValue))
           }
@@ -142,11 +182,32 @@ export default function Home(props: Props) {
             textField: {
               error: error,
               helperText: error && 'Start time must be before end time',
+              onBlur: () => {
+                console.log(endTimeChange.current);
+                setEndTime(
+                  endTimeChange.current == null ||
+                    !endTimeChange.current.isValid()
+                    ? null
+                    : snapTime(endTimeChange.current),
+                );
+              },
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') {
+                  setEndTime(
+                    endTimeChange.current == null ||
+                      !endTimeChange.current.isValid()
+                      ? null
+                      : snapTime(endTimeChange.current),
+                  );
+                }
+              },
             },
           }}
         />
         <FormControl className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti">
-          <InputLabel id="buildings">Buildings</InputLabel>
+          <InputLabel id="buildings" shrink>
+            Buildings
+          </InputLabel>
           <Select
             label="Buildings"
             labelId="buildings"
@@ -166,10 +227,11 @@ export default function Home(props: Props) {
             }}
             renderValue={(selected) => {
               if (!selected.length) {
-                return '';
+                return 'Any';
               }
               return selected.join(', ');
             }}
+            displayEmpty
             // loading icon on building dropdown
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
             endAdornment={
@@ -205,13 +267,30 @@ export default function Home(props: Props) {
         </FormControl>
         <Button
           variant="contained"
-          className="w-fit"
+          className="h-11 relative"
           onClick={searchRooms}
-          disabled={selectedDate === null || error}
+          disabled={date === null || !date.isValid() || error}
         >
-          Search Rooms
+          {isPending && (
+            <CircularProgress
+              color="inherit"
+              className="absolute left-0 right-0 m-auto h-6 w-6 text-cornflower-50 dark:text-haiti"
+            />
+          )}
+          <span className={isPending ? 'opacity-0' : ''}>Search Rooms</span>
         </Button>
       </div>
+      <p className="absolute bottom-2 text-sm text-slate-600 dark:text-slate-400">
+        Originally brought to you by{' '}
+        <a
+          href="https://www.linkedin.com/in/mithil-viradia/"
+          target="_blank"
+          rel="noreferrer"
+          className="underline decoration-transparent hover:decoration-inherit transition"
+        >
+          Mithil Viradia
+        </a>
+      </p>
     </div>
   );
 }

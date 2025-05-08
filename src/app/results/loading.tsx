@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
 
-import Filters from '@/components/Filters';
+import { LoadingFilters } from '@/components/Filters';
 import { LoadingResultsTable } from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
@@ -14,11 +14,11 @@ import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 export default function Loading() {
   const searchParams = useSearchParams();
 
-  let startTime = searchParams.get('startTime') ?? defaultStartTime;
+  let startTime = searchParams.get('startTime') ?? defaultStartTime + ':00';
   if (Array.isArray(startTime)) {
     startTime = startTime[0];
   }
-  let endTime = searchParams.get('endTime') ?? defaultEndTime;
+  let endTime = searchParams.get('endTime') ?? defaultEndTime + ':00';
   if (Array.isArray(endTime)) {
     endTime = endTime[0];
   }
@@ -27,7 +27,7 @@ export default function Loading() {
     <>
       <TopMenu />
       <main className="p-4 flex flex-col gap-4">
-        <Filters roomsLoading />
+        <LoadingFilters />
         <LoadingResultsTable startTime={startTime} endTime={endTime} />
       </main>
     </>
