@@ -340,7 +340,7 @@ export default function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms.data).forEach(([building, rooms]) => {
+  Object.entries(rooms.data).forEach(([building, info]) => {
     if (
       !excludedBuildings.includes(building) &&
       (!buildings.length || buildings.includes(building))
@@ -354,7 +354,7 @@ export default function ResultsTable(props: Props) {
         text: buildingText,
       });
 
-      rooms
+      info.rooms
         .toSorted((a, b) => a.room.localeCompare(b.room))
         .forEach((room) => {
           const roomName = `${building} ${room.room}`;
