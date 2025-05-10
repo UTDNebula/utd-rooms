@@ -12,7 +12,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import buildingNames, {
   buildingMapLinkOverrides,
@@ -62,6 +62,7 @@ type EventSource = EventSourceNoResource & {
 };
 
 interface LoadingProps {
+  text?: string;
   startTime: string;
   endTime: string;
 }
@@ -69,7 +70,7 @@ interface LoadingProps {
 export function LoadingResultsTable(props: LoadingProps) {
   return (
     <>
-      <p>Loading rooms...</p>
+      <p>{props.text ?? 'Loading rooms...'}</p>
       <ScheduleComponent
         currentView="TimelineDay"
         readonly
@@ -183,19 +184,49 @@ export default function ResultsTable(props: Props) {
   endTime = endTime ?? defaultEndTime + ':00';
   const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
 
-  if (dayjsEndTime.isBefore(dayjsStartTime)) {
-    return null;
-  }
-
   const minCapacity = isNaN(parseInt(props.minCapacity))
     ? 0
     : parseInt(props.minCapacity);
 
   const buildings = props.buildings;
+  const nearby = buildings[0] === 'nearby';
+  const [location, setLocation] = useState<number[]>([]);
+  useEffect(() => {
+    if (
+      nearby &&
+      typeof window !== 'undefined' &&
+      'permissions' in navigator &&
+      'geolocation' in navigator
+    ) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          console.log(pos);
+          setLocation([pos.coords.latitude, pos.coords.longitude]);
+        },
+        console.log,
+        {
+          maximumAge: 60000, //up to one minute old
+        },
+      );
+    }
+  }, [nearby]);
+  if (nearby && !location.length) {
+    return (
+      <LoadingResultsTable
+        text="Getting your location..."
+        startTime={startTime}
+        endTime={endTime}
+      />
+    );
+  }
 
   const fullAvailability = props.fullAvailability;
 
   const search = props.search.trim().toLowerCase();
+
+  if (dayjsEndTime.isBefore(dayjsStartTime)) {
+    return null;
+  }
 
   const rooms = props.rooms;
 
@@ -228,7 +259,7 @@ export default function ResultsTable(props: Props) {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
@@ -256,7 +287,7 @@ export default function ResultsTable(props: Props) {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
@@ -283,7 +314,7 @@ export default function ResultsTable(props: Props) {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
@@ -343,7 +374,7 @@ export default function ResultsTable(props: Props) {
   Object.entries(rooms.data).forEach(([building, info]) => {
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       const buildingName = buildingNames[building];
       const buildingText = buildingName ? buildingName : building;
@@ -404,12 +435,16 @@ export default function ResultsTable(props: Props) {
     }
   });
 
-  // Sort buildings by the number of open rooms
-  buildingResources.sort(
-    (a, b) =>
-      roomResources.filter((room) => room.buildingId === b.id).length -
-      roomResources.filter((room) => room.buildingId === a.id).length,
-  );
+  if (nearby) {
+    console.log(location);
+  } else {
+    // Sort buildings by the number of open rooms
+    buildingResources.sort(
+      (a, b) =>
+        roomResources.filter((room) => room.buildingId === b.id).length -
+        roomResources.filter((room) => room.buildingId === a.id).length,
+    );
+  }
 
   // Convert events to array
   const scheduleData: EventSource[] = [];
@@ -442,7 +477,7 @@ export default function ResultsTable(props: Props) {
             : roomResources.length === 1
               ? ' room that has free time.'
               : ' rooms that have free time.'
-        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}`}
+        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"

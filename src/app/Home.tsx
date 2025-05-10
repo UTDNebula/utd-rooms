@@ -1,42 +1,21 @@
 'use client';
 
-import {
-  Checkbox,
-  CircularProgress,
-  FormControl,
-  InputLabel,
-  ListItemText,
-  MenuItem,
-  Radio,
-  Select,
-} from '@mui/material';
+import { Checkbox, CircularProgress, FormControlLabel } from '@mui/material';
 import Button from '@mui/material/Button';
-import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useRef, useState, useTransition } from 'react';
+import React, { useEffect, useRef, useState, useTransition } from 'react';
 
 import Background from '@/../public/background.png';
-import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
 import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
-import type { Rooms } from '@/types/Rooms';
-
-type Props =
-  | {
-      roomsLoading: true;
-    }
-  | {
-      roomsLoading: false;
-      rooms: Rooms;
-    };
 
 /**
  * Returns the home page with Nebula Branding and search options
  */
-export default function Home(props: Props) {
+export default function Home() {
   const router = useRouter();
 
   //for spinner after router.push
@@ -65,7 +44,26 @@ export default function Home(props: Props) {
   const startTimeChange = useRef<Dayjs | null>(startTime);
   const endTimeChange = useRef<Dayjs | null>(endTime);
 
-  const [buildings, setBuildings] = useState<string[]>([]);
+  const [nearby, setNearby] = useState(false);
+
+  // only show checkbox if location is possible
+  const [locationAvailable, setLocationAvailable] = useState<
+    'loading' | 'yes' | 'no'
+  >('loading');
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      'permissions' in navigator &&
+      'geolocation' in navigator
+    ) {
+      setLocationAvailable('yes');
+    } else {
+      setLocationAvailable('no');
+    }
+  }, []);
+
+  const [locationGranted, setLocationGranted] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   function searchRooms() {
     if (date !== null) {
@@ -77,7 +75,7 @@ export default function Home(props: Props) {
               date: formattedDate,
               ...(startTime && { startTime: startTime.format('HH:mm') }),
               ...(endTime && { endTime: endTime.format('HH:mm') }),
-              ...(buildings.length && { buildings: buildings.join(',') }),
+              ...(nearby && { buildings: 'nearby' }),
             }).toString(),
         );
       });
@@ -111,7 +109,7 @@ export default function Home(props: Props) {
           Find available rooms at UT Dallas
         </p>
       </div>
-      <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-8">
+      <div className="w-full max-w-96 flex flex-col items-center gap-4 sm:gap-4">
         <DatePicker
           label="Date *"
           value={date}
@@ -204,67 +202,57 @@ export default function Home(props: Props) {
             },
           }}
         />
-        <FormControl className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti">
-          <InputLabel id="buildings" shrink>
-            Buildings
-          </InputLabel>
-          <Select
-            label="Buildings"
-            labelId="buildings"
-            multiple
-            disabled={props.roomsLoading}
-            value={buildings}
-            onChange={(event: SelectChangeEvent<string[]>) => {
-              let newValue = event.target.value;
-              if (typeof newValue === 'string') {
-                newValue = [newValue];
-              }
-              if (!newValue.includes('any')) {
-                setBuildings(newValue.toSorted());
-              } else {
-                setBuildings([]);
-              }
-            }}
-            renderValue={(selected) => {
-              if (!selected.length) {
-                return 'Any';
-              }
-              return selected.join(', ');
-            }}
-            displayEmpty
-            // loading icon on building dropdown
-            MenuProps={{ PaperProps: { className: 'max-h-60' } }}
-            endAdornment={
-              props.roomsLoading ? <CircularProgress size={20} /> : null
-            }
-            IconComponent={props.roomsLoading ? () => null : undefined}
-          >
-            <MenuItem className="h-10" value="any">
-              <Radio checked={!buildings.length} />
-              <ListItemText primary="Any" />
-            </MenuItem>
-            {/* dropdown options*/}
-            {!props.roomsLoading &&
-              Object.keys(props.rooms)
-                .toSorted()
-                .map((value) => {
-                  if (excludedBuildings.includes(value)) {
-                    return null;
-                  }
-                  return (
-                    <MenuItem className="h-10" key={value} value={value}>
-                      <Checkbox checked={buildings.includes(value)} />
-                      <ListItemText
-                        className="text-wrap"
-                        primary={
-                          buildingNames[value] ? buildingNames[value] : value
+        {locationAvailable === 'loading' && (
+          <FormControlLabel
+            control={<Checkbox checked={false} disabled />}
+            label="Nearby buildings"
+          />
+        )}
+        {locationAvailable === 'yes' && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={nearby}
+                icon={
+                  locationLoading ? <CircularProgress size={24} /> : undefined
+                }
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  //we know we can get location
+                  if (!event.target.checked || locationGranted) {
+                    setNearby(event.target.checked);
+                  } else {
+                    navigator.permissions
+                      .query({ name: 'geolocation' })
+                      .then((result) => {
+                        if (result.state === 'granted') {
+                          setLocationGranted(true);
+                          setNearby(true);
+                        } else if (result.state === 'prompt') {
+                          setLocationLoading(true);
+                          //make the prompt by getting location
+                          navigator.geolocation.getCurrentPosition(
+                            () => {
+                              setLocationGranted(true);
+                              setLocationLoading(false);
+                              setNearby(true);
+                            },
+                            () => {
+                              setLocationLoading(false);
+                              setNearby(false);
+                            },
+                            {
+                              maximumAge: 60000, //up to one minute old
+                            },
+                          );
                         }
-                      />
-                    </MenuItem>
-                  );
-                })}
-          </Select>
-        </FormControl>
+                      });
+                  }
+                }}
+              />
+            }
+            label="Nearby buildings"
+          />
+        )}
         <Button
           variant="contained"
           className="h-11 relative"
