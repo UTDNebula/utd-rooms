@@ -1,6 +1,10 @@
 export type Rooms = {
   [key: string]: {
-    room: string;
-    capacity: number;
-  }[];
+    lat: number | null;
+    lng: number | null;
+    rooms: {
+      room: string;
+      capacity: number;
+    }[];
+  };
 };
