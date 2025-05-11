@@ -577,7 +577,7 @@ export default function ResultsTable(props: Props) {
                         {data.distance !== null
                           ? Math.round(metersToMiles(data.distance) * 100) /
                               100 +
-                            'mi'
+                            ' miles'
                           : 'unknown'}
                       </>
                     )}
