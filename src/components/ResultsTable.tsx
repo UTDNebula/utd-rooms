@@ -15,8 +15,8 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 import buildingNames, {
-  buildingMapOverrides,
   buildingLocationHardcodes,
+  buildingMapOverrides,
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
@@ -155,6 +155,23 @@ export function LoadingResultsTable(props: LoadingProps) {
   );
 }
 
+interface ErrorProps {
+  text: string;
+}
+
+function ErrorResultsTable(props: ErrorProps) {
+  return (
+    <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
+      <p className="text-xl text-gray-700 dark:text-gray-300">
+        {`Error ${props.text}. Please reload the page.`}
+      </p>
+      <Button onClick={() => window.location.reload()} variant="contained">
+        Reload
+      </Button>
+    </div>
+  );
+}
+
 // From: https://henry-rossiter.medium.com/calculating-distance-between-geographic-coordinates-with-javascript-5f3097b61898
 function cosineDistanceBetweenPoints(
   lat1: number,
@@ -251,16 +268,7 @@ export default function ResultsTable(props: Props) {
   }
   if (error) {
     //print error message
-    return (
-      <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
-        <p className="text-xl text-gray-700 dark:text-gray-300">
-          {`Error ${error}. Please reload the page.`}
-        </p>
-        <Button onClick={() => window.location.reload()} variant="contained">
-          Reload
-        </Button>
-      </div>
-    );
+    return <ErrorResultsTable text={error} />;
   }
 
   const fullAvailability = props.fullAvailability;
@@ -283,7 +291,7 @@ export default function ResultsTable(props: Props) {
     astraEvents.message !== 'success' ||
     mazevoEvents.message !== 'success'
   ) {
-    setError('getting data');
+    return <ErrorResultsTable text="getting data" />;
   }
 
   // Combine sources

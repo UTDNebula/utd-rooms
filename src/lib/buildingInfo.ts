@@ -125,7 +125,7 @@ export const buildingMapOverrides: {
 };
 
 export const buildingLocationHardcodes: {
-  [key: string]: string;
+  [key: string]: number[];
 } = {
   APC1: [32.98386, -96.747261],
   'Outdoors SU Mall': [32.986023, -96.748268],
