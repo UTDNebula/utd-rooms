@@ -15,7 +15,8 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 import buildingNames, {
-  buildingMapLinkOverrides,
+  buildingMapOverrides,
+  buildingLocationHardcodes,
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
@@ -40,6 +41,7 @@ interface BuildingResource {
   type: 'building';
   id: number;
   text: string;
+  distance: number | null;
 }
 interface RoomResource {
   type: 'room';
@@ -153,6 +155,33 @@ export function LoadingResultsTable(props: LoadingProps) {
   );
 }
 
+// From: https://henry-rossiter.medium.com/calculating-distance-between-geographic-coordinates-with-javascript-5f3097b61898
+function cosineDistanceBetweenPoints(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) {
+  const R = 6371e3;
+  const p1 = (lat1 * Math.PI) / 180;
+  const p2 = (lat2 * Math.PI) / 180;
+  const deltaP = p2 - p1;
+  const deltaLon = lon2 - lon1;
+  const deltaLambda = (deltaLon * Math.PI) / 180;
+  const a =
+    Math.sin(deltaP / 2) * Math.sin(deltaP / 2) +
+    Math.cos(p1) *
+      Math.cos(p2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2);
+  const d = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * R;
+  return d;
+}
+
+function metersToMiles(distance: number) {
+  return distance / 1000 / 1.609;
+}
+
 /**
  * Props type used by the ResultsTable component
  */
@@ -174,6 +203,8 @@ interface Props {
  * This is a component to hold results for room availablity in a table
  */
 export default function ResultsTable(props: Props) {
+  const [error, setError] = useState('');
+
   const date = props.date;
 
   let startTime = props.startTime;
@@ -200,10 +231,9 @@ export default function ResultsTable(props: Props) {
     ) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          console.log(pos);
           setLocation([pos.coords.latitude, pos.coords.longitude]);
         },
-        console.log,
+        () => setError('getting your location'),
         {
           maximumAge: 60000, //up to one minute old
         },
@@ -217,6 +247,19 @@ export default function ResultsTable(props: Props) {
         startTime={startTime}
         endTime={endTime}
       />
+    );
+  }
+  if (error) {
+    //print error message
+    return (
+      <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
+        <p className="text-xl text-gray-700 dark:text-gray-300">
+          {`Error ${error}. Please reload the page.`}
+        </p>
+        <Button onClick={() => window.location.reload()} variant="contained">
+          Reload
+        </Button>
+      </div>
     );
   }
 
@@ -240,17 +283,7 @@ export default function ResultsTable(props: Props) {
     astraEvents.message !== 'success' ||
     mazevoEvents.message !== 'success'
   ) {
-    //print error message
-    return (
-      <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
-        <p className="text-xl text-gray-700 dark:text-gray-300">
-          Error. Please reload the page.
-        </p>
-        <Button onClick={() => window.location.reload()} variant="contained">
-          Reload
-        </Button>
-      </div>
-    );
+    setError('getting data');
   }
 
   // Combine sources
@@ -378,11 +411,25 @@ export default function ResultsTable(props: Props) {
     ) {
       const buildingName = buildingNames[building];
       const buildingText = buildingName ? buildingName : building;
+      const lat = buildingLocationHardcodes[building]
+        ? buildingLocationHardcodes[building][0]
+        : buildingMapOverrides[building]
+          ? rooms.data[buildingMapOverrides[building]].lat
+          : info.lat;
+      const lng = buildingLocationHardcodes[building]
+        ? buildingLocationHardcodes[building][1]
+        : buildingMapOverrides[building]
+          ? rooms.data[buildingMapOverrides[building]].lng
+          : info.lng;
       buildingIdMap.set(building, buildingIdCounter++);
       buildingResources.push({
         type: 'building',
         id: buildingIdMap.get(building),
         text: buildingText,
+        distance:
+          lat === null || lng === null || !location.length
+            ? null
+            : cosineDistanceBetweenPoints(location[0], location[1], lat, lng),
       });
 
       info.rooms
@@ -416,8 +463,7 @@ export default function ResultsTable(props: Props) {
                 )
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
-                const mapBuilding =
-                  buildingMapLinkOverrides[building] ?? building;
+                const mapBuilding = buildingMapOverrides[building] ?? building;
                 let link = `https://locator.utdallas.edu/${mapBuilding}_${room.room}`;
                 link = mapLinkOverrides[link] ?? link;
                 roomResources.push({
@@ -436,7 +482,19 @@ export default function ResultsTable(props: Props) {
   });
 
   if (nearby) {
-    console.log(location);
+    // Sort buildings by distance
+    buildingResources.sort((a, b) => {
+      if (a.distance === null && b.distance === null) {
+        return 0;
+      }
+      if (a.distance === null) {
+        return 1;
+      }
+      if (b.distance === null) {
+        return -1;
+      }
+      return a.distance - b.distance;
+    });
   } else {
     // Sort buildings by the number of open rooms
     buildingResources.sort(
@@ -500,7 +558,24 @@ export default function ResultsTable(props: Props) {
           const data = props.resourceData;
           if (data.type === 'building') {
             return (
-              <Tooltip title={data.text}>
+              <Tooltip
+                title={
+                  <>
+                    {data.text}
+                    {location.length && (
+                      <>
+                        <br />
+                        Distance:{' '}
+                        {data.distance !== null
+                          ? Math.round(metersToMiles(data.distance) * 100) /
+                              100 +
+                            'mi'
+                          : 'unknown'}
+                      </>
+                    )}
+                  </>
+                }
+              >
                 <div className="e-resource-text ml-0 whitespace-nowrap overflow-hidden text-ellipsis">
                   {data.text}
                 </div>
