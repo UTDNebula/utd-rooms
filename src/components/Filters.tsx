@@ -352,7 +352,7 @@ export default function Filters(props: Props) {
                   `${pathname}?${params.toString()}`,
                 );
               }
-              if (newValue.includes('any')) {
+              if (newValue.includes('any') || !newValue.length) {
                 params.delete('buildings');
               } else if (
                 newValue.includes('nearby') &&
