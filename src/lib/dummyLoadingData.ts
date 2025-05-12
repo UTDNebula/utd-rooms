@@ -5,6 +5,7 @@ export const dummyBuildingResources = [
     type: 'building',
     id: 1,
     text: 'SCI (Sciences Building)',
+    distance: null,
   },
 ];
 

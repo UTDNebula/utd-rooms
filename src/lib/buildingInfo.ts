@@ -116,11 +116,19 @@ const buildingNames: { [key: string]: string } = {
 export default buildingNames;
 
 //Map doesn't recognize these buildings
-export const buildingMapLinkOverrides: {
+//For map links and lat/lng
+export const buildingMapOverrides: {
   [key: string]: string;
 } = {
   SOM: 'JSOM',
   TH: 'JO',
+};
+
+export const buildingLocationHardcodes: {
+  [key: string]: number[];
+} = {
+  APC1: [32.98386, -96.747261],
+  'Outdoors SU Mall': [32.986023, -96.748268],
 };
 
 //Override specific room links
@@ -155,21 +163,21 @@ export const mapLinkOverrides: {
     'https://map.concept3d.com/?id=1772#!m/434592',
   'https://locator.utdallas.edu/Outdoors SU Mall_Entire SU Mall':
     'https://map.concept3d.com/?id=1772#!m/434591',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth F1':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth F1':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth F2':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth F2':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth F3':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth F3':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth F4':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth F4':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth W1':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth W1':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth W1&W2':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth W1&W2':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Mall Booth W2':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Mall Booth W2':
     'https://map.concept3d.com/?id=1772#!m/434590',
-  'https://locator.utdallas.edu/Outdoors SU Mall_SU Plinth':
+  'https://locator.utdallas.edu/Outdoors SU Mall_Plinth':
     'https://map.concept3d.com/?id=1772#!m/434590',
   'https://locator.utdallas.edu/SSA_Auditorium':
     'https://locator.utdallas.edu/SSA_13.330',
