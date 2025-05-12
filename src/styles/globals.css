@@ -153,4 +153,11 @@
   .e-appointment .e-appointment-details div:not(.e-indicator) div {
     display: block;
   }
+  /*Popup*/
+  .e-event-popup .e-subject {
+    max-height: unset;
+  }
+  .e-resource-icon::before {
+    content: '\e756';
+  }
 }
