@@ -226,6 +226,7 @@ export default function Home() {
                   if (!event.target.checked || locationGranted) {
                     setNearby(event.target.checked);
                   } else {
+                    //check for granted always, prompt, or denied always
                     navigator.permissions
                       .query({ name: 'geolocation' })
                       .then((result) => {
@@ -239,6 +240,7 @@ export default function Home() {
                             () => {
                               setLocationGranted(true);
                               //to cancel callback
+                              //for most recent value on double callbacks
                               setLocationLoading((prev) => {
                                 if (prev) {
                                   setNearby(true);

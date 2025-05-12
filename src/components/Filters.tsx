@@ -368,6 +368,7 @@ export default function Filters(props: Props) {
                 if (locationGranted) {
                   params.set('buildings', 'nearby');
                 } else {
+                  //check for granted always, prompt, or denied always
                   //don't run window.history.replaceState at the end, run it in these callbacks
                   replaceAtEnd = false;
                   navigator.permissions
@@ -383,6 +384,8 @@ export default function Filters(props: Props) {
                         navigator.geolocation.getCurrentPosition(
                           () => {
                             setLocationGranted(true);
+                            //to cancel callback
+                            //for most recent value on double callbacks
                             if (locationLoadingRef.current) {
                               setLocationLoading(false);
                               params.set('buildings', 'nearby');
