@@ -252,6 +252,7 @@ export default function ResultsTable(props: Props) {
         },
         () => setError('getting your location'),
         {
+          enableHighAccuracy: true,
           maximumAge: 60000, //up to one minute old
         },
       );

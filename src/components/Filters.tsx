@@ -388,6 +388,7 @@ export default function Filters(props: Props) {
                             replaceState();
                           },
                           {
+                            enableHighAccuracy: true,
                             maximumAge: 60000, //up to one minute old
                           },
                         );
