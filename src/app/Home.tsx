@@ -217,6 +217,11 @@ export default function Home() {
                   locationLoading ? <CircularProgress size={24} /> : undefined
                 }
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  if (locationLoading) {
+                    //cancel nearby callback if ongoing
+                    setLocationLoading(false);
+                    return;
+                  }
                   //we know we can get location
                   if (!event.target.checked || locationGranted) {
                     setNearby(event.target.checked);
@@ -233,8 +238,14 @@ export default function Home() {
                           navigator.geolocation.getCurrentPosition(
                             () => {
                               setLocationGranted(true);
-                              setLocationLoading(false);
-                              setNearby(true);
+                              //to cancel callback
+                              setLocationLoading((prev) => {
+                                if (prev) {
+                                  setNearby(true);
+                                  return false;
+                                }
+                                return prev;
+                              });
                             },
                             () => {
                               setLocationLoading(false);

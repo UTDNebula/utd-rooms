@@ -151,6 +151,11 @@ export default function Filters(props: Props) {
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
+  //ref for handling double callbacks to 2 getCurrentPosition callbacks when the user is clicking crazy
+  const locationLoadingRef = useRef(locationLoading);
+  useEffect(() => {
+    locationLoadingRef.current = locationLoading;
+  }, [locationLoading]);
 
   const fullAvailability = props.fullAvailability;
 
@@ -377,8 +382,8 @@ export default function Filters(props: Props) {
                         //make the prompt by getting location
                         navigator.geolocation.getCurrentPosition(
                           () => {
-                            if (locationLoading) {
-                              setLocationGranted(true);
+                            setLocationGranted(true);
+                            if (locationLoadingRef.current) {
                               setLocationLoading(false);
                               params.set('buildings', 'nearby');
                               replaceState();
