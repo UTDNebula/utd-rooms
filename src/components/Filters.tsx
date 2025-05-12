@@ -377,15 +377,15 @@ export default function Filters(props: Props) {
                         //make the prompt by getting location
                         navigator.geolocation.getCurrentPosition(
                           () => {
-                            setLocationGranted(true);
-                            setLocationLoading(false);
-                            params.set('buildings', 'nearby');
-                            replaceState();
+                            if (locationLoading) {
+                              setLocationGranted(true);
+                              setLocationLoading(false);
+                              params.set('buildings', 'nearby');
+                              replaceState();
+                            }
                           },
                           () => {
                             setLocationLoading(false);
-                            params.delete('buildings');
-                            replaceState();
                           },
                           {
                             enableHighAccuracy: true,
@@ -405,6 +405,8 @@ export default function Filters(props: Props) {
                 );
               }
               if (replaceAtEnd) {
+                //cancel nearby callback if ongoing
+                setLocationLoading(false);
                 replaceState();
               }
             }}
@@ -418,11 +420,6 @@ export default function Filters(props: Props) {
               return selected.join(', ');
             }}
             displayEmpty
-            // loading icon on building dropdown
-            endAdornment={
-              locationLoading ? <CircularProgress size={20} /> : null
-            }
-            IconComponent={locationLoading ? () => null : undefined}
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
           >
             <MenuItem className="h-10" value="any">
@@ -437,7 +434,12 @@ export default function Filters(props: Props) {
             )}
             {locationAvailable === 'yes' && (
               <MenuItem className="h-10" value="nearby">
-                <Radio checked={buildings[0] === 'nearby'} />
+                <Radio
+                  checked={buildings[0] === 'nearby'}
+                  icon={
+                    locationLoading ? <CircularProgress size={24} /> : undefined
+                  }
+                />
                 <ListItemText primary="Nearby" />
               </MenuItem>
             )}

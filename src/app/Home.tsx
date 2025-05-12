@@ -238,7 +238,6 @@ export default function Home() {
                             },
                             () => {
                               setLocationLoading(false);
-                              setNearby(false);
                             },
                             {
                               enableHighAccuracy: true,
