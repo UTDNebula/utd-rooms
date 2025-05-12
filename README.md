@@ -37,7 +37,7 @@ pnpm dev
 
 ### Documentation
 
-For any work on the results table see the SyncFusion documentation at https://ej2.syncfusion.com/react/documentation/schedule/getting-started and https://helpej2.syncfusion.com/react/documentation/api/schedule/.
+For any work on the results table see the SyncFusion [Schedule documentation](https://ej2.syncfusion.com/react/documentation/schedule/getting-started) and [API documentation](https://helpej2.syncfusion.com/react/documentation/api/schedule/).
 
 ### Contact
 
