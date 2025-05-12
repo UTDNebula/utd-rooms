@@ -571,7 +571,7 @@ export default function ResultsTable(props: Props) {
                 title={
                   <>
                     {data.text}
-                    {location.length && (
+                    {location.length ? (
                       <>
                         <br />
                         Distance:{' '}
@@ -581,6 +581,8 @@ export default function ResultsTable(props: Props) {
                             ' miles'
                           : 'unknown'}
                       </>
+                    ) : (
+                      ''
                     )}
                   </>
                 }
