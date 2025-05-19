@@ -12,10 +12,11 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import buildingNames, {
-  buildingMapLinkOverrides,
+  buildingLocationHardcodes,
+  buildingMapOverrides,
   excludedBuildings,
   excludedRooms,
   mapLinkOverrides,
@@ -40,6 +41,7 @@ interface BuildingResource {
   type: 'building';
   id: number;
   text: string;
+  distance: number | null;
 }
 interface RoomResource {
   type: 'room';
@@ -62,6 +64,7 @@ type EventSource = EventSourceNoResource & {
 };
 
 interface LoadingProps {
+  text?: string;
   startTime: string;
   endTime: string;
 }
@@ -69,7 +72,7 @@ interface LoadingProps {
 export function LoadingResultsTable(props: LoadingProps) {
   return (
     <>
-      <p>Loading rooms...</p>
+      <p>{props.text ?? 'Loading rooms...'}</p>
       <ScheduleComponent
         currentView="TimelineDay"
         readonly
@@ -152,6 +155,50 @@ export function LoadingResultsTable(props: LoadingProps) {
   );
 }
 
+interface ErrorProps {
+  text: string;
+}
+
+function ErrorResultsTable(props: ErrorProps) {
+  return (
+    <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
+      <p className="text-xl text-gray-700 dark:text-gray-300">
+        {`Error ${props.text}. Please reload the page.`}
+      </p>
+      <Button onClick={() => window.location.reload()} variant="contained">
+        Reload
+      </Button>
+    </div>
+  );
+}
+
+// From: https://henry-rossiter.medium.com/calculating-distance-between-geographic-coordinates-with-javascript-5f3097b61898
+function cosineDistanceBetweenPoints(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) {
+  const R = 6371e3;
+  const p1 = (lat1 * Math.PI) / 180;
+  const p2 = (lat2 * Math.PI) / 180;
+  const deltaP = p2 - p1;
+  const deltaLon = lon2 - lon1;
+  const deltaLambda = (deltaLon * Math.PI) / 180;
+  const a =
+    Math.sin(deltaP / 2) * Math.sin(deltaP / 2) +
+    Math.cos(p1) *
+      Math.cos(p2) *
+      Math.sin(deltaLambda / 2) *
+      Math.sin(deltaLambda / 2);
+  const d = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * R;
+  return d;
+}
+
+function metersToMiles(distance: number) {
+  return distance / 1000 / 1.609;
+}
+
 /**
  * Props type used by the ResultsTable component
  */
@@ -173,6 +220,8 @@ interface Props {
  * This is a component to hold results for room availablity in a table
  */
 export default function ResultsTable(props: Props) {
+  const [error, setError] = useState('');
+
   const date = props.date;
 
   let startTime = props.startTime;
@@ -183,19 +232,53 @@ export default function ResultsTable(props: Props) {
   endTime = endTime ?? defaultEndTime + ':00';
   const dayjsEndTime = dayjs(date + endTime, 'YYYY-MM-DDHH:mm');
 
-  if (dayjsEndTime.isBefore(dayjsStartTime)) {
-    return null;
-  }
-
   const minCapacity = isNaN(parseInt(props.minCapacity))
     ? 0
     : parseInt(props.minCapacity);
 
   const buildings = props.buildings;
+  const nearby = buildings[0] === 'nearby';
+  const [location, setLocation] = useState<number[]>([]);
+  useEffect(() => {
+    if (
+      nearby &&
+      typeof window !== 'undefined' &&
+      'permissions' in navigator &&
+      'geolocation' in navigator
+    ) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setLocation([pos.coords.latitude, pos.coords.longitude]);
+        },
+        () => setError('getting your location'),
+        {
+          enableHighAccuracy: true,
+          maximumAge: 60000, //up to one minute old
+        },
+      );
+    }
+  }, [nearby]);
+  if (nearby && !location.length) {
+    return (
+      <LoadingResultsTable
+        text="Getting your location..."
+        startTime={startTime}
+        endTime={endTime}
+      />
+    );
+  }
+  if (error) {
+    //print error message
+    return <ErrorResultsTable text={error} />;
+  }
 
   const fullAvailability = props.fullAvailability;
 
   const search = props.search.trim().toLowerCase();
+
+  if (dayjsEndTime.isBefore(dayjsStartTime)) {
+    return null;
+  }
 
   const rooms = props.rooms;
 
@@ -209,17 +292,7 @@ export default function ResultsTable(props: Props) {
     astraEvents.message !== 'success' ||
     mazevoEvents.message !== 'success'
   ) {
-    //print error message
-    return (
-      <div className="flex flex-col gap-4 justify-center items-center px-8 py-16">
-        <p className="text-xl text-gray-700 dark:text-gray-300">
-          Error. Please reload the page.
-        </p>
-        <Button onClick={() => window.location.reload()} variant="contained">
-          Reload
-        </Button>
-      </div>
-    );
+    return <ErrorResultsTable text="getting data" />;
   }
 
   // Combine sources
@@ -228,7 +301,7 @@ export default function ResultsTable(props: Props) {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
@@ -256,7 +329,7 @@ export default function ResultsTable(props: Props) {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
@@ -283,7 +356,7 @@ export default function ResultsTable(props: Props) {
     building = mergedBuildings[building] ?? building;
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
@@ -340,21 +413,35 @@ export default function ResultsTable(props: Props) {
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
-  Object.entries(rooms.data).forEach(([building, rooms]) => {
+  Object.entries(rooms.data).forEach(([building, info]) => {
     if (
       !excludedBuildings.includes(building) &&
-      (!buildings.length || buildings.includes(building))
+      (!buildings.length || nearby || buildings.includes(building))
     ) {
       const buildingName = buildingNames[building];
       const buildingText = buildingName ? buildingName : building;
+      const lat = buildingLocationHardcodes[building]
+        ? buildingLocationHardcodes[building][0]
+        : buildingMapOverrides[building]
+          ? rooms.data[buildingMapOverrides[building]].lat
+          : info.lat;
+      const lng = buildingLocationHardcodes[building]
+        ? buildingLocationHardcodes[building][1]
+        : buildingMapOverrides[building]
+          ? rooms.data[buildingMapOverrides[building]].lng
+          : info.lng;
       buildingIdMap.set(building, buildingIdCounter++);
       buildingResources.push({
         type: 'building',
         id: buildingIdMap.get(building),
         text: buildingText,
+        distance:
+          lat === null || lng === null || !location.length
+            ? null
+            : cosineDistanceBetweenPoints(location[0], location[1], lat, lng),
       });
 
-      rooms
+      info.rooms
         .toSorted((a, b) => a.room.localeCompare(b.room))
         .forEach((room) => {
           const roomName = `${building} ${room.room}`;
@@ -385,8 +472,7 @@ export default function ResultsTable(props: Props) {
                 )
               ) {
                 roomIdMap.set(roomName, roomIdCounter++);
-                const mapBuilding =
-                  buildingMapLinkOverrides[building] ?? building;
+                const mapBuilding = buildingMapOverrides[building] ?? building;
                 let link = `https://locator.utdallas.edu/${mapBuilding}_${room.room}`;
                 link = mapLinkOverrides[link] ?? link;
                 roomResources.push({
@@ -404,12 +490,28 @@ export default function ResultsTable(props: Props) {
     }
   });
 
-  // Sort buildings by the number of open rooms
-  buildingResources.sort(
-    (a, b) =>
-      roomResources.filter((room) => room.buildingId === b.id).length -
-      roomResources.filter((room) => room.buildingId === a.id).length,
-  );
+  if (nearby) {
+    // Sort buildings by distance
+    buildingResources.sort((a, b) => {
+      if (a.distance === null && b.distance === null) {
+        return 0;
+      }
+      if (a.distance === null) {
+        return 1;
+      }
+      if (b.distance === null) {
+        return -1;
+      }
+      return a.distance - b.distance;
+    });
+  } else {
+    // Sort buildings by the number of open rooms
+    buildingResources.sort(
+      (a, b) =>
+        roomResources.filter((room) => room.buildingId === b.id).length -
+        roomResources.filter((room) => room.buildingId === a.id).length,
+    );
+  }
 
   // Convert events to array
   const scheduleData: EventSource[] = [];
@@ -442,7 +544,7 @@ export default function ResultsTable(props: Props) {
             : roomResources.length === 1
               ? ' room that has free time.'
               : ' rooms that have free time.'
-        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}`}
+        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"
@@ -465,7 +567,26 @@ export default function ResultsTable(props: Props) {
           const data = props.resourceData;
           if (data.type === 'building') {
             return (
-              <Tooltip title={data.text}>
+              <Tooltip
+                title={
+                  <>
+                    {data.text}
+                    {location.length ? (
+                      <>
+                        <br />
+                        Distance:{' '}
+                        {data.distance !== null
+                          ? Math.round(metersToMiles(data.distance) * 100) /
+                              100 +
+                            ' miles'
+                          : 'unknown'}
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </>
+                }
+              >
                 <div className="e-resource-text ml-0 whitespace-nowrap overflow-hidden text-ellipsis">
                   {data.text}
                 </div>

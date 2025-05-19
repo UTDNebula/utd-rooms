@@ -26,7 +26,11 @@ export default async function fetchRooms(): Promise<GenericFetchedData<Rooms>> {
     // Convert from array to object
     const roomsMap: Rooms = {};
     for (const building of data.data) {
-      roomsMap[building.building] = building.rooms;
+      roomsMap[building.building] = {
+        lat: building.lat === 0 ? null : building.lat,
+        lng: building.lng === 0 ? null : building.lng,
+        rooms: building.rooms,
+      };
     }
 
     return { message: 'success', data: roomsMap };

@@ -19,7 +19,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
 import snapTime from '@/lib/snapTime';
@@ -132,6 +132,30 @@ export default function Filters(props: Props) {
   const minCapacity = props.minCapacity;
 
   const buildings = props.buildings;
+
+  // only show checkbox if location is possible
+  const [locationAvailable, setLocationAvailable] = useState<
+    'loading' | 'yes' | 'no'
+  >('loading');
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      'permissions' in navigator &&
+      'geolocation' in navigator
+    ) {
+      setLocationAvailable('yes');
+    } else {
+      setLocationAvailable('no');
+    }
+  }, []);
+
+  const [locationGranted, setLocationGranted] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+  //ref for handling double callbacks to 2 getCurrentPosition callbacks when the user is clicking crazy
+  const locationLoadingRef = useRef(locationLoading);
+  useEffect(() => {
+    locationLoadingRef.current = locationLoading;
+  }, [locationLoading]);
 
   const fullAvailability = props.fullAvailability;
 
@@ -325,31 +349,108 @@ export default function Filters(props: Props) {
                 ? event.target.value
                 : [event.target.value];
               const params = new URLSearchParams(searchParams.toString());
-              if (newValue.includes('any')) {
-                params.delete('buildings');
-              } else {
-                params.set('buildings', newValue.sort().join(','));
+              let replaceAtEnd = true;
+              function replaceState() {
+                window.history.replaceState(
+                  null,
+                  '',
+                  `${pathname}?${params.toString()}`,
+                );
               }
-              window.history.replaceState(
-                null,
-                '',
-                `${pathname}?${params.toString()}`,
-              );
+              if (newValue.includes('any') || !newValue.length) {
+                params.delete('buildings');
+              } else if (
+                newValue.includes('nearby') &&
+                //not already there
+                buildings[0] !== 'nearby'
+              ) {
+                //we know we can get location
+                if (locationGranted) {
+                  params.set('buildings', 'nearby');
+                } else {
+                  //check for granted always, prompt, or denied always
+                  //don't run window.history.replaceState at the end, run it in these callbacks
+                  replaceAtEnd = false;
+                  navigator.permissions
+                    .query({ name: 'geolocation' })
+                    .then((result) => {
+                      if (result.state === 'granted') {
+                        setLocationGranted(true);
+                        params.set('buildings', 'nearby');
+                        replaceState();
+                      } else if (result.state === 'prompt') {
+                        setLocationLoading(true);
+                        //make the prompt by getting location
+                        navigator.geolocation.getCurrentPosition(
+                          () => {
+                            setLocationGranted(true);
+                            //to cancel callback
+                            //for most recent value on double callbacks
+                            if (locationLoadingRef.current) {
+                              setLocationLoading(false);
+                              params.set('buildings', 'nearby');
+                              replaceState();
+                            }
+                          },
+                          () => {
+                            setLocationLoading(false);
+                          },
+                          {
+                            enableHighAccuracy: true,
+                            maximumAge: 60000, //up to one minute old
+                          },
+                        );
+                      }
+                    });
+                }
+              } else {
+                params.set(
+                  'buildings',
+                  newValue
+                    .filter((building) => building !== 'nearby')
+                    .sort()
+                    .join(','),
+                );
+              }
+              if (replaceAtEnd) {
+                //cancel nearby callback if ongoing
+                setLocationLoading(false);
+                replaceState();
+              }
             }}
             renderValue={(selected) => {
               if (!selected.length) {
                 return 'Any';
               }
+              if (selected[0] === 'nearby') {
+                return 'Nearby';
+              }
               return selected.join(', ');
             }}
             displayEmpty
-            // loading icon on building dropdown
             MenuProps={{ PaperProps: { className: 'max-h-60' } }}
           >
             <MenuItem className="h-10" value="any">
               <Radio checked={!buildings.length} />
               <ListItemText primary="Any" />
             </MenuItem>
+            {locationAvailable === 'loading' && (
+              <MenuItem className="h-10" value="nearby">
+                <Radio disabled />
+                <ListItemText primary="Nearby" />
+              </MenuItem>
+            )}
+            {locationAvailable === 'yes' && (
+              <MenuItem className="h-10" value="nearby">
+                <Radio
+                  checked={buildings[0] === 'nearby'}
+                  icon={
+                    locationLoading ? <CircularProgress size={24} /> : undefined
+                  }
+                />
+                <ListItemText primary="Nearby" />
+              </MenuItem>
+            )}
             {/* dropdown options*/}
             {Object.keys(props.rooms)
               .toSorted()

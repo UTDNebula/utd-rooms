@@ -35,6 +35,10 @@ pnpm install
 pnpm dev
 ```
 
+### Documentation
+
+For any work on the results table see the SyncFusion [Schedule documentation](https://ej2.syncfusion.com/react/documentation/schedule/getting-started) and [API documentation](https://helpej2.syncfusion.com/react/documentation/api/schedule/).
+
 ### Contact
 
 This project is maintained by Nebula Labs. If you have
