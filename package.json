@@ -21,12 +21,15 @@
     "@mui/material-nextjs": "^7.0.2",
     "@mui/x-date-pickers": "^7.28.3",
     "@next/third-parties": "^15.3.0",
+    "@sentry/nextjs": "^9.22.0",
     "@syncfusion/ej2-base": "^29.1.36",
     "@syncfusion/ej2-react-schedule": "^29.1.37",
     "dayjs": "^1.11.13",
+    "import-in-the-middle": "^1.13.2",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "require-in-the-middle": "^7.5.2",
     "sharp": "^0.34.1"
   },
   "devDependencies": {
