@@ -102,7 +102,7 @@ export default function Home() {
             NEBULA LABS
           </a>
         </h2>
-        <h1 className="text-6xl font-extrabold font-kallisto mb-3">
+        <h1 className="text-6xl font-extrabold font-display mb-3">
           UTD ROOMS
         </h1>
         <p className="mb-5 text-gray-700 dark:text-gray-300 leading-7">
