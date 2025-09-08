@@ -7,6 +7,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 
 import Background from '@/../public/background.png';
+import NebulaLogo from '@/components/NebulaLogo';
 
 /**
  * Props type used by the TopMenu component
@@ -67,8 +68,9 @@ export default function TopMenu(props: Props) {
         />
         <Link
           href="/"
-          className="text-lg md:text-xl font-display font-medium md:font-bold"
+          className="text-lg md:text-xl font-display font-medium md:font-bold flex gap-2 items-center"
         >
+          <NebulaLogo className="h-6 w-auto fill-haiti dark:fill-white" />
           UTD ROOMS
         </Link>
         <TextField
