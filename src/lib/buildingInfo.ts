@@ -72,7 +72,7 @@ export const excludedRooms = [
   'SLC 3.215',
   'SLC 3.216',
   //Conference rooms
-  'ECSS 2.507'
+  'ECSS 2.507',
   'ECSS 3.910',
   'ECSW 3.375',
 ];
