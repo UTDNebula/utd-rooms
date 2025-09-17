@@ -51,6 +51,7 @@ export const excludedRooms = [
   'JO 1.206',
   'JO 1.216',
   //Not labs on map but checked and are locked labs
+  'ECSN 2.316',
   'SCI 1.119',
   'SCI 1.129',
   'SCI 1.139',
