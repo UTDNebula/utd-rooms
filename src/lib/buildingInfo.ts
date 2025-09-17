@@ -36,6 +36,7 @@ export const excludedRooms = [
   'ECSN 3.114',
   'ECSN 3.118',
   'ECSN 3.120',
+  'ECSW 1.150B',
   'ECSW 2.315',
   'ECSW 2.335',
   'ECSW 3.315',
