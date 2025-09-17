@@ -77,6 +77,7 @@ export default function Home() {
               ...(startTime && { startTime: startTime.format('HH:mm') }),
               ...(endTime && { endTime: endTime.format('HH:mm') }),
               ...(nearby && { buildings: 'nearby' }),
+              availability: 'hasGap',
             }).toString(),
         );
       });

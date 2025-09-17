@@ -208,7 +208,7 @@ interface Props {
   endTime: string | null;
   minCapacity: string;
   buildings: string[];
-  fullAvailability: boolean;
+  availability: string;
   rooms: GenericFetchedData<Rooms>;
   courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
   astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
@@ -272,7 +272,7 @@ export default function ResultsTable(props: Props) {
     return <ErrorResultsTable text={error} />;
   }
 
-  const fullAvailability = props.fullAvailability;
+  const availability = props.availability;
 
   const search = props.search.trim().toLowerCase();
 
@@ -457,7 +457,11 @@ export default function ResultsTable(props: Props) {
               dayjsStartTime,
               dayjsEndTime,
             );
-            if (completelyFree || (hasGap && !fullAvailability)) {
+            if (
+              completelyFree ||
+              (hasGap && availability === 'hasGap') ||
+              availability === 'any'
+            ) {
               if (
                 search === '' ||
                 roomName.toLowerCase().startsWith(search) ||
@@ -533,18 +537,29 @@ export default function ResultsTable(props: Props) {
     });
   });
 
+  let roomCountText = '';
+  switch (availability) {
+    case 'any':
+      roomCountText = roomResources.length === 1 ? ' room.' : ' rooms.';
+      break;
+    case 'full':
+      roomCountText =
+        roomResources.length === 1
+          ? ' room that is completely free.'
+          : ' rooms that are completely free.';
+      break;
+    case 'hasGap':
+      roomCountText =
+        roomResources.length === 1
+          ? ' room that has free time.'
+          : ' rooms that have free time.';
+      break;
+  }
+
   return (
     <>
       <p>
-        {`Found ${roomResources.length}${
-          fullAvailability
-            ? roomResources.length === 1
-              ? ' room that is completely free.'
-              : ' rooms that are completely free.'
-            : roomResources.length === 1
-              ? ' room that has free time.'
-              : ' rooms that have free time.'
-        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
+        {`Found ${roomResources.length}${roomCountText}${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"
