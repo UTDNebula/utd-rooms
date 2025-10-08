@@ -59,6 +59,7 @@ export const excludedRooms = [
   'SCI 1.169',
   'SCI 1.179',
   'SCI 1.188',
+  'SCI 2.220',
   'SLC 1.205',
   'SLC 1.206',
   'SLC 1.211',
@@ -72,10 +73,15 @@ export const excludedRooms = [
   'SLC 3.210',
   'SLC 3.215',
   'SLC 3.216',
+  //Locked
+  'JO 4.504',
   //Conference rooms
   'ECSS 2.507',
   'ECSS 3.910',
   'ECSW 3.375',
+  'FO 3.704A',
+  //Mock trial room
+  'FO 2.608',
 ];
 
 const buildingNames: { [key: string]: string } = {
