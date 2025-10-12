@@ -49,7 +49,11 @@ export default function Results(props: Props) {
   }
   minCapacity = minCapacity ?? '';
 
-  const fullAvailability = searchParams.get('fullAvailability') === 'true';
+  let availability = searchParams.get('availability');
+  if (Array.isArray(availability)) {
+    availability = availability[0];
+  }
+  availability = availability ?? '';
 
   return (
     <>
@@ -61,7 +65,7 @@ export default function Results(props: Props) {
           endTime={endTime}
           buildings={buildings}
           minCapacity={minCapacity}
-          fullAvailability={fullAvailability}
+          availability={availability}
           rooms={props.rooms.message === 'success' ? props.rooms.data : {}}
         />
         <ResultsTable
@@ -70,7 +74,7 @@ export default function Results(props: Props) {
           endTime={endTime}
           buildings={buildings}
           minCapacity={minCapacity}
-          fullAvailability={fullAvailability}
+          availability={availability}
           rooms={props.rooms}
           courseBookEvents={props.courseBookEvents}
           astraEvents={props.astraEvents}
