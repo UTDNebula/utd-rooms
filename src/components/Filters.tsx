@@ -4,7 +4,6 @@ import {
   Checkbox,
   CircularProgress,
   FormControl,
-  FormControlLabel,
   Grid,
   InputLabel,
   ListItemText,
@@ -12,7 +11,6 @@ import {
   Radio,
   Select,
   TextField,
-  Tooltip,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -87,13 +85,16 @@ export function LoadingFilters() {
           disabled
         />
       </Grid>
-      <Grid size={{ xs: 6, sm: 4, lg: 2 }} className="px-2">
-        <Tooltip title="Only show rooms available the whole time">
-          <FormControlLabel
-            control={<Checkbox disabled />}
-            label="Full availability"
-          />
-        </Tooltip>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
+        <FormControl size="small" className="w-full">
+          <InputLabel id="availability">Availability</InputLabel>
+          <Select
+            label="Availability"
+            labelId="availability"
+            disabled
+            value=""
+          ></Select>
+        </FormControl>
       </Grid>
     </Grid>
   );
@@ -105,7 +106,7 @@ interface Props {
   endTime: string | null;
   minCapacity: string | null;
   buildings: string[];
-  fullAvailability: boolean;
+  availability: string;
   rooms: Rooms;
 }
 
@@ -157,7 +158,7 @@ export default function Filters(props: Props) {
     locationLoadingRef.current = locationLoading;
   }, [locationLoading]);
 
-  const fullAvailability = props.fullAvailability;
+  const availability = props.availability;
 
   // for saving the input values on change but only updating them onBlur or onKeyDown+enter
   const dateChange = useRef<Dayjs | null>(dayjsDate);
@@ -184,7 +185,7 @@ export default function Filters(props: Props) {
       params.set('startTime', snapTime(newValue).format('HH:mm'));
     } else {
       params.delete('startTime');
-      params.delete('fullAvailability');
+      params.set('availability', 'hasGap');
     }
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }
@@ -195,7 +196,7 @@ export default function Filters(props: Props) {
       params.set('endTime', snapTime(newValue).format('HH:mm'));
     } else {
       params.delete('endTime');
-      params.delete('fullAvailability');
+      params.set('availability', 'hasGap');
     }
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }
@@ -495,31 +496,42 @@ export default function Filters(props: Props) {
         />
       </Grid>
 
-      {/*Only show rooms available the whole time checkbox*/}
-      <Grid size={{ xs: 6, sm: 4, lg: 2 }} className="px-2">
-        <Tooltip title="Only show rooms available the whole time">
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={fullAvailability}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  if (event.target.checked) {
-                    params.set('fullAvailability', 'true');
-                  } else {
-                    params.delete('fullAvailability');
-                  }
-                  window.history.replaceState(
-                    null,
-                    '',
-                    `${pathname}?${params.toString()}`,
-                  );
-                }}
-              />
-            }
-            label="Full availability"
-          />
-        </Tooltip>
+      {/*Availability dropdown*/}
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
+        <FormControl size="small" className="w-full">
+          <InputLabel id="availability" shrink>
+            Availability
+          </InputLabel>
+          <Select
+            label="Availability"
+            labelId="availability"
+            value={availability}
+            onChange={(event: SelectChangeEvent<string>) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('availability', event.target.value);
+              window.history.replaceState(
+                null,
+                '',
+                `${pathname}?${params.toString()}`,
+              );
+            }}
+            renderValue={(selected) => {
+              if (selected === 'full') {
+                return 'Full availability';
+              }
+              if (selected === 'hasGap') {
+                return 'Has gap';
+              }
+              if (selected === 'any') {
+                return 'All rooms';
+              }
+            }}
+          >
+            <MenuItem value="full">Full time is availabile</MenuItem>
+            <MenuItem value="hasGap">Some gap available</MenuItem>
+            <MenuItem value="any">Show all rooms</MenuItem>
+          </Select>
+        </FormControl>
       </Grid>
     </Grid>
   );
