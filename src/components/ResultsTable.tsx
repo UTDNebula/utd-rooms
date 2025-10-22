@@ -622,7 +622,7 @@ export default function ResultsTable(props: Props) {
                 <Link
                   href={data.link}
                   target="_blank"
-                  className="font-bold text-lg text-purple-300 hover:text-purple-400 visited:text-purple-600"
+                  className="font-bold text-lg text-royal dark:text-cornflower-300 hover:text-royalDark dark:hover:text-cornflower-400 visited:text-cornflower-700 dark:visited:text-cornflower-500"
                 >
                   {data.text}
                 </Link>
