@@ -93,7 +93,7 @@ export default function Home() {
         className="object-cover -z-20"
       />
       <div className="text-center">
-        <h2 className="text-sm font-semibold mb-3 text-cornflower-600 dark:text-cornflower-400 tracking-wider flex gap-1 items-center w-full justify-center">
+        <h2 className="text-sm font-semibold mb-3 text-royal dark:text-cornflower-300 tracking-wider flex gap-1 items-center w-full justify-center">
           <span className="leading-none">POWERED BY</span>
           {/*eslint-disable-next-line react/jsx-no-target-blank*/}
           <a
@@ -102,7 +102,7 @@ export default function Home() {
             rel="noopener"
             className="underline decoration-transparent hover:decoration-inherit transition flex gap-1 items-center"
           >
-            <NebulaLogo className="h-4 w-auto fill-cornflower-600 dark:fill-cornflower-400" />
+            <NebulaLogo className="h-4 w-auto fill-royal dark:fill-cornflower-300" />
             <span className="leading-none">NEBULA LABS</span>
           </a>
         </h2>
@@ -266,6 +266,7 @@ export default function Home() {
               />
             }
             label="Nearby buildings"
+            className="mr-0"
           />
         )}
         <Button
