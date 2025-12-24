@@ -1,19 +1,5 @@
 'use client';
 
-import { Button, Skeleton, Tooltip } from '@mui/material';
-import {
-  Inject,
-  ResourceDirective,
-  ResourcesDirective,
-  ScheduleComponent,
-  TimelineViews,
-  ViewDirective,
-  ViewsDirective,
-} from '@syncfusion/ej2-react-schedule';
-import dayjs, { type Dayjs } from 'dayjs';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-
 import buildingNames, {
   buildingLocationHardcodes,
   buildingMapOverrides,
@@ -36,6 +22,19 @@ import type {
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
+import { Button, Skeleton, Tooltip } from '@mui/material';
+import {
+  Inject,
+  ResourceDirective,
+  ResourcesDirective,
+  ScheduleComponent,
+  TimelineViews,
+  ViewDirective,
+  ViewsDirective,
+} from '@syncfusion/ej2-react-schedule';
+import dayjs, { type Dayjs } from 'dayjs';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 
 interface BuildingResource {
   type: 'building';
