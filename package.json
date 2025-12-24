@@ -63,7 +63,6 @@
     ],
     "parser": "@typescript-eslint/parser",
     "plugins": [
-      "simple-import-sort",
       "@typescript-eslint"
     ],
     "rules": {
@@ -83,8 +82,6 @@
           ]
         }
       ],
-      "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error",
       "import/first": "error",
       "import/newline-after-import": "error",
       "import/no-duplicates": "error"
