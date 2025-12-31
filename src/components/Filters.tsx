@@ -1,5 +1,8 @@
 'use client';
 
+import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
+import snapTime from '@/lib/snapTime';
+import type { Rooms } from '@/types/Rooms';
 import {
   Checkbox,
   CircularProgress,
@@ -18,10 +21,6 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-
-import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
-import type { Rooms } from '@/types/Rooms';
 
 export function LoadingFilters() {
   return (

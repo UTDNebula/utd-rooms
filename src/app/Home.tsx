@@ -1,5 +1,8 @@
 'use client';
 
+import Background from '@/../public/background.png';
+import NebulaLogo from '@/components/NebulaLogo';
+import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import { Checkbox, CircularProgress, FormControlLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -8,10 +11,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState, useTransition } from 'react';
-
-import Background from '@/../public/background.png';
-import NebulaLogo from '@/components/NebulaLogo';
-import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 
 /**
  * Returns the home page with Nebula Branding and search options
