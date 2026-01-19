@@ -94,7 +94,6 @@ export default function Home() {
       <div className="text-center">
         <h2 className="text-sm font-semibold mb-3 text-royal dark:text-cornflower-300 tracking-wider flex gap-1 items-center w-full justify-center">
           <span className="leading-none">POWERED BY</span>
-          {/*eslint-disable-next-line react/jsx-no-target-blank*/}
           <a
             href="https://www.utdnebula.com/"
             target="_blank"
