@@ -134,20 +134,16 @@ export default function Filters(props: Props) {
   const buildings = props.buildings;
 
   // only show checkbox if location is possible
-  const [locationAvailable, setLocationAvailable] = useState<
-    'loading' | 'yes' | 'no'
-  >('loading');
-  useEffect(() => {
+  const [locationAvailable] = useState<'yes' | 'no'>(() => {
     if (
       typeof window !== 'undefined' &&
       'permissions' in navigator &&
       'geolocation' in navigator
     ) {
-      setLocationAvailable('yes');
-    } else {
-      setLocationAvailable('no');
+      return 'yes';
     }
-  }, []);
+    return 'no';
+  });
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -339,7 +335,7 @@ export default function Filters(props: Props) {
           <InputLabel id="buildings" shrink>
             Buildings
           </InputLabel>
-          <Select
+          <Select<string[]>
             label="Buildings"
             labelId="buildings"
             multiple
@@ -434,12 +430,6 @@ export default function Filters(props: Props) {
               <Radio checked={!buildings.length} />
               <ListItemText primary="Any" />
             </MenuItem>
-            {locationAvailable === 'loading' && (
-              <MenuItem className="h-10" value="nearby">
-                <Radio disabled />
-                <ListItemText primary="Nearby" />
-              </MenuItem>
-            )}
             {locationAvailable === 'yes' && (
               <MenuItem className="h-10" value="nearby">
                 <Radio

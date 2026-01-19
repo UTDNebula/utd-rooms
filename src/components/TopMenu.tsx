@@ -74,7 +74,12 @@ export default function TopMenu(props: Props) {
         </Link>
         <TextField
           label="Filter results"
-          className="basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
+          className="basis-[24rem] shrink"
+          slotProps={{
+            input: {
+              className: 'bg-white dark:bg-haiti',
+            },
+          }}
           value={props.search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             if (typeof props.setSearch !== 'undefined') {
