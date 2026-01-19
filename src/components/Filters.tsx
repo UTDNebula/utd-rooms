@@ -125,8 +125,8 @@ export default function Filters(props: Props) {
   const endTime = props.endTime;
   const error = Boolean(
     startTime &&
-      endTime &&
-      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    endTime &&
+    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
   const minCapacity = props.minCapacity;

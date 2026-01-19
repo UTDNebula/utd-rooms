@@ -36,8 +36,8 @@ export default function Home() {
   );
   const error = Boolean(
     startTime &&
-      endTime &&
-      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    endTime &&
+    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
   // for saving the input values on change but only updating them onBlur or onKeyDown+enter
