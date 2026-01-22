@@ -47,15 +47,15 @@ export default function Home() {
   const [nearby, setNearby] = useState(false);
 
   // only show checkbox if location is possible
-  const [locationAvailable] = useState<'yes' | 'no'>(() => {
+  const [locationAvailable] = useState(() => {
     if (
       typeof window !== 'undefined' &&
       'permissions' in navigator &&
       'geolocation' in navigator
     ) {
-      return 'yes';
+      return true;
     }
-    return 'no';
+    return false;
   });
 
   const [locationGranted, setLocationGranted] = useState(false);
@@ -215,7 +215,7 @@ export default function Home() {
             },
           }}
         />
-        {locationAvailable === 'yes' && (
+        {locationAvailable && (
           <FormControlLabel
             control={
               <Checkbox

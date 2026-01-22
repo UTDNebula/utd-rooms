@@ -134,15 +134,15 @@ export default function Filters(props: Props) {
   const buildings = props.buildings;
 
   // only show checkbox if location is possible
-  const [locationAvailable] = useState<'yes' | 'no'>(() => {
+  const [locationAvailable] = useState(() => {
     if (
       typeof window !== 'undefined' &&
       'permissions' in navigator &&
       'geolocation' in navigator
     ) {
-      return 'yes';
+      return true;
     }
-    return 'no';
+    return false;
   });
 
   const [locationGranted, setLocationGranted] = useState(false);
@@ -430,7 +430,7 @@ export default function Filters(props: Props) {
               <Radio checked={!buildings.length} />
               <ListItemText primary="Any" />
             </MenuItem>
-            {locationAvailable === 'yes' && (
+            {locationAvailable && (
               <MenuItem className="h-10" value="nearby">
                 <Radio
                   checked={buildings[0] === 'nearby'}
