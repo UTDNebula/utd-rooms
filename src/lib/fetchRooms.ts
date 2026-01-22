@@ -2,7 +2,7 @@ import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
 
 export default async function fetchRooms(): Promise<GenericFetchedData<Rooms>> {
-  const API_KEY = process.env.REACT_APP_NEBULA_API_KEY;
+  const API_KEY = process.env.NEBULA_API_KEY;
   if (typeof API_KEY !== 'string') {
     return { message: 'error', data: 'API key is undefined' };
   }
