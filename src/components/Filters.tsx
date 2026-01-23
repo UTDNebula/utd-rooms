@@ -1,5 +1,8 @@
 'use client';
 
+import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
+import snapTime from '@/lib/snapTime';
+import type { Rooms } from '@/types/Rooms';
 import {
   Checkbox,
   CircularProgress,
@@ -18,10 +21,6 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-
-import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
-import type { Rooms } from '@/types/Rooms';
 
 export function LoadingFilters() {
   return (
@@ -126,8 +125,8 @@ export default function Filters(props: Props) {
   const endTime = props.endTime;
   const error = Boolean(
     startTime &&
-      endTime &&
-      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    endTime &&
+    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
   const minCapacity = props.minCapacity;
@@ -135,20 +134,16 @@ export default function Filters(props: Props) {
   const buildings = props.buildings;
 
   // only show checkbox if location is possible
-  const [locationAvailable, setLocationAvailable] = useState<
-    'loading' | 'yes' | 'no'
-  >('loading');
-  useEffect(() => {
+  const [locationAvailable] = useState(() => {
     if (
       typeof window !== 'undefined' &&
       'permissions' in navigator &&
       'geolocation' in navigator
     ) {
-      setLocationAvailable('yes');
-    } else {
-      setLocationAvailable('no');
+      return true;
     }
-  }, []);
+    return false;
+  });
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -340,7 +335,7 @@ export default function Filters(props: Props) {
           <InputLabel id="buildings" shrink>
             Buildings
           </InputLabel>
-          <Select
+          <Select<string[]>
             label="Buildings"
             labelId="buildings"
             multiple
@@ -435,13 +430,7 @@ export default function Filters(props: Props) {
               <Radio checked={!buildings.length} />
               <ListItemText primary="Any" />
             </MenuItem>
-            {locationAvailable === 'loading' && (
-              <MenuItem className="h-10" value="nearby">
-                <Radio disabled />
-                <ListItemText primary="Nearby" />
-              </MenuItem>
-            )}
-            {locationAvailable === 'yes' && (
+            {locationAvailable && (
               <MenuItem className="h-10" value="nearby">
                 <Radio
                   checked={buildings[0] === 'nearby'}

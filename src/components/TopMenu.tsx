@@ -1,13 +1,12 @@
 'use client';
 
+import Background from '@/../public/background.png';
+import NebulaLogo from '@/components/NebulaLogo';
 import { Share } from '@mui/icons-material';
 import { IconButton, Snackbar, TextField, Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
-
-import Background from '@/../public/background.png';
-import NebulaLogo from '@/components/NebulaLogo';
 
 /**
  * Props type used by the TopMenu component
@@ -75,7 +74,12 @@ export default function TopMenu(props: Props) {
         </Link>
         <TextField
           label="Filter results"
-          className="basis-[24rem] shrink [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
+          className="basis-[24rem] shrink"
+          slotProps={{
+            input: {
+              className: 'bg-white dark:bg-haiti',
+            },
+          }}
           value={props.search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             if (typeof props.setSearch !== 'undefined') {

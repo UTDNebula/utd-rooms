@@ -1,8 +1,5 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
-
 import Filters from '@/components/Filters';
 import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
@@ -14,6 +11,8 @@ import type {
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
+import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 
 interface Props {
   date: string;

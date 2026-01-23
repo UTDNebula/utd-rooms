@@ -1,11 +1,9 @@
-import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import React from 'react';
-
 import fetchEvents from '@/lib/fetchEvents';
 import fetchRooms from '@/lib/fetchRooms';
 import type { AstraEvent, CourseBookEvent, MazevoEvent } from '@/types/Events';
-
+import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
+import React from 'react';
 import Results from './Results';
 
 export const metadata: Metadata = {

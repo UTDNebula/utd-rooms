@@ -1,5 +1,8 @@
 'use client';
 
+import Background from '@/../public/background.png';
+import NebulaLogo from '@/components/NebulaLogo';
+import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import { Checkbox, CircularProgress, FormControlLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -7,11 +10,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState, useTransition } from 'react';
-
-import Background from '@/../public/background.png';
-import NebulaLogo from '@/components/NebulaLogo';
-import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
+import React, { useRef, useState, useTransition } from 'react';
 
 /**
  * Returns the home page with Nebula Branding and search options
@@ -37,8 +36,8 @@ export default function Home() {
   );
   const error = Boolean(
     startTime &&
-      endTime &&
-      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    endTime &&
+    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
 
   // for saving the input values on change but only updating them onBlur or onKeyDown+enter
@@ -48,20 +47,16 @@ export default function Home() {
   const [nearby, setNearby] = useState(false);
 
   // only show checkbox if location is possible
-  const [locationAvailable, setLocationAvailable] = useState<
-    'loading' | 'yes' | 'no'
-  >('loading');
-  useEffect(() => {
+  const [locationAvailable] = useState(() => {
     if (
       typeof window !== 'undefined' &&
       'permissions' in navigator &&
       'geolocation' in navigator
     ) {
-      setLocationAvailable('yes');
-    } else {
-      setLocationAvailable('no');
+      return true;
     }
-  }, []);
+    return false;
+  });
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -95,7 +90,6 @@ export default function Home() {
       <div className="text-center">
         <h2 className="text-sm font-semibold mb-3 text-royal dark:text-cornflower-300 tracking-wider flex gap-1 items-center w-full justify-center">
           <span className="leading-none">POWERED BY</span>
-          {/*eslint-disable-next-line react/jsx-no-target-blank*/}
           <a
             href="https://www.utdnebula.com/"
             target="_blank"
@@ -120,8 +114,15 @@ export default function Home() {
               setDate(newValue);
             }
           }}
-          className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
+          className="w-full"
           slotProps={{
+            textField: {
+              slotProps: {
+                input: {
+                  className: 'bg-white dark:bg-haiti',
+                },
+              },
+            },
             actionBar: {
               actions: ['today', 'accept'],
             },
@@ -137,12 +138,17 @@ export default function Home() {
           onAccept={(newValue) =>
             setStartTime(newValue == null ? null : snapTime(newValue))
           }
-          className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
+          className="w-full"
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
             },
             textField: {
+              slotProps: {
+                input: {
+                  className: 'bg-white dark:bg-haiti',
+                },
+              },
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
@@ -174,12 +180,17 @@ export default function Home() {
           onAccept={(newValue) =>
             setEndTime(newValue == null ? null : snapTime(newValue))
           }
-          className="w-full [&>.MuiInputBase-root]:bg-white dark:[&>.MuiInputBase-root]:bg-haiti"
+          className="w-full"
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
             },
             textField: {
+              slotProps: {
+                input: {
+                  className: 'bg-white dark:bg-haiti',
+                },
+              },
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
@@ -204,13 +215,7 @@ export default function Home() {
             },
           }}
         />
-        {locationAvailable === 'loading' && (
-          <FormControlLabel
-            control={<Checkbox checked={false} disabled />}
-            label="Nearby buildings"
-          />
-        )}
-        {locationAvailable === 'yes' && (
+        {locationAvailable && (
           <FormControlLabel
             control={
               <Checkbox
