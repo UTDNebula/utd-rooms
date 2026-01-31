@@ -268,8 +268,7 @@ export default function Filters(props: Props) {
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
                 setStartTime(
-                  startTimeChange == null ||
-                    !startTimeChange.isValid()
+                  startTimeChange == null || !startTimeChange.isValid()
                     ? null
                     : startTimeChange,
                 );
@@ -277,8 +276,7 @@ export default function Filters(props: Props) {
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
                   setStartTime(
-                    startTimeChange == null ||
-                      !startTimeChange.isValid()
+                    startTimeChange == null || !startTimeChange.isValid()
                       ? null
                       : startTimeChange,
                   );
@@ -308,8 +306,7 @@ export default function Filters(props: Props) {
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
                 setEndTime(
-                  endTimeChange == null ||
-                    !endTimeChange.isValid()
+                  endTimeChange == null || !endTimeChange.isValid()
                     ? null
                     : endTimeChange,
                 );
@@ -317,8 +314,7 @@ export default function Filters(props: Props) {
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
                   setEndTime(
-                    endTimeChange == null ||
-                      !endTimeChange.isValid()
+                    endTimeChange == null || !endTimeChange.isValid()
                       ? null
                       : endTimeChange,
                   );
