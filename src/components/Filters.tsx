@@ -1,7 +1,7 @@
 'use client';
 
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
+import { snapTime, validTime } from '@/lib/timeUtils';
 import type { Rooms } from '@/types/Rooms';
 import {
   Checkbox,
@@ -157,10 +157,10 @@ export default function Filters(props: Props) {
 
   // for saving the input values on change but only updating them onBlur or onKeyDown+enter
   const dateChange = useRef<Dayjs | null>(dayjsDate);
-  const startTimeChange = useRef<Dayjs | null>(
+  const [startTimeChange, setStartTimeChange] = useState<Dayjs | null>(
     dayjs(date + startTime, 'YYYY-MM-DDHH:mm'),
   );
-  const endTimeChange = useRef<Dayjs | null>(
+  const [endTimeChange, setEndTimeChange] = useState<Dayjs | null>(
     dayjs(date + endTime, 'YYYY-MM-DDHH:mm'),
   );
   const [minCapacityChange, setMinCapacityChange] = useState(minCapacity ?? '');
@@ -255,9 +255,9 @@ export default function Filters(props: Props) {
           timeSteps={{ minutes: 15 }}
           label="Start time"
           className="w-full"
-          value={startTime ? dayjs(startTime, 'HH:mm') : null}
-          onChange={(newValue) => (startTimeChange.current = newValue)}
-          onAccept={setStartTime}
+          value={startTimeChange}
+          onChange={(newValue) => setStartTimeChange(newValue)}
+          onAccept={(newValue) => setStartTime(validTime(newValue))}
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
@@ -267,21 +267,11 @@ export default function Filters(props: Props) {
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
-                setStartTime(
-                  startTimeChange.current == null ||
-                    !startTimeChange.current.isValid()
-                    ? null
-                    : startTimeChange.current,
-                );
+                setStartTime(validTime(startTimeChange));
               },
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
-                  setStartTime(
-                    startTimeChange.current == null ||
-                      !startTimeChange.current.isValid()
-                      ? null
-                      : startTimeChange.current,
-                  );
+                  setStartTime(validTime(startTimeChange));
                 }
               },
             },
@@ -295,9 +285,9 @@ export default function Filters(props: Props) {
           timeSteps={{ minutes: 15 }}
           label="End time"
           className="w-full"
-          value={endTime ? dayjs(endTime, 'HH:mm') : null}
-          onChange={(newValue) => (endTimeChange.current = newValue)}
-          onAccept={setEndTime}
+          value={endTimeChange}
+          onChange={(newValue) => setEndTimeChange(newValue)}
+          onAccept={(newValue) => setEndTime(validTime(newValue))}
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
@@ -307,21 +297,11 @@ export default function Filters(props: Props) {
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
-                setEndTime(
-                  endTimeChange.current == null ||
-                    !endTimeChange.current.isValid()
-                    ? null
-                    : endTimeChange.current,
-                );
+                setEndTime(validTime(endTimeChange));
               },
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
-                  setEndTime(
-                    endTimeChange.current == null ||
-                      !endTimeChange.current.isValid()
-                      ? null
-                      : endTimeChange.current,
-                  );
+                  setEndTime(validTime(endTimeChange));
                 }
               },
             },
