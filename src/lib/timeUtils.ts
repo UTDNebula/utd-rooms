@@ -23,6 +23,5 @@ export function snapTime(time: Dayjs | null): Dayjs | null {
 }
 
 export function validTime(time: Dayjs | null): Dayjs | null {
-  console.log(time?.isValid(), time == null || !time.isValid() ? null : time);
   return time == null || !time.isValid() ? null : time;
 }
