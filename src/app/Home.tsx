@@ -2,7 +2,12 @@
 
 import Background from '@/../public/background.png';
 import NebulaLogo from '@/components/NebulaLogo';
-import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
+import {
+  defaultEndTime,
+  defaultStartTime,
+  snapTime,
+  validTime,
+} from '@/lib/timeUtils';
 import { Checkbox, CircularProgress, FormControlLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -10,7 +15,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useRef, useState, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
 
 /**
  * Returns the home page with Nebula Branding and search options
@@ -39,10 +44,6 @@ export default function Home() {
     endTime &&
     dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
   );
-
-  // for saving the input values on change but only updating them onBlur or onKeyDown+enter
-  const startTimeChange = useRef<Dayjs | null>(startTime);
-  const endTimeChange = useRef<Dayjs | null>(endTime);
 
   const [nearby, setNearby] = useState(false);
 
@@ -134,10 +135,8 @@ export default function Home() {
           label="Start time"
           value={startTime}
           timeSteps={{ minutes: 15 }}
-          onChange={(newValue) => (startTimeChange.current = newValue)}
-          onAccept={(newValue) =>
-            setStartTime(newValue == null ? null : snapTime(newValue))
-          }
+          onChange={(newValue) => setStartTime(newValue)}
+          onAccept={(newValue) => setStartTime(snapTime(validTime(newValue)))}
           className="w-full"
           slotProps={{
             actionBar: {
@@ -151,24 +150,6 @@ export default function Home() {
               },
               error: error,
               helperText: error && 'Start time must be before end time',
-              onBlur: () => {
-                setStartTime(
-                  startTimeChange.current == null ||
-                    !startTimeChange.current.isValid()
-                    ? null
-                    : snapTime(startTimeChange.current),
-                );
-              },
-              onKeyDown: (e) => {
-                if (e.key === 'Enter') {
-                  setStartTime(
-                    startTimeChange.current == null ||
-                      !startTimeChange.current.isValid()
-                      ? null
-                      : snapTime(startTimeChange.current),
-                  );
-                }
-              },
             },
           }}
         />
@@ -176,10 +157,8 @@ export default function Home() {
           label="End time"
           value={endTime}
           timeSteps={{ minutes: 15 }}
-          onChange={(newValue) => (endTimeChange.current = newValue)}
-          onAccept={(newValue) =>
-            setEndTime(newValue == null ? null : snapTime(newValue))
-          }
+          onChange={(newValue) => setEndTime(newValue)}
+          onAccept={(newValue) => setEndTime(snapTime(validTime(newValue)))}
           className="w-full"
           slotProps={{
             actionBar: {
@@ -193,25 +172,6 @@ export default function Home() {
               },
               error: error,
               helperText: error && 'Start time must be before end time',
-              onBlur: () => {
-                console.log(endTimeChange.current);
-                setEndTime(
-                  endTimeChange.current == null ||
-                    !endTimeChange.current.isValid()
-                    ? null
-                    : snapTime(endTimeChange.current),
-                );
-              },
-              onKeyDown: (e) => {
-                if (e.key === 'Enter') {
-                  setEndTime(
-                    endTimeChange.current == null ||
-                      !endTimeChange.current.isValid()
-                      ? null
-                      : snapTime(endTimeChange.current),
-                  );
-                }
-              },
             },
           }}
         />
