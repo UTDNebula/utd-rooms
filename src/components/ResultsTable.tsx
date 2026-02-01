@@ -13,7 +13,7 @@ import {
   dummyRoomResources,
   dummyScheduleData,
 } from '@/lib/dummyLoadingData';
-import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
+import { defaultEndTime, defaultStartTime } from '@/lib/timeUtils';
 import type {
   AstraEvent,
   CourseBookEvent,

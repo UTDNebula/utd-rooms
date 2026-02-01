@@ -1,7 +1,7 @@
 'use client';
 
 import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
+import { snapTime, validTime } from '@/lib/timeUtils';
 import type { Rooms } from '@/types/Rooms';
 import {
   Checkbox,
@@ -257,7 +257,7 @@ export default function Filters(props: Props) {
           className="w-full"
           value={startTimeChange}
           onChange={(newValue) => setStartTimeChange(newValue)}
-          onAccept={setStartTime}
+          onAccept={(newValue) => setStartTime(validTime(newValue))}
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
@@ -267,19 +267,11 @@ export default function Filters(props: Props) {
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
-                setStartTime(
-                  startTimeChange == null || !startTimeChange.isValid()
-                    ? null
-                    : startTimeChange,
-                );
+                setStartTime(validTime(startTimeChange));
               },
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
-                  setStartTime(
-                    startTimeChange == null || !startTimeChange.isValid()
-                      ? null
-                      : startTimeChange,
-                  );
+                  setStartTime(validTime(startTimeChange));
                 }
               },
             },
@@ -295,7 +287,7 @@ export default function Filters(props: Props) {
           className="w-full"
           value={endTimeChange}
           onChange={(newValue) => setEndTimeChange(newValue)}
-          onAccept={setEndTime}
+          onAccept={(newValue) => setEndTime(validTime(newValue))}
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
@@ -305,19 +297,11 @@ export default function Filters(props: Props) {
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
-                setEndTime(
-                  endTimeChange == null || !endTimeChange.isValid()
-                    ? null
-                    : endTimeChange,
-                );
+                setEndTime(validTime(endTimeChange));
               },
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
-                  setEndTime(
-                    endTimeChange == null || !endTimeChange.isValid()
-                      ? null
-                      : endTimeChange,
-                  );
+                  setEndTime(validTime(endTimeChange));
                 }
               },
             },

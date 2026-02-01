@@ -2,7 +2,12 @@
 
 import Background from '@/../public/background.png';
 import NebulaLogo from '@/components/NebulaLogo';
-import snapTime, { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
+import {
+  defaultEndTime,
+  defaultStartTime,
+  snapTime,
+  validTime,
+} from '@/lib/timeUtils';
 import { Checkbox, CircularProgress, FormControlLabel } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -10,7 +15,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import React, { useRef, useState, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
 
 /**
  * Returns the home page with Nebula Branding and search options
@@ -131,9 +136,7 @@ export default function Home() {
           value={startTime}
           timeSteps={{ minutes: 15 }}
           onChange={(newValue) => setStartTime(newValue)}
-          onAccept={(newValue) =>
-            setStartTime(newValue == null ? null : snapTime(newValue))
-          }
+          onAccept={(newValue) => setStartTime(snapTime(validTime(newValue)))}
           className="w-full"
           slotProps={{
             actionBar: {
@@ -155,9 +158,7 @@ export default function Home() {
           value={endTime}
           timeSteps={{ minutes: 15 }}
           onChange={(newValue) => setEndTime(newValue)}
-          onAccept={(newValue) =>
-            setEndTime(newValue == null ? null : snapTime(newValue))
-          }
+          onAccept={(newValue) => setEndTime(snapTime(validTime(newValue)))}
           className="w-full"
           slotProps={{
             actionBar: {
