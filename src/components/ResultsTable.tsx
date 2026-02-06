@@ -275,7 +275,10 @@ export default function ResultsTable(props: Props) {
 
   const search = props.search.trim().toLowerCase();
 
-  if (dayjsEndTime.isBefore(dayjsStartTime)) {
+  if (
+    dayjsEndTime.isBefore(dayjsStartTime) ||
+    dayjsEndTime.isSame(dayjsStartTime)
+  ) {
     return null;
   }
 
