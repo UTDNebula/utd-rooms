@@ -42,7 +42,8 @@ export default function Home() {
   const error = Boolean(
     startTime &&
     endTime &&
-    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    (dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')) ||
+      dayjs(endTime, 'HH:mm').isSame(dayjs(startTime, 'HH:mm'))),
   );
 
   const [nearby, setNearby] = useState(false);
