@@ -8,10 +8,10 @@ import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import type {
   AstraEvent,
+  CometCalendarEvent,
   CourseBookEvent,
   Hierarchy,
   MazevoEvent,
-  CometCalendarEvent,
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';

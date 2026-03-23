@@ -4,7 +4,7 @@ import React from 'react';
 
 import fetchEvents from '@/lib/fetchEvents';
 import fetchRooms from '@/lib/fetchRooms';
-import type { AstraEvent, CourseBookEvent, MazevoEvent, CometCalendarEvent } from '@/types/Events';
+import type { AstraEvent, CometCalendarEvent,CourseBookEvent, MazevoEvent } from '@/types/Events';
 
 import Results from './Results';
 

@@ -30,10 +30,10 @@ import {
 import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
 import type {
   AstraEvent,
+  CometCalendarEvent,
   CourseBookEvent,
   Hierarchy,
   MazevoEvent,
-  CometCalendarEvent,
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
