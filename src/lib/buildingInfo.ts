@@ -8,6 +8,7 @@ export const excludedBuildings = [
   '',
   'See',
   'ONLINE',
+  'Others',
   //At UT Southwestern
   'CBH',
   'CD1',
@@ -70,6 +71,7 @@ export const excludedRooms = [
   'SLC 3.210',
   'SLC 3.215',
   'SLC 3.216',
+  'MC Info Desk in Library Lobby',
 ];
 
 const buildingNames: { [key: string]: string } = {

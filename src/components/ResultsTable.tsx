@@ -33,6 +33,7 @@ import type {
   CourseBookEvent,
   Hierarchy,
   MazevoEvent,
+  CometCalendarEvent,
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
@@ -213,6 +214,7 @@ interface Props {
   courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
   astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
   mazevoEvents: GenericFetchedData<Hierarchy<MazevoEvent>>;
+  cometCalendarEvents: GenericFetchedData<Hierarchy<CometCalendarEvent>>;
   search: string;
 }
 
@@ -285,12 +287,14 @@ export default function ResultsTable(props: Props) {
   const courseBookEvents = props.courseBookEvents;
   const astraEvents = props.astraEvents;
   const mazevoEvents = props.mazevoEvents;
+  const cometCalendarEvents = props.cometCalendarEvents;
 
   if (
     rooms.message !== 'success' ||
     courseBookEvents.message !== 'success' ||
     astraEvents.message !== 'success' ||
-    mazevoEvents.message !== 'success'
+    mazevoEvents.message !== 'success' ||
+    cometCalendarEvents.message !== 'success'
   ) {
     return <ErrorResultsTable text="getting data" />;
   }
@@ -377,8 +381,36 @@ export default function ResultsTable(props: Props) {
       });
     }
   });
+  Object.entries(cometCalendarEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || nearby || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`
+        if (!excludedRooms.includes(roomName) && room != 'Other') {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            // Some calendar events have start time after end time??
+            const startTime = dayjs(event.start_time).toDate()
+            const endTime = dayjs(event.end_time).toDate()
+            
+            if (startTime.getTime() < endTime.getTime()) {
+              combinedEvents[building][room].push({
+                Subject: event.summary,
+                StartTime: startTime,
+                EndTime: endTime,
+              })
+            }
+          })
+        }
+      })
+    }
+  });
 
-  //Remove duplicates
+  // Remove duplicates
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const eventMap = new Map<string, EventSourceNoResource>();
@@ -402,14 +434,13 @@ export default function ResultsTable(props: Props) {
     });
   });
 
-  // Generate resource groups
-  //to pass into calendar
+  // Generate resource groups to pass into calendar
   const buildingResources: BuildingResource[] = [];
   const roomResources: RoomResource[] = [];
-  //to number them
+  // to number them
   let buildingIdCounter = 1;
   let roomIdCounter = 1;
-  //to get the number for the events
+  // to get the number for the events
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
@@ -450,7 +481,7 @@ export default function ResultsTable(props: Props) {
             (minCapacity === 0 ||
               (room.capacity !== 0 && room.capacity >= minCapacity))
           ) {
-            //Check if free
+            // Check if free
             const events = combinedEvents?.[building]?.[room.room] ?? [];
             const [completelyFree, hasGap] = findAvailability(
               events,
@@ -520,7 +551,7 @@ export default function ResultsTable(props: Props) {
       events.forEach((event, index) => {
         const roomName = `${building} ${room}`;
         const roomId = roomIdMap.get(roomName);
-        //If room exists (it doesn't when its been filtered out)
+        // If room exists (it doesn't when its been filtered out)
         if (roomId) {
           scheduleData.push({
             id: `${roomId}-${index}`, // Unique event ID

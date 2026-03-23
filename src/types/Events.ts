@@ -32,3 +32,20 @@ export type MazevoEvent = {
   statusDescription: string;
   statusColor: string;
 };
+
+export type CometCalendarEvent = {
+  summary: string;
+  location: string;
+  start_time: string;
+  end_time: string;
+  description: string;
+  event_type: string[];
+  target_audience: string[];
+  topic: string[];
+  event_tags: string[];
+  event_website: string;
+  department: string[];
+  contact_name: string;
+  contact_email: string;
+  contact_phone_number: string;
+}
