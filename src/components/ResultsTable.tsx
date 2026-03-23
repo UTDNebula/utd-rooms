@@ -389,24 +389,24 @@ export default function ResultsTable(props: Props) {
     ) {
       combinedEvents[building] = combinedEvents[building] ?? {};
       Object.entries(rooms).forEach(([room, events]) => {
-        const roomName = `${building} ${room}`
+        const roomName = `${building} ${room}`;
         if (!excludedRooms.includes(roomName) && room != 'Other') {
           combinedEvents[building][room] = combinedEvents[building][room] ?? [];
           events.forEach((event) => {
             // Some calendar events have start time after end time??
-            const startTime = dayjs(event.start_time).toDate()
-            const endTime = dayjs(event.end_time).toDate()
-            
+            const startTime = dayjs(event.start_time).toDate();
+            const endTime = dayjs(event.end_time).toDate();
+
             if (startTime.getTime() < endTime.getTime()) {
               combinedEvents[building][room].push({
                 Subject: event.summary,
                 StartTime: startTime,
                 EndTime: endTime,
-              })
+              });
             }
-          })
+          });
         }
-      })
+      });
     }
   });
 
