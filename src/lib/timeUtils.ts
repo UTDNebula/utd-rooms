@@ -6,7 +6,13 @@ export const defaultEndTime = 22;
 const minTime = 6;
 const maxTime = 23;
 
-export default function snapTime(time: Dayjs): Dayjs {
+export function snapTime(time: null): null;
+export function snapTime(time: Dayjs): Dayjs;
+export function snapTime(time: Dayjs | null): Dayjs | null;
+export function snapTime(time: Dayjs | null): Dayjs | null {
+  if (time == null) {
+    return null;
+  }
   if (time.isBefore(dayjs().hour(minTime).minute(0))) {
     return dayjs().hour(minTime).minute(0);
   }
@@ -14,4 +20,8 @@ export default function snapTime(time: Dayjs): Dayjs {
     return dayjs().hour(maxTime).minute(0);
   }
   return time;
+}
+
+export function validTime(time: Dayjs | null): Dayjs | null {
+  return time == null || !time.isValid() ? null : time;
 }

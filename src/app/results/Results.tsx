@@ -1,8 +1,5 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
-
 import Filters from '@/components/Filters';
 import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
@@ -15,6 +12,8 @@ import type {
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
+import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 
 interface Props {
   date: string;
@@ -51,7 +50,11 @@ export default function Results(props: Props) {
   }
   minCapacity = minCapacity ?? '';
 
-  const fullAvailability = searchParams.get('fullAvailability') === 'true';
+  let availability = searchParams.get('availability');
+  if (Array.isArray(availability)) {
+    availability = availability[0];
+  }
+  availability = availability ?? '';
 
   return (
     <>
@@ -63,7 +66,7 @@ export default function Results(props: Props) {
           endTime={endTime}
           buildings={buildings}
           minCapacity={minCapacity}
-          fullAvailability={fullAvailability}
+          availability={availability}
           rooms={props.rooms.message === 'success' ? props.rooms.data : {}}
         />
         <ResultsTable
@@ -72,7 +75,7 @@ export default function Results(props: Props) {
           endTime={endTime}
           buildings={buildings}
           minCapacity={minCapacity}
-          fullAvailability={fullAvailability}
+          availability={availability}
           rooms={props.rooms}
           courseBookEvents={props.courseBookEvents}
           astraEvents={props.astraEvents}

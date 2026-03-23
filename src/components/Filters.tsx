@@ -1,10 +1,12 @@
 'use client';
 
+import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
+import { snapTime, validTime } from '@/lib/timeUtils';
+import type { Rooms } from '@/types/Rooms';
 import {
   Checkbox,
   CircularProgress,
   FormControl,
-  FormControlLabel,
   Grid,
   InputLabel,
   ListItemText,
@@ -12,7 +14,6 @@ import {
   Radio,
   Select,
   TextField,
-  Tooltip,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -20,10 +21,6 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { type Dayjs } from 'dayjs';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-
-import buildingNames, { excludedBuildings } from '@/lib/buildingInfo';
-import snapTime from '@/lib/snapTime';
-import type { Rooms } from '@/types/Rooms';
 
 export function LoadingFilters() {
   return (
@@ -87,13 +84,16 @@ export function LoadingFilters() {
           disabled
         />
       </Grid>
-      <Grid size={{ xs: 6, sm: 4, lg: 2 }} className="px-2">
-        <Tooltip title="Only show rooms available the whole time">
-          <FormControlLabel
-            control={<Checkbox disabled />}
-            label="Full availability"
-          />
-        </Tooltip>
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
+        <FormControl size="small" className="w-full">
+          <InputLabel id="availability">Availability</InputLabel>
+          <Select
+            label="Availability"
+            labelId="availability"
+            disabled
+            value=""
+          ></Select>
+        </FormControl>
       </Grid>
     </Grid>
   );
@@ -105,7 +105,7 @@ interface Props {
   endTime: string | null;
   minCapacity: string | null;
   buildings: string[];
-  fullAvailability: boolean;
+  availability: string;
   rooms: Rooms;
 }
 
@@ -125,8 +125,9 @@ export default function Filters(props: Props) {
   const endTime = props.endTime;
   const error = Boolean(
     startTime &&
-      endTime &&
-      dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    endTime &&
+    (dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')) ||
+      dayjs(endTime, 'HH:mm').isSame(dayjs(startTime, 'HH:mm'))),
   );
 
   const minCapacity = props.minCapacity;
@@ -134,20 +135,16 @@ export default function Filters(props: Props) {
   const buildings = props.buildings;
 
   // only show checkbox if location is possible
-  const [locationAvailable, setLocationAvailable] = useState<
-    'loading' | 'yes' | 'no'
-  >('loading');
-  useEffect(() => {
+  const [locationAvailable] = useState(() => {
     if (
       typeof window !== 'undefined' &&
       'permissions' in navigator &&
       'geolocation' in navigator
     ) {
-      setLocationAvailable('yes');
-    } else {
-      setLocationAvailable('no');
+      return true;
     }
-  }, []);
+    return false;
+  });
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
@@ -157,14 +154,14 @@ export default function Filters(props: Props) {
     locationLoadingRef.current = locationLoading;
   }, [locationLoading]);
 
-  const fullAvailability = props.fullAvailability;
+  const availability = props.availability;
 
   // for saving the input values on change but only updating them onBlur or onKeyDown+enter
   const dateChange = useRef<Dayjs | null>(dayjsDate);
-  const startTimeChange = useRef<Dayjs | null>(
+  const [startTimeChange, setStartTimeChange] = useState<Dayjs | null>(
     dayjs(date + startTime, 'YYYY-MM-DDHH:mm'),
   );
-  const endTimeChange = useRef<Dayjs | null>(
+  const [endTimeChange, setEndTimeChange] = useState<Dayjs | null>(
     dayjs(date + endTime, 'YYYY-MM-DDHH:mm'),
   );
   const [minCapacityChange, setMinCapacityChange] = useState(minCapacity ?? '');
@@ -184,7 +181,7 @@ export default function Filters(props: Props) {
       params.set('startTime', snapTime(newValue).format('HH:mm'));
     } else {
       params.delete('startTime');
-      params.delete('fullAvailability');
+      params.set('availability', 'hasGap');
     }
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }
@@ -195,7 +192,7 @@ export default function Filters(props: Props) {
       params.set('endTime', snapTime(newValue).format('HH:mm'));
     } else {
       params.delete('endTime');
-      params.delete('fullAvailability');
+      params.set('availability', 'hasGap');
     }
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }
@@ -259,9 +256,9 @@ export default function Filters(props: Props) {
           timeSteps={{ minutes: 15 }}
           label="Start time"
           className="w-full"
-          value={startTime ? dayjs(startTime, 'HH:mm') : null}
-          onChange={(newValue) => (startTimeChange.current = newValue)}
-          onAccept={setStartTime}
+          value={startTimeChange}
+          onChange={(newValue) => setStartTimeChange(newValue)}
+          onAccept={(newValue) => setStartTime(validTime(newValue))}
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
@@ -271,21 +268,11 @@ export default function Filters(props: Props) {
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
-                setStartTime(
-                  startTimeChange.current == null ||
-                    !startTimeChange.current.isValid()
-                    ? null
-                    : startTimeChange.current,
-                );
+                setStartTime(validTime(startTimeChange));
               },
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
-                  setStartTime(
-                    startTimeChange.current == null ||
-                      !startTimeChange.current.isValid()
-                      ? null
-                      : startTimeChange.current,
-                  );
+                  setStartTime(validTime(startTimeChange));
                 }
               },
             },
@@ -299,9 +286,9 @@ export default function Filters(props: Props) {
           timeSteps={{ minutes: 15 }}
           label="End time"
           className="w-full"
-          value={endTime ? dayjs(endTime, 'HH:mm') : null}
-          onChange={(newValue) => (endTimeChange.current = newValue)}
-          onAccept={setEndTime}
+          value={endTimeChange}
+          onChange={(newValue) => setEndTimeChange(newValue)}
+          onAccept={(newValue) => setEndTime(validTime(newValue))}
           slotProps={{
             actionBar: {
               actions: ['clear', 'accept'],
@@ -311,21 +298,11 @@ export default function Filters(props: Props) {
               error: error,
               helperText: error && 'Start time must be before end time',
               onBlur: () => {
-                setEndTime(
-                  endTimeChange.current == null ||
-                    !endTimeChange.current.isValid()
-                    ? null
-                    : endTimeChange.current,
-                );
+                setEndTime(validTime(endTimeChange));
               },
               onKeyDown: (e) => {
                 if (e.key === 'Enter') {
-                  setEndTime(
-                    endTimeChange.current == null ||
-                      !endTimeChange.current.isValid()
-                      ? null
-                      : endTimeChange.current,
-                  );
+                  setEndTime(validTime(endTimeChange));
                 }
               },
             },
@@ -339,7 +316,7 @@ export default function Filters(props: Props) {
           <InputLabel id="buildings" shrink>
             Buildings
           </InputLabel>
-          <Select
+          <Select<string[]>
             label="Buildings"
             labelId="buildings"
             multiple
@@ -434,13 +411,7 @@ export default function Filters(props: Props) {
               <Radio checked={!buildings.length} />
               <ListItemText primary="Any" />
             </MenuItem>
-            {locationAvailable === 'loading' && (
-              <MenuItem className="h-10" value="nearby">
-                <Radio disabled />
-                <ListItemText primary="Nearby" />
-              </MenuItem>
-            )}
-            {locationAvailable === 'yes' && (
+            {locationAvailable && (
               <MenuItem className="h-10" value="nearby">
                 <Radio
                   checked={buildings[0] === 'nearby'}
@@ -495,31 +466,42 @@ export default function Filters(props: Props) {
         />
       </Grid>
 
-      {/*Only show rooms available the whole time checkbox*/}
-      <Grid size={{ xs: 6, sm: 4, lg: 2 }} className="px-2">
-        <Tooltip title="Only show rooms available the whole time">
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={fullAvailability}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  if (event.target.checked) {
-                    params.set('fullAvailability', 'true');
-                  } else {
-                    params.delete('fullAvailability');
-                  }
-                  window.history.replaceState(
-                    null,
-                    '',
-                    `${pathname}?${params.toString()}`,
-                  );
-                }}
-              />
-            }
-            label="Full availability"
-          />
-        </Tooltip>
+      {/*Availability dropdown*/}
+      <Grid size={{ xs: 6, sm: 4, lg: 2 }}>
+        <FormControl size="small" className="w-full">
+          <InputLabel id="availability" shrink>
+            Availability
+          </InputLabel>
+          <Select
+            label="Availability"
+            labelId="availability"
+            value={availability}
+            onChange={(event: SelectChangeEvent<string>) => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('availability', event.target.value);
+              window.history.replaceState(
+                null,
+                '',
+                `${pathname}?${params.toString()}`,
+              );
+            }}
+            renderValue={(selected) => {
+              if (selected === 'full') {
+                return 'Full availability';
+              }
+              if (selected === 'hasGap') {
+                return 'Has gap';
+              }
+              if (selected === 'any') {
+                return 'All rooms';
+              }
+            }}
+          >
+            <MenuItem value="full">Full time is availabile</MenuItem>
+            <MenuItem value="hasGap">Some gap available</MenuItem>
+            <MenuItem value="any">Show all rooms</MenuItem>
+          </Select>
+        </FormControl>
       </Grid>
     </Grid>
   );

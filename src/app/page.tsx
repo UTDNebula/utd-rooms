@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import React from 'react';
-
 import Home from './Home';
 
 export const metadata: Metadata = {

@@ -1,15 +1,13 @@
 import '@/styles/globals.css';
-
-import { ThemeProvider } from '@mui/material/styles';
+import ClientLocalizationProvider from '@/lib/localization';
+import SyncfusionWrapper from '@/lib/syncfusion';
+import theme from '@/lib/theme';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { ThemeProvider } from '@mui/material/styles';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 import { Bai_Jamjuree, Inter } from 'next/font/google';
 import React from 'react';
-
-import ClientLocalizationProvider from '@/lib/localization';
-import SyncfusionWrapper from '@/lib/syncfusion';
-import theme from '@/lib/theme';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -55,7 +53,7 @@ export default function RootLayout({
         <GoogleAnalytics gaId="G-BKZ9JMC28B" />
       )}
       <body
-        className={`bg-white dark:bg-black ${inter.variable} font-main ${baiJamjuree.variable} text-haiti dark:text-white`}
+        className={`bg-[rgb(246,246,246)] dark:bg-black ${inter.variable} font-main ${baiJamjuree.variable} text-haiti dark:text-white`}
       >
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>

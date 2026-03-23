@@ -5,7 +5,7 @@ export default async function fetchEvents<T>(
   route: string,
   date: string,
 ): Promise<GenericFetchedData<Hierarchy<T>>> {
-  const API_KEY = process.env.REACT_APP_NEBULA_API_KEY;
+  const API_KEY = process.env.NEBULA_API_KEY;
   if (typeof API_KEY !== 'string') {
     return { message: 'error', data: 'API key is undefined' };
   }

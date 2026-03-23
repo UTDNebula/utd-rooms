@@ -1,19 +1,5 @@
 'use client';
 
-import { Button, Skeleton, Tooltip } from '@mui/material';
-import {
-  Inject,
-  ResourceDirective,
-  ResourcesDirective,
-  ScheduleComponent,
-  TimelineViews,
-  ViewDirective,
-  ViewsDirective,
-} from '@syncfusion/ej2-react-schedule';
-import dayjs, { type Dayjs } from 'dayjs';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-
 import buildingNames, {
   buildingLocationHardcodes,
   buildingMapOverrides,
@@ -27,7 +13,7 @@ import {
   dummyRoomResources,
   dummyScheduleData,
 } from '@/lib/dummyLoadingData';
-import { defaultEndTime, defaultStartTime } from '@/lib/snapTime';
+import { defaultEndTime, defaultStartTime } from '@/lib/timeUtils';
 import type {
   AstraEvent,
   CometCalendarEvent,
@@ -37,6 +23,19 @@ import type {
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
+import { Button, Skeleton, Tooltip } from '@mui/material';
+import {
+  Inject,
+  ResourceDirective,
+  ResourcesDirective,
+  ScheduleComponent,
+  TimelineViews,
+  ViewDirective,
+  ViewsDirective,
+} from '@syncfusion/ej2-react-schedule';
+import dayjs, { type Dayjs } from 'dayjs';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 
 interface BuildingResource {
   type: 'building';
@@ -209,7 +208,7 @@ interface Props {
   endTime: string | null;
   minCapacity: string;
   buildings: string[];
-  fullAvailability: boolean;
+  availability: string;
   rooms: GenericFetchedData<Rooms>;
   courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
   astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
@@ -274,11 +273,14 @@ export default function ResultsTable(props: Props) {
     return <ErrorResultsTable text={error} />;
   }
 
-  const fullAvailability = props.fullAvailability;
+  const availability = props.availability;
 
   const search = props.search.trim().toLowerCase();
 
-  if (dayjsEndTime.isBefore(dayjsStartTime)) {
+  if (
+    dayjsEndTime.isBefore(dayjsStartTime) ||
+    dayjsEndTime.isSame(dayjsStartTime)
+  ) {
     return null;
   }
 
@@ -394,14 +396,14 @@ export default function ResultsTable(props: Props) {
           combinedEvents[building][room] = combinedEvents[building][room] ?? [];
           events.forEach((event) => {
             // Some calendar events have start time after end time??
-            const startTime = dayjs(event.start_time).toDate();
-            const endTime = dayjs(event.end_time).toDate();
+            const startTime = dayjs(event.start_time);
+            const endTime = dayjs(event.end_time);
 
-            if (startTime.getTime() < endTime.getTime()) {
+            if (startTime.isBefore(endTime)) {
               combinedEvents[building][room].push({
                 Subject: event.summary,
-                StartTime: startTime,
-                EndTime: endTime,
+                StartTime: startTime.toDate(),
+                EndTime: endTime.toDate(),
               });
             }
           });
@@ -488,7 +490,11 @@ export default function ResultsTable(props: Props) {
               dayjsStartTime,
               dayjsEndTime,
             );
-            if (completelyFree || (hasGap && !fullAvailability)) {
+            if (
+              completelyFree ||
+              (hasGap && availability === 'hasGap') ||
+              availability === 'any'
+            ) {
               if (
                 search === '' ||
                 roomName.toLowerCase().startsWith(search) ||
@@ -564,18 +570,29 @@ export default function ResultsTable(props: Props) {
     });
   });
 
+  let roomCountText = '';
+  switch (availability) {
+    case 'any':
+      roomCountText = roomResources.length === 1 ? ' room.' : ' rooms.';
+      break;
+    case 'full':
+      roomCountText =
+        roomResources.length === 1
+          ? ' room that is completely free.'
+          : ' rooms that are completely free.';
+      break;
+    case 'hasGap':
+      roomCountText =
+        roomResources.length === 1
+          ? ' room that has free time.'
+          : ' rooms that have free time.';
+      break;
+  }
+
   return (
     <>
       <p>
-        {`Found ${roomResources.length}${
-          fullAvailability
-            ? roomResources.length === 1
-              ? ' room that is completely free.'
-              : ' rooms that are completely free.'
-            : roomResources.length === 1
-              ? ' room that has free time.'
-              : ' rooms that have free time.'
-        }${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
+        {`Found ${roomResources.length}${roomCountText}${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"
@@ -638,7 +655,7 @@ export default function ResultsTable(props: Props) {
                 <Link
                   href={data.link}
                   target="_blank"
-                  className="font-bold text-lg text-purple-300 hover:text-purple-400 visited:text-purple-600"
+                  className="font-bold text-lg text-royal dark:text-cornflower-300 hover:text-royalDark dark:hover:text-cornflower-400 visited:text-cornflower-700 dark:visited:text-cornflower-500"
                 >
                   {data.text}
                 </Link>

@@ -4,3 +4,4 @@
 package.json
 pnpm-lock.yaml
 public
+next-env.d.ts
