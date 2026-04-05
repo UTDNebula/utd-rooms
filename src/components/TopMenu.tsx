@@ -108,7 +108,7 @@ export default function TopMenu(props: Props) {
                 height={128}
                 src="/comet-giving-days.png"
                 alt="UTD Giving Days Comet Logo"
-                className="h-12 w-12"
+                className="h-12 w-12 max-w-none"
               />
             </Link>
           </Tooltip>
