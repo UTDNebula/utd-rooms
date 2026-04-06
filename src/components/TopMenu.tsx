@@ -96,15 +96,32 @@ export default function TopMenu(props: Props) {
             }
           }}
         />
-        <Tooltip title="Share link to search" className="ml-auto">
-          <IconButton
-            className="aspect-square"
-            size="medium"
-            onClick={() => shareLink(window.location.href)}
-          >
-            <Share className="text-3xl mr-1" />
-          </IconButton>
-        </Tooltip>
+        <div className="ml-auto flex items-center gap-x-4">
+          <Tooltip title="Support Nebula Labs on Comet Giving Days">
+            <Link
+              href="https://givingday.utdallas.edu/giving-day/115742/department/118896"
+              target="_blank"
+            >
+              <Image
+                unoptimized
+                width={128}
+                height={128}
+                src="/comet-giving-days.png"
+                alt="UTD Giving Days Comet Logo"
+                className="h-12 w-12 max-w-none"
+              />
+            </Link>
+          </Tooltip>
+          <Tooltip title="Share link to search">
+            <IconButton
+              className="aspect-square"
+              size="medium"
+              onClick={() => shareLink(window.location.href)}
+            >
+              <Share className="text-3xl mr-1" />
+            </IconButton>
+          </Tooltip>
+        </div>
       </header>
       <Snackbar
         open={openCopied}
