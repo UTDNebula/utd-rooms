@@ -8,12 +8,18 @@ import {
   snapTime,
   validTime,
 } from '@/lib/timeUtils';
-import { Checkbox, CircularProgress, FormControlLabel } from '@mui/material';
+import {
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
+  Tooltip,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState, useTransition } from 'react';
 
@@ -42,7 +48,8 @@ export default function Home() {
   const error = Boolean(
     startTime &&
     endTime &&
-    dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')),
+    (dayjs(endTime, 'HH:mm').isBefore(dayjs(startTime, 'HH:mm')) ||
+      dayjs(endTime, 'HH:mm').isSame(dayjs(startTime, 'HH:mm'))),
   );
 
   const [nearby, setNearby] = useState(false);
@@ -88,6 +95,24 @@ export default function Home() {
         fill
         className="object-cover -z-20"
       />
+      <div className="absolute top-4 right-4">
+        {/* Comet Giving Days button */}
+        <Tooltip title="Support Nebula Labs on Comet Giving Days">
+          <Link
+            href="https://givingday.utdallas.edu/giving-day/115742/department/118896"
+            target="_blank"
+          >
+            <Image
+              unoptimized
+              width={128}
+              height={128}
+              src="/comet-giving-days.png"
+              alt="UTD Giving Days Comet Logo"
+              className="h-12 w-12 max-w-none"
+            />
+          </Link>
+        </Tooltip>
+      </div>
       <div className="text-center">
         <h2 className="text-sm font-semibold mb-3 text-royal dark:text-cornflower-300 tracking-wider flex gap-1 items-center w-full justify-center">
           <span className="leading-none">POWERED BY</span>
