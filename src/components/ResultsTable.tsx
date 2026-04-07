@@ -35,7 +35,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface BuildingResource {
   type: 'building';
@@ -395,7 +395,7 @@ export default function ResultsTable(props: Props) {
         if (!excludedRooms.includes(roomName) && room != 'Other') {
           combinedEvents[building][room] = combinedEvents[building][room] ?? [];
           events.forEach((event) => {
-            // Some calendar events have start time after end time??
+            // Some calendar events might have start time equal to end time
             const startTime = dayjs(event.start_time);
             const endTime = dayjs(event.end_time);
 
