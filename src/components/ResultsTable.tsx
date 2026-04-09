@@ -401,7 +401,7 @@ export default function ResultsTable(props: Props) {
 
             if (startTime.isBefore(endTime)) {
               combinedEvents[building][room].push({
-                Subject: event.summary,
+                Subject: `From Comet Cal: ${event.summary}`,
                 StartTime: startTime.toDate(),
                 EndTime: endTime.toDate(),
               });
@@ -433,6 +433,42 @@ export default function ResultsTable(props: Props) {
         }
       });
       rooms[room] = Array.from(eventMap.values());
+    });
+  });
+
+  // Merge events that have different timeline
+  Object.values(combinedEvents).forEach((rooms) => {
+    Object.entries(rooms).forEach(([room, events]) => {
+      const mergedEvents: EventSourceNoResource[] = [];
+      events.sort((a, b) => {
+        const aStart = dayjs(a.StartTime);
+        const bStart = dayjs(b.StartTime);
+
+        const aEnd = dayjs(a.EndTime);
+        const bEnd = dayjs(b.EndTime);
+
+        return aStart.diff(bStart) != 0 ? aStart.diff(bStart) : aEnd.diff(bEnd);
+      });
+
+      events.forEach((event) => {
+        const last = mergedEvents.length - 1;
+        const eventStart = dayjs(event.StartTime);
+        const eventEnd = dayjs(event.EndTime);
+        if (
+          mergedEvents.length > 0 && 
+          dayjs(mergedEvents[last].EndTime).isAfter(eventStart)
+        ) {
+          mergedEvents[last].EndTime =
+            dayjs(mergedEvents[last].EndTime).isBefore(eventEnd)
+            ? event.EndTime
+            : mergedEvents[last].EndTime;
+
+          mergedEvents[last].Subject += ", " + event.Subject;
+        } else {
+          mergedEvents.push(event);
+        }
+      });
+      rooms[room] = mergedEvents;
     });
   });
 
