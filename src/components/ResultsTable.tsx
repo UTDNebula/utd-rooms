@@ -455,18 +455,19 @@ export default function ResultsTable(props: Props) {
         const eventStart = dayjs(event.StartTime);
         const eventEnd = dayjs(event.EndTime);
         if (
-          mergedEvents.length > 0 && 
+          mergedEvents.length > 0 &&
           dayjs(mergedEvents[last].EndTime).isAfter(eventStart)
         ) {
-          mergedEvents[last].EndTime =
-            dayjs(mergedEvents[last].EndTime).isBefore(eventEnd)
+          mergedEvents[last].EndTime = dayjs(
+            mergedEvents[last].EndTime,
+          ).isBefore(eventEnd)
             ? event.EndTime
             : mergedEvents[last].EndTime;
 
           mergedEvents[last].Subject =
             mergedEvents[last].Subject != event.Subject
-            ? "MERGED: " + mergedEvents[last].Subject + ", " + event.Subject
-            : event.Subject;
+              ? 'MERGED: ' + mergedEvents[last].Subject + ', ' + event.Subject
+              : event.Subject;
         } else {
           mergedEvents.push(event);
         }
