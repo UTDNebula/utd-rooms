@@ -401,7 +401,7 @@ export default function ResultsTable(props: Props) {
 
             if (startTime.isBefore(endTime)) {
               combinedEvents[building][room].push({
-                Subject: `From Comet Cal: ${event.summary}`,
+                Subject: event.summary,
                 StartTime: startTime.toDate(),
                 EndTime: endTime.toDate(),
               });
@@ -436,7 +436,7 @@ export default function ResultsTable(props: Props) {
     });
   });
 
-  // Merge events that have different timeline
+  // Merge identical events that have overlapping timeline
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const mergedEvents: EventSourceNoResource[] = [];
@@ -463,7 +463,10 @@ export default function ResultsTable(props: Props) {
             ? event.EndTime
             : mergedEvents[last].EndTime;
 
-          mergedEvents[last].Subject += ", " + event.Subject;
+          mergedEvents[last].Subject =
+            mergedEvents[last].Subject != event.Subject
+            ? "MERGED: " + mergedEvents[last].Subject + ", " + event.Subject
+            : event.Subject;
         } else {
           mergedEvents.push(event);
         }
