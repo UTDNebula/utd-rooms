@@ -451,6 +451,7 @@ export default function ResultsTable(props: Props) {
       events.forEach((event) => {
         const eventStart = dayjs(event.StartTime);
         const eventEnd = dayjs(event.EndTime);
+
         const lastIndex = mergedEvents.length - 1;
         if (
           mergedEvents.length > 0 &&
@@ -461,10 +462,12 @@ export default function ResultsTable(props: Props) {
           ).isBefore(eventEnd)
             ? event.EndTime
             : mergedEvents[lastIndex].EndTime;
+
           // Merge the names of the 2 events
-          mergedEvents[lastIndex].Subject =
+          mergedEvents[lastIndex].Subject = 'MERGED: ';
+          mergedEvents[lastIndex].Subject +=
             mergedEvents[lastIndex].Subject != event.Subject
-              ? 'MERGED: ' + mergedEvents[lastIndex].Subject + ', ' + event.Subject
+              ? mergedEvents[lastIndex].Subject + ', ' + event.Subject
               : mergedEvents[lastIndex].Subject;
         } else {
           mergedEvents.push(event);
