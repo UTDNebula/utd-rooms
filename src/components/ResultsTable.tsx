@@ -440,34 +440,32 @@ export default function ResultsTable(props: Props) {
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const mergedEvents: EventSourceNoResource[] = [];
+      // Sort events by start date, then end date
       events.sort((a, b) => {
-        const aStart = dayjs(a.StartTime);
-        const bStart = dayjs(b.StartTime);
-
-        const aEnd = dayjs(a.EndTime);
-        const bEnd = dayjs(b.EndTime);
-
-        return aStart.diff(bStart) != 0 ? aStart.diff(bStart) : aEnd.diff(bEnd);
+        const startDiff = dayjs(a.StartTime).diff(dayjs(b.StartTime));
+        return startDiff != 0
+          ? startDiff
+          : dayjs(a.EndTime).diff(dayjs(b.EndTime));
       });
 
       events.forEach((event) => {
-        const last = mergedEvents.length - 1;
         const eventStart = dayjs(event.StartTime);
         const eventEnd = dayjs(event.EndTime);
+        const lastIndex = mergedEvents.length - 1;
         if (
           mergedEvents.length > 0 &&
-          dayjs(mergedEvents[last].EndTime).isAfter(eventStart)
+          dayjs(mergedEvents[lastIndex].EndTime).isAfter(eventStart)
         ) {
-          mergedEvents[last].EndTime = dayjs(
-            mergedEvents[last].EndTime,
+          mergedEvents[lastIndex].EndTime = dayjs(
+            mergedEvents[lastIndex].EndTime,
           ).isBefore(eventEnd)
             ? event.EndTime
-            : mergedEvents[last].EndTime;
-
-          mergedEvents[last].Subject =
-            mergedEvents[last].Subject != event.Subject
-              ? 'MERGED: ' + mergedEvents[last].Subject + ', ' + event.Subject
-              : event.Subject;
+            : mergedEvents[lastIndex].EndTime;
+          // Merge the names of the 2 events
+          mergedEvents[lastIndex].Subject =
+            mergedEvents[lastIndex].Subject != event.Subject
+              ? 'MERGED: ' + mergedEvents[lastIndex].Subject + ', ' + event.Subject
+              : mergedEvents[lastIndex].Subject;
         } else {
           mergedEvents.push(event);
         }
