@@ -200,6 +200,38 @@ function metersToMiles(distance: number) {
 }
 
 /**
+ * Merge the subjects of 2 overlapping events together
+ */
+function mergeSubjects(subject1: string, subject2: string) {
+  if (subject1 == subject2) {
+    return subject1;
+  }
+  const m = subject1.length;
+  const n = subject2.length;
+
+  const memo: number[][] = Array.from({ length: m + 1 }, () =>
+    Array(n + 1).fill(0),
+  );
+
+  let commonLength = 0;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (subject1[i - 1] == subject2[j - 1]) {
+        memo[i][j] = memo[i - 1][j - 1] + 1;
+        commonLength = Math.max(commonLength, memo[i][j]);
+      }
+    }
+  }
+
+  if (commonLength > 0.3 * Math.min(m, n)) {
+    // Heuristic: 2 identical events with different naming
+    return m > n ? subject1 : subject2;
+  }
+  // 2 unrelated events
+  return subject1 + ', ' + subject2;
+}
+
+/**
  * Props type used by the ResultsTable component
  */
 interface Props {
@@ -463,12 +495,11 @@ export default function ResultsTable(props: Props) {
             ? event.EndTime
             : mergedEvents[lastIndex].EndTime;
 
-          // Merge the names of the 2 events
-          mergedEvents[lastIndex].Subject = 'MERGED: ';
-          mergedEvents[lastIndex].Subject +=
-            mergedEvents[lastIndex].Subject != event.Subject
-              ? mergedEvents[lastIndex].Subject + ', ' + event.Subject
-              : mergedEvents[lastIndex].Subject;
+          // Merge the subjects
+          mergedEvents[lastIndex].Subject = mergeSubjects(
+            mergedEvents[lastIndex].Subject,
+            event.Subject,
+          );
         } else {
           mergedEvents.push(event);
         }
