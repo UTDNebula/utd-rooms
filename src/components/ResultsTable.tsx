@@ -208,11 +208,9 @@ function mergeSubjects(subject1: string, subject2: string) {
   }
   const m = subject1.length;
   const n = subject2.length;
-
   const memo: number[][] = Array.from({ length: m + 1 }, () =>
     Array(n + 1).fill(0),
   );
-
   let commonLength = 0;
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
@@ -222,7 +220,6 @@ function mergeSubjects(subject1: string, subject2: string) {
       }
     }
   }
-
   if (commonLength > 0.3 * Math.min(m, n)) {
     // Heuristic: 2 identical events with different naming
     return m > n ? subject1 : subject2;
@@ -427,17 +424,17 @@ export default function ResultsTable(props: Props) {
         if (!excludedRooms.includes(roomName) && room != 'Other') {
           combinedEvents[building][room] = combinedEvents[building][room] ?? [];
           events.forEach((event) => {
-            // Some calendar events might have start time equal to end time
+            // Some calendar events might have start time equal to end time, extend an hour for them
             const startTime = dayjs(event.start_time);
-            const endTime = dayjs(event.end_time);
-
-            if (startTime.isBefore(endTime)) {
-              combinedEvents[building][room].push({
-                Subject: event.summary,
-                StartTime: startTime.toDate(),
-                EndTime: endTime.toDate(),
-              });
+            let endTime = dayjs(event.end_time);
+            if (endTime.isSame(startTime)) {
+              endTime = startTime.add(1, 'hour');
             }
+            combinedEvents[building][room].push({
+              Subject: event.summary,
+              StartTime: startTime.toDate(),
+              EndTime: endTime.toDate(),
+            });
           });
         }
       });
