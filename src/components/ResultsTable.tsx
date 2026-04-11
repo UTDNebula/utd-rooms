@@ -225,7 +225,7 @@ function mergeSubjects(subject1: string, subject2: string) {
     return m > n ? subject1 : subject2;
   }
   // 2 unrelated events
-  return subject1 + ', ' + subject2;
+  return subject1 + ' & ' + subject2;
 }
 
 /**
@@ -424,16 +424,19 @@ export default function ResultsTable(props: Props) {
         if (!excludedRooms.includes(roomName) && room != 'Other') {
           combinedEvents[building][room] = combinedEvents[building][room] ?? [];
           events.forEach((event) => {
-            // Some calendar events might have start time equal to end time, extend an hour for them
+            // Some calendar events have start time equal to end time, extend an hour for them
             const startTime = dayjs(event.start_time);
-            let endTime = dayjs(event.end_time);
-            if (endTime.isSame(startTime)) {
-              endTime = startTime.add(1, 'hour');
-            }
+            const endTime = dayjs(event.end_time).isSame(startTime)
+              ? dayjs(event.end_time)
+              : startTime.add(1, 'hour');
+
             combinedEvents[building][room].push({
               Subject: event.summary,
               StartTime: startTime.toDate(),
               EndTime: endTime.toDate(),
+              ...(dayjs(event.end_time).isSame(startTime)
+                ? { pending: true }
+                : {}),
             });
           });
         }
@@ -441,31 +444,7 @@ export default function ResultsTable(props: Props) {
     }
   });
 
-  // Remove duplicates
-  Object.values(combinedEvents).forEach((rooms) => {
-    Object.entries(rooms).forEach(([room, events]) => {
-      const eventMap = new Map<string, EventSourceNoResource>();
-      events.forEach((event) => {
-        const key = `${event.StartTime.getTime()}-${event.EndTime.getTime()}`;
-        const existingEvent = eventMap.get(key);
-        if (!existingEvent) {
-          eventMap.set(key, event);
-        } else if (
-          existingEvent.Subject === 'Class' &&
-          event.Subject !== 'Class'
-        ) {
-          // overwrite "Class" event with a more descriptive event
-          eventMap.set(key, event);
-        } else if (existingEvent.Subject !== event.Subject) {
-          // merge subjects if they are different
-          existingEvent.Subject += `, ${event.Subject}`;
-        }
-      });
-      rooms[room] = Array.from(eventMap.values());
-    });
-  });
-
-  // Merge identical events that have overlapping timeline
+  // Merge events
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const mergedEvents: EventSourceNoResource[] = [];
@@ -480,23 +459,34 @@ export default function ResultsTable(props: Props) {
       events.forEach((event) => {
         const eventStart = dayjs(event.StartTime);
         const eventEnd = dayjs(event.EndTime);
-
         const lastIndex = mergedEvents.length - 1;
         if (
           mergedEvents.length > 0 &&
           dayjs(mergedEvents[lastIndex].EndTime).isAfter(eventStart)
         ) {
-          mergedEvents[lastIndex].EndTime = dayjs(
-            mergedEvents[lastIndex].EndTime,
-          ).isBefore(eventEnd)
-            ? event.EndTime
-            : mergedEvents[lastIndex].EndTime;
-
-          // Merge the subjects
-          mergedEvents[lastIndex].Subject = mergeSubjects(
-            mergedEvents[lastIndex].Subject,
-            event.Subject,
-          );
+          const lastEventStart = dayjs(mergedEvents[lastIndex].StartTime);
+          const lastEventEnd = dayjs(mergedEvents[lastIndex].EndTime);
+          if (
+            lastEventStart.isSame(eventStart) &&
+            lastEventEnd.isSame(eventEnd) // Duplicate events
+          ) {
+            mergedEvents[lastIndex].Subject =
+              event.Subject !== 'Class'
+                ? mergedEvents[lastIndex].Subject !== 'Class'
+                  ? mergedEvents[lastIndex].Subject + ', ' + event.Subject
+                  : event.Subject
+                : mergedEvents[lastIndex].Subject;
+          } else {
+            // Strict overlap events
+            mergedEvents[lastIndex].EndTime = lastEventEnd.isBefore(eventEnd)
+              ? event.EndTime
+              : mergedEvents[lastIndex].EndTime;
+            // Merge the subjects
+            mergedEvents[lastIndex].Subject = mergeSubjects(
+              mergedEvents[lastIndex].Subject,
+              event.Subject,
+            );
+          }
         } else {
           mergedEvents.push(event);
         }
