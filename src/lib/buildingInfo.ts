@@ -8,7 +8,7 @@ export const excludedBuildings = [
   '',
   'See',
   'ONLINE',
-  'Others',
+  'Other',
   //At UT Southwestern
   'CBH',
   'CD1',
@@ -83,7 +83,44 @@ export const excludedRooms = [
   'FO 3.704A',
   //Mock trial room
   'FO 2.608',
+  //From Comet Calendar but not available rooms
+  'AB 1.201',
+  'AB Activity Center Bookstore Atrium',
+  'AB Check-In will be at the Activity Center- across from the Main Gym',
+  'ACB We will meet at the UTD Bookstore!', //LMAO
+  'ACB Other',
+  'APC Other',
+  'ATC 1.200',
+  'ATC 1.700',
+  'ATC 1.705',
+  'ATC 1st Floor Lobby (by stepped seating)',
+  'ATC Lobby',
+  'ATC Other',
+  'DGA Other',
+  'ECSN 1st Floor ECSN Atrium',
+  'ECSN Activity Center Bookstore Atrium',
+  'ECSN 1.506',
+  'ECSN 11.219',
+  'ECSN Other',
+  'ECSS 3.503',
+  'ECSS Commons Area outside Ground Floor Elevators',
+  'ECSW 1.100', //Exxes Atrium
+  'ECSW 2.001',
+  'ECSW 4.210',
+  'MC 1.310',
+  'MC 2.402',
+  'MC 3.504',
+  'MC 3.612',
+  'MC 4.404',
   'MC Info Desk in Library Lobby',
+  'SLC Green courtyard between Sciences Bldg and Science Learning Center',
+  'Student Union (SU) 4.600',
+  'Student Union (SU) Green / Outside',
+  'Student Union (SU) Other',
+  'GR 2.236',
+  'SPN 1.220',
+  'RL 1st Floor Food Court',
+  'TH Other',
 ];
 
 const buildingNames: { [key: string]: string } = {
