@@ -427,8 +427,8 @@ export default function ResultsTable(props: Props) {
             // Some calendar events have start time equal to end time, extend an hour for them
             const startTime = dayjs(event.start_time);
             const endTime = dayjs(event.end_time).isSame(startTime)
-              ? dayjs(event.end_time)
-              : startTime.add(1, 'hour');
+              ? startTime.add(1, 'hour')
+              : dayjs(event.end_time);
 
             combinedEvents[building][room].push({
               Subject: event.summary,
@@ -448,7 +448,7 @@ export default function ResultsTable(props: Props) {
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const mergedEvents: EventSourceNoResource[] = [];
-      // Sort events by start date, then end date
+      // Sort events by start & end date
       events.sort((a, b) => {
         const startDiff = dayjs(a.StartTime).diff(dayjs(b.StartTime));
         return startDiff != 0
@@ -468,8 +468,9 @@ export default function ResultsTable(props: Props) {
           const lastEventEnd = dayjs(mergedEvents[lastIndex].EndTime);
           if (
             lastEventStart.isSame(eventStart) &&
-            lastEventEnd.isSame(eventEnd) // Duplicate events
+            lastEventEnd.isSame(eventEnd)
           ) {
+            // Duplicate events
             mergedEvents[lastIndex].Subject =
               event.Subject !== 'Class'
                 ? mergedEvents[lastIndex].Subject !== 'Class'
