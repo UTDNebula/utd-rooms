@@ -498,15 +498,15 @@ export default function ResultsTable(props: Props) {
             );
             merged = true;
           } else {
-            // Strict overlap events
+            // Overlap events
             const allDay =
               dur(eventStart, eventEnd) > 23 || dur(lastStart, lastEnd) > 23;
             const overlap = dur(
               dayjs.max(eventStart, lastStart),
               dayjs.min(eventEnd, lastEnd),
             );
+            // Non "all-days" events that overlap at least by 15 mins
             if (!allDay && overlap >= 0.25) {
-              // Overlap >= 15 mins
               mergedEvents[index].EndTime = lastEnd.isBefore(eventEnd)
                 ? event.EndTime
                 : mergedEvents[index].EndTime;
