@@ -34,6 +34,7 @@ import {
   ViewsDirective,
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -225,7 +226,7 @@ function mergeSubjects(subject1: string, subject2: string) {
     return m > n ? subject1 : subject2;
   }
   // 2 unrelated events
-  return subject1 + ' & ' + subject2;
+  return subject1 + ', ' + subject2;
 }
 
 /**
@@ -253,6 +254,7 @@ export default function ResultsTable(props: Props) {
   const [error, setError] = useState('');
 
   const date = props.date;
+  dayjs.extend(duration);
 
   let startTime = props.startTime;
   startTime = startTime ?? defaultStartTime + ':00';
@@ -444,7 +446,7 @@ export default function ResultsTable(props: Props) {
     }
   });
 
-  // Merge events
+  // Merge events that are either duplicate or overlapping by 15-60 minutes
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const mergedEvents: EventSourceNoResource[] = [];
@@ -457,38 +459,44 @@ export default function ResultsTable(props: Props) {
       });
 
       events.forEach((event) => {
+        let merged = false;
+
         const eventStart = dayjs(event.StartTime);
         const eventEnd = dayjs(event.EndTime);
-        const lastIndex = mergedEvents.length - 1;
-        if (
-          mergedEvents.length > 0 &&
-          dayjs(mergedEvents[lastIndex].EndTime).isAfter(eventStart)
-        ) {
-          const lastEventStart = dayjs(mergedEvents[lastIndex].StartTime);
-          const lastEventEnd = dayjs(mergedEvents[lastIndex].EndTime);
-          if (
-            lastEventStart.isSame(eventStart) &&
-            lastEventEnd.isSame(eventEnd)
-          ) {
-            // Duplicate events
-            mergedEvents[lastIndex].Subject =
-              event.Subject !== 'Class'
-                ? mergedEvents[lastIndex].Subject !== 'Class'
-                  ? mergedEvents[lastIndex].Subject + ', ' + event.Subject
-                  : event.Subject
-                : mergedEvents[lastIndex].Subject;
-          } else {
-            // Strict overlap events
-            mergedEvents[lastIndex].EndTime = lastEventEnd.isBefore(eventEnd)
-              ? event.EndTime
-              : mergedEvents[lastIndex].EndTime;
-            // Merge the subjects
-            mergedEvents[lastIndex].Subject = mergeSubjects(
-              mergedEvents[lastIndex].Subject,
-              event.Subject,
-            );
+        const index = mergedEvents.length - 1;
+        if (mergedEvents.length > 0) {
+          const lastStart = dayjs(mergedEvents[index].StartTime);
+          const lastEnd = dayjs(mergedEvents[index].EndTime);
+
+          if (lastEnd.isAfter(eventStart)) {
+            const tooLong =
+              dayjs.duration(eventEnd.diff(eventStart)).hours() > 12 ||
+              dayjs.duration(lastEnd.diff(lastStart)).hours() > 12;
+
+            if (lastStart.isSame(eventStart) && lastEnd.isSame(eventEnd)) {
+              // Duplicate events
+              mergedEvents[index].Subject =
+                event.Subject !== 'Class'
+                  ? mergedEvents[index].Subject !== 'Class' &&
+                    mergedEvents[index].Subject !== event.Subject
+                    ? mergedEvents[index].Subject + ', ' + event.Subject
+                    : event.Subject
+                  : mergedEvents[index].Subject;
+              merged = true;
+            } else if (!tooLong) {
+              // Strict overlap events
+              mergedEvents[index].EndTime = lastEnd.isBefore(eventEnd)
+                ? event.EndTime
+                : mergedEvents[index].EndTime;
+              mergedEvents[index].Subject = mergeSubjects(
+                mergedEvents[index].Subject,
+                event.Subject,
+              );
+              merged = true;
+            }
           }
-        } else {
+        }
+        if (!merged) {
           mergedEvents.push(event);
         }
       });
