@@ -35,6 +35,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import minMax from 'dayjs/plugin/minMax';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -63,6 +64,9 @@ type EventSource = EventSourceNoResource & {
   roomId: number;
   buildingId: number;
 };
+
+dayjs.extend(duration);
+dayjs.extend(minMax);
 
 interface LoadingProps {
   text?: string;
@@ -200,10 +204,27 @@ function metersToMiles(distance: number) {
   return distance / 1000 / 1.609;
 }
 
+function dur(time1: dayjs.Dayjs, time2: dayjs.Dayjs) {
+  return (
+    dayjs.duration(time2.diff(time1)).hours() +
+    dayjs.duration(time2.diff(time1)).minutes() / 60
+  );
+}
+
 /**
- * Merge the subjects of 2 overlapping events together
+ * Merge the subjects of 2 duplicate or overlapping events
  */
-function mergeSubjects(subject1: string, subject2: string) {
+function mergeSubjects(type: string, subject1: string, subject2: string) {
+  if (type === 'duplicate') {
+    return subject1 !== 'Class' && subject2 !== 'Class'
+      ? subject1 !== subject2
+        ? subject1 + ', ' + subject2
+        : subject1
+      : subject1 === 'Class'
+        ? subject2
+        : subject1;
+  }
+
   if (subject1 == subject2) {
     return subject1;
   }
@@ -226,7 +247,7 @@ function mergeSubjects(subject1: string, subject2: string) {
     return m > n ? subject1 : subject2;
   }
   // 2 unrelated events
-  return subject1 + ', ' + subject2;
+  return subject1 + ' & ' + subject2;
 }
 
 /**
@@ -254,7 +275,6 @@ export default function ResultsTable(props: Props) {
   const [error, setError] = useState('');
 
   const date = props.date;
-  dayjs.extend(duration);
 
   let startTime = props.startTime;
   startTime = startTime ?? defaultStartTime + ':00';
@@ -460,35 +480,38 @@ export default function ResultsTable(props: Props) {
 
       events.forEach((event) => {
         let merged = false;
-
         const eventStart = dayjs(event.StartTime);
         const eventEnd = dayjs(event.EndTime);
         const index = mergedEvents.length - 1;
-        if (mergedEvents.length > 0) {
+        if (
+          mergedEvents.length > 0 &&
+          dayjs(mergedEvents[index].EndTime).isAfter(eventStart)
+        ) {
           const lastStart = dayjs(mergedEvents[index].StartTime);
           const lastEnd = dayjs(mergedEvents[index].EndTime);
-
-          if (lastEnd.isAfter(eventStart)) {
-            const tooLong =
-              dayjs.duration(eventEnd.diff(eventStart)).hours() > 12 ||
-              dayjs.duration(lastEnd.diff(lastStart)).hours() > 12;
-
-            if (lastStart.isSame(eventStart) && lastEnd.isSame(eventEnd)) {
-              // Duplicate events
-              mergedEvents[index].Subject =
-                event.Subject !== 'Class'
-                  ? mergedEvents[index].Subject !== 'Class' &&
-                    mergedEvents[index].Subject !== event.Subject
-                    ? mergedEvents[index].Subject + ', ' + event.Subject
-                    : event.Subject
-                  : mergedEvents[index].Subject;
-              merged = true;
-            } else if (!tooLong) {
-              // Strict overlap events
+          if (lastStart.isSame(eventStart) && lastEnd.isSame(eventEnd)) {
+            // Duplicate events
+            mergedEvents[index].Subject = mergeSubjects(
+              'duplicate',
+              mergedEvents[index].Subject,
+              event.Subject,
+            );
+            merged = true;
+          } else {
+            // Strict overlap events
+            const allDay =
+              dur(eventStart, eventEnd) > 23 || dur(lastStart, lastEnd) > 23;
+            const overlap = dur(
+              dayjs.max(eventStart, lastStart),
+              dayjs.min(eventEnd, lastEnd),
+            );
+            if (!allDay && overlap >= 0.25) {
+              // Overlap >= 15 mins
               mergedEvents[index].EndTime = lastEnd.isBefore(eventEnd)
                 ? event.EndTime
                 : mergedEvents[index].EndTime;
               mergedEvents[index].Subject = mergeSubjects(
+                'overlapping',
                 mergedEvents[index].Subject,
                 event.Subject,
               );
