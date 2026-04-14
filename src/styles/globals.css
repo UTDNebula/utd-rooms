@@ -180,6 +180,9 @@
     word-break: break-word;
     overflow-wrap: anywhere;
   }
+  .e-event-popup .e-subject {
+    max-height: unset;
+  }
   .e-resource-icon::before {
     content: '\e756';
   }
