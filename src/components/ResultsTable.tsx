@@ -16,6 +16,7 @@ import {
 import { defaultEndTime, defaultStartTime } from '@/lib/timeUtils';
 import type {
   AstraEvent,
+  CometCalendarEvent,
   CourseBookEvent,
   Hierarchy,
   MazevoEvent,
@@ -33,8 +34,10 @@ import {
   ViewsDirective,
 } from '@syncfusion/ej2-react-schedule';
 import dayjs, { type Dayjs } from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import minMax from 'dayjs/plugin/minMax';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface BuildingResource {
   type: 'building';
@@ -61,6 +64,9 @@ type EventSource = EventSourceNoResource & {
   roomId: number;
   buildingId: number;
 };
+
+dayjs.extend(duration);
+dayjs.extend(minMax);
 
 interface LoadingProps {
   text?: string;
@@ -198,6 +204,52 @@ function metersToMiles(distance: number) {
   return distance / 1000 / 1.609;
 }
 
+function dur(time1: dayjs.Dayjs, time2: dayjs.Dayjs) {
+  return (
+    dayjs.duration(time2.diff(time1)).hours() +
+    dayjs.duration(time2.diff(time1)).minutes() / 60
+  );
+}
+
+/**
+ * Merge the subjects of 2 duplicate or overlapping events
+ */
+function mergeSubjects(type: string, subject1: string, subject2: string) {
+  if (type === 'duplicate') {
+    return subject1 !== 'Class' && subject2 !== 'Class'
+      ? subject1 !== subject2
+        ? subject1 + ', ' + subject2
+        : subject1
+      : subject1 === 'Class'
+        ? subject2
+        : subject1;
+  }
+
+  if (subject1 == subject2) {
+    return subject1;
+  }
+  const m = subject1.length;
+  const n = subject2.length;
+  const memo: number[][] = Array.from({ length: m + 1 }, () =>
+    Array(n + 1).fill(0),
+  );
+  let commonLength = 0;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (subject1[i - 1] == subject2[j - 1]) {
+        memo[i][j] = memo[i - 1][j - 1] + 1;
+        commonLength = Math.max(commonLength, memo[i][j]);
+      }
+    }
+  }
+  if (commonLength > 0.3 * Math.min(m, n)) {
+    // Heuristic: 2 identical events with different naming
+    return m > n ? subject1 : subject2;
+  }
+  // 2 unrelated events
+  return subject1 + ' & ' + subject2;
+}
+
 /**
  * Props type used by the ResultsTable component
  */
@@ -212,6 +264,7 @@ interface Props {
   courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
   astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
   mazevoEvents: GenericFetchedData<Hierarchy<MazevoEvent>>;
+  cometCalendarEvents: GenericFetchedData<Hierarchy<CometCalendarEvent>>;
   search: string;
 }
 
@@ -287,12 +340,14 @@ export default function ResultsTable(props: Props) {
   const courseBookEvents = props.courseBookEvents;
   const astraEvents = props.astraEvents;
   const mazevoEvents = props.mazevoEvents;
+  const cometCalendarEvents = props.cometCalendarEvents;
 
   if (
     rooms.message !== 'success' ||
     courseBookEvents.message !== 'success' ||
     astraEvents.message !== 'success' ||
-    mazevoEvents.message !== 'success'
+    mazevoEvents.message !== 'success' ||
+    cometCalendarEvents.message !== 'success'
   ) {
     return <ErrorResultsTable text="getting data" />;
   }
@@ -379,39 +434,106 @@ export default function ResultsTable(props: Props) {
       });
     }
   });
+  Object.entries(cometCalendarEvents.data).forEach(([building, rooms]) => {
+    building = mergedBuildings[building] ?? building;
+    if (
+      !excludedBuildings.includes(building) &&
+      (!buildings.length || nearby || buildings.includes(building))
+    ) {
+      combinedEvents[building] = combinedEvents[building] ?? {};
+      Object.entries(rooms).forEach(([room, events]) => {
+        const roomName = `${building} ${room}`;
+        if (!excludedRooms.includes(roomName) && room != 'Other') {
+          combinedEvents[building][room] = combinedEvents[building][room] ?? [];
+          events.forEach((event) => {
+            // Some calendar events have start time equal to end time, extend an hour for them
+            const startTime = dayjs(event.start_time);
+            const endTime = dayjs(event.end_time).isSame(startTime)
+              ? startTime.add(1, 'hour')
+              : dayjs(event.end_time);
 
-  //Remove duplicates
-  Object.values(combinedEvents).forEach((rooms) => {
-    Object.entries(rooms).forEach(([room, events]) => {
-      const eventMap = new Map<string, EventSourceNoResource>();
-      events.forEach((event) => {
-        const key = `${event.StartTime.getTime()}-${event.EndTime.getTime()}`;
-        const existingEvent = eventMap.get(key);
-        if (!existingEvent) {
-          eventMap.set(key, event);
-        } else if (
-          existingEvent.Subject === 'Class' &&
-          event.Subject !== 'Class'
-        ) {
-          // overwrite "Class" event with a more descriptive event
-          eventMap.set(key, event);
-        } else if (existingEvent.Subject !== event.Subject) {
-          // merge subjects if they are different
-          existingEvent.Subject += `, ${event.Subject}`;
+            combinedEvents[building][room].push({
+              Subject: event.summary,
+              StartTime: startTime.toDate(),
+              EndTime: endTime.toDate(),
+              ...(dayjs(event.end_time).isSame(startTime)
+                ? { pending: true }
+                : {}),
+            });
+          });
         }
       });
-      rooms[room] = Array.from(eventMap.values());
+    }
+  });
+
+  // Merge events that are either duplicate or overlapping by 15-60 minutes
+  Object.values(combinedEvents).forEach((rooms) => {
+    Object.entries(rooms).forEach(([room, events]) => {
+      const mergedEvents: EventSourceNoResource[] = [];
+      // Sort events by start & end date
+      events.sort((a, b) => {
+        const startDiff = dayjs(a.StartTime).diff(dayjs(b.StartTime));
+        return startDiff != 0
+          ? startDiff
+          : dayjs(a.EndTime).diff(dayjs(b.EndTime));
+      });
+
+      events.forEach((event) => {
+        let merged = false;
+        const eventStart = dayjs(event.StartTime);
+        const eventEnd = dayjs(event.EndTime);
+        const index = mergedEvents.length - 1;
+        if (
+          mergedEvents.length > 0 &&
+          dayjs(mergedEvents[index].EndTime).isAfter(eventStart)
+        ) {
+          const lastStart = dayjs(mergedEvents[index].StartTime);
+          const lastEnd = dayjs(mergedEvents[index].EndTime);
+          if (lastStart.isSame(eventStart) && lastEnd.isSame(eventEnd)) {
+            // Duplicate events
+            mergedEvents[index].Subject = mergeSubjects(
+              'duplicate',
+              mergedEvents[index].Subject,
+              event.Subject,
+            );
+            merged = true;
+          } else {
+            // Overlap events
+            const allDay =
+              dur(eventStart, eventEnd) > 23 || dur(lastStart, lastEnd) > 23;
+            const overlap = dur(
+              dayjs.max(eventStart, lastStart),
+              dayjs.min(eventEnd, lastEnd),
+            );
+            // Non "all-days" events that overlap at least by 15 mins
+            if (!allDay && overlap >= 0.25) {
+              mergedEvents[index].EndTime = lastEnd.isBefore(eventEnd)
+                ? event.EndTime
+                : mergedEvents[index].EndTime;
+              mergedEvents[index].Subject = mergeSubjects(
+                'overlapping',
+                mergedEvents[index].Subject,
+                event.Subject,
+              );
+              merged = true;
+            }
+          }
+        }
+        if (!merged) {
+          mergedEvents.push(event);
+        }
+      });
+      rooms[room] = mergedEvents;
     });
   });
 
-  // Generate resource groups
-  //to pass into calendar
+  // Generate resource groups to pass into calendar
   const buildingResources: BuildingResource[] = [];
   const roomResources: RoomResource[] = [];
-  //to number them
+  // to number them
   let buildingIdCounter = 1;
   let roomIdCounter = 1;
-  //to get the number for the events
+  // to get the number for the events
   const buildingIdMap = new Map();
   const roomIdMap = new Map();
 
@@ -452,7 +574,7 @@ export default function ResultsTable(props: Props) {
             (minCapacity === 0 ||
               (room.capacity !== 0 && room.capacity >= minCapacity))
           ) {
-            //Check if free
+            // Check if free
             const events = combinedEvents?.[building]?.[room.room] ?? [];
             const [completelyFree, hasGap] = findAvailability(
               events,
@@ -526,7 +648,7 @@ export default function ResultsTable(props: Props) {
       events.forEach((event, index) => {
         const roomName = `${building} ${room}`;
         const roomId = roomIdMap.get(roomName);
-        //If room exists (it doesn't when its been filtered out)
+        // If room exists (it doesn't when its been filtered out)
         if (roomId) {
           scheduleData.push({
             id: `${roomId}-${index}`, // Unique event ID
