@@ -2,6 +2,7 @@
 
 import Background from '@/../public/background.png';
 import NebulaLogo from '@/components/NebulaLogo';
+import SearchDisclaimerDialog from '@/components/SearchDisclaimer';
 import {
   defaultEndTime,
   defaultStartTime,
@@ -62,6 +63,18 @@ export default function Home() {
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [disclaimerOpen, setDisclaimerOpen] = useState(false);
+
+  function handleSearchClick() {
+    setDisclaimerOpen(true);
+  }
+  function handleConfirm() {
+    setDisclaimerOpen(false);
+    searchRooms();
+  }
+  function handleClose() {
+    setDisclaimerOpen(false);
+  }
 
   function searchRooms() {
     if (date !== null) {
@@ -235,10 +248,15 @@ export default function Home() {
             className="mr-0"
           />
         )}
+        <SearchDisclaimerDialog
+          open={disclaimerOpen}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
         <Button
           variant="contained"
           className="h-11 relative"
-          onClick={searchRooms}
+          onClick={handleSearchClick}
           disabled={date === null || !date.isValid() || error}
         >
           {isPending && (
