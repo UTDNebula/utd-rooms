@@ -64,11 +64,18 @@ export default function Home() {
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
   const [disclaimerOpen, setDisclaimerOpen] = useState(false);
+  const DISCLAIMER_KEY = 'disclaimerAccepted';
 
   function handleSearchClick() {
-    setDisclaimerOpen(true);
+    const accepted = localStorage.getItem(DISCLAIMER_KEY);
+    if (accepted === 'true') {
+      searchRooms();
+    } else {
+      setDisclaimerOpen(true);
+    }
   }
   function handleConfirm() {
+    localStorage.setItem(DISCLAIMER_KEY, 'true');
     setDisclaimerOpen(false);
     searchRooms();
   }
