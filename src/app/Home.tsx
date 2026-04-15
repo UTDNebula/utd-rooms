@@ -62,7 +62,7 @@ export default function Home() {
 
   const [locationGranted, setLocationGranted] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
-  
+
   function searchRooms() {
     if (date !== null) {
       const formattedDate = date.format('YYYY-MM-DD');
