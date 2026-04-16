@@ -156,7 +156,18 @@
   .e-appointment .e-appointment-details div:not(.e-indicator) div {
     display: block;
   }
+
+  /*Allowing Overflow on table component*/
+  .e-schedule {
+    overflow: visible !important;
+  }
+
   /*Popup*/
+  .e-quick-popup-wrapper,
+  .e-event-popup {
+    border-radius: 0.75rem !important;
+    overflow: hidden;
+  }
   .e-event-popup .e-subject {
     max-height: unset;
   }
