@@ -168,11 +168,6 @@
     border-radius: 0.75rem !important;
     overflow: hidden;
   }
-  .e-quick-popup-wrapper *,
-  .e-event-popup * {
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
   .e-event-popup .e-subject {
     max-height: unset;
   }
