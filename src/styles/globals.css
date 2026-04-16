@@ -158,27 +158,15 @@
   }
 
   /*Allowing Overflow on table component*/
-  .e-schedule,
-  .e-schedule .e-table-container,
-  .e-schedule .e-content-wrap,
-  .e-schedule .e-content-wrap table,
-  .e-schedule .e-content-table,
-  .e-schedule .e-timeline-view {
+  .e-schedule {
     overflow: visible !important;
   }
 
   /*Popup*/
   .e-quick-popup-wrapper,
   .e-event-popup {
-    width: 22rem !important;
-    max-width: min(22rem, calc(100vw - 1rem)) !important;
     border-radius: 0.75rem !important;
     overflow: hidden;
-  }
-  .e-quick-popup-wrapper *,
-  .e-event-popup * {
-    word-break: break-word;
-    overflow-wrap: anywhere;
   }
   .e-event-popup .e-subject {
     max-height: unset;
