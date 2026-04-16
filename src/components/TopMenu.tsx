@@ -97,7 +97,7 @@ export default function TopMenu(props: Props) {
             }
           }}
         />
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-4">
           <Disclaimer />
           <Tooltip title="Share link to search">
             <IconButton
