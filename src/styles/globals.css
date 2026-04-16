@@ -158,12 +158,7 @@
   }
 
   /*Allowing Overflow on table component*/
-  .e-schedule,
-  .e-schedule .e-table-container,
-  .e-schedule .e-content-wrap,
-  .e-schedule .e-content-wrap table,
-  .e-schedule .e-content-table,
-  .e-schedule .e-timeline-view {
+  .e-schedule {
     overflow: visible !important;
   }
 
@@ -174,6 +169,7 @@
     max-width: min(22rem, calc(100vw - 1rem)) !important;
     border-radius: 0.75rem !important;
     overflow: hidden;
+    max-height: fit-content;
   }
   .e-quick-popup-wrapper *,
   .e-event-popup * {
