@@ -476,7 +476,7 @@ export default function ResultsTable(props: Props) {
         let diff = dayjs(a.StartTime).diff(dayjs(b.StartTime));
         if (diff !== 0) {
           return diff;
-        } 
+        }
         diff = dayjs(a.EndTime).diff(dayjs(b.EndTime));
         if (diff !== 0) {
           return diff;
