@@ -495,7 +495,10 @@ export default function ResultsTable(props: Props) {
         ) {
           const lastEventStart = dayjs(mergedEvents[index].StartTime);
           const lastEventEnd = dayjs(mergedEvents[index].EndTime);
-          if (lastEventStart.isSame(eventStart) && lastEventEnd.isSame(eventEnd)) {
+          if (
+            lastEventStart.isSame(eventStart) &&
+            lastEventEnd.isSame(eventEnd)
+          ) {
             // Duplicate events
             mergedEvents[index].Subject = mergeSubjects(
               'duplicate',
@@ -506,7 +509,8 @@ export default function ResultsTable(props: Props) {
           } else {
             // Overlap events
             const allDay =
-              dur(eventStart, eventEnd) > 23 || dur(lastEventStart, lastEventEnd) > 23;
+              dur(eventStart, eventEnd) > 23 ||
+              dur(lastEventStart, lastEventEnd) > 23;
             const overlap = dur(
               dayjs.max(eventStart, lastEventStart),
               dayjs.min(eventEnd, lastEventEnd),
