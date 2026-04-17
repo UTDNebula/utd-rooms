@@ -223,31 +223,32 @@ function mergeSubjects(type: string, subject1: string, subject2: string) {
       : subject1 === 'Class'
         ? subject2
         : subject1;
-  }
-
-  if (subject1 == subject2) {
-    return subject1;
-  }
-  const m = subject1.length;
-  const n = subject2.length;
-  const memo: number[][] = Array.from({ length: m + 1 }, () =>
-    Array(n + 1).fill(0),
-  );
-  let commonLength = 0;
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (subject1[i - 1] == subject2[j - 1]) {
-        memo[i][j] = memo[i - 1][j - 1] + 1;
-        commonLength = Math.max(commonLength, memo[i][j]);
+  } else if (type === 'overlapping') {
+    if (subject1 == subject2) {
+      return subject1;
+    }
+    const m = subject1.length;
+    const n = subject2.length;
+    const memo: number[][] = Array.from({ length: m + 1 }, () =>
+      Array(n + 1).fill(0),
+    );
+    let commonLength = 0;
+    for (let i = 1; i <= m; i++) {
+      for (let j = 1; j <= n; j++) {
+        if (subject1[i - 1] == subject2[j - 1]) {
+          memo[i][j] = memo[i - 1][j - 1] + 1;
+          commonLength = Math.max(commonLength, memo[i][j]);
+        }
       }
     }
+    if (commonLength > 0.3 * Math.min(m, n)) {
+      // Heuristic: 2 identical events with different naming
+      return m > n ? subject1 : subject2;
+    }
+    return subject1 + ' & ' + subject2;
   }
-  if (commonLength > 0.3 * Math.min(m, n)) {
-    // Heuristic: 2 identical events with different naming
-    return m > n ? subject1 : subject2;
-  }
-  // 2 unrelated events
-  return subject1 + ' & ' + subject2;
+  // Act as a fallback
+  return 'MERGED EVENTS';
 }
 
 /**
@@ -470,12 +471,17 @@ export default function ResultsTable(props: Props) {
   Object.values(combinedEvents).forEach((rooms) => {
     Object.entries(rooms).forEach(([room, events]) => {
       const mergedEvents: EventSourceNoResource[] = [];
-      // Sort events by start & end date
+      // Sort event
       events.sort((a, b) => {
-        const startDiff = dayjs(a.StartTime).diff(dayjs(b.StartTime));
-        return startDiff != 0
-          ? startDiff
-          : dayjs(a.EndTime).diff(dayjs(b.EndTime));
+        let diff = dayjs(a.StartTime).diff(dayjs(b.StartTime));
+        if (diff !== 0) {
+          return diff;
+        } 
+        diff = dayjs(a.EndTime).diff(dayjs(b.EndTime));
+        if (diff !== 0) {
+          return diff;
+        }
+        return a.Subject.localeCompare(b.Subject);
       });
 
       events.forEach((event) => {
