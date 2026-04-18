@@ -5,6 +5,7 @@ import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import type {
   AstraEvent,
+  CometCalendarEvent,
   CourseBookEvent,
   Hierarchy,
   MazevoEvent,
@@ -20,6 +21,7 @@ interface Props {
   courseBookEvents: GenericFetchedData<Hierarchy<CourseBookEvent>>;
   astraEvents: GenericFetchedData<Hierarchy<AstraEvent>>;
   mazevoEvents: GenericFetchedData<Hierarchy<MazevoEvent>>;
+  cometCalendarEvents: GenericFetchedData<Hierarchy<CometCalendarEvent>>;
 }
 
 /**
@@ -78,6 +80,7 @@ export default function Results(props: Props) {
           courseBookEvents={props.courseBookEvents}
           astraEvents={props.astraEvents}
           mazevoEvents={props.mazevoEvents}
+          cometCalendarEvents={props.cometCalendarEvents}
           search={search}
         />
       </main>

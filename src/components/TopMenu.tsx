@@ -1,6 +1,7 @@
 'use client';
 
 import Background from '@/../public/background.png';
+import Disclaimer from '@/components/Disclaimer';
 import { UTDRoomsLogoStandalone } from '@/components/UTDRoomsLogo';
 import { Share } from '@mui/icons-material';
 import { IconButton, Snackbar, TextField, Tooltip } from '@mui/material';
@@ -96,15 +97,18 @@ export default function TopMenu(props: Props) {
             }
           }}
         />
-        <Tooltip title="Share link to search" className="ml-auto">
-          <IconButton
-            className="aspect-square"
-            size="medium"
-            onClick={() => shareLink(window.location.href)}
-          >
-            <Share className="text-3xl mr-1" />
-          </IconButton>
-        </Tooltip>
+        <div className="ml-auto flex items-center gap-4">
+          <Disclaimer />
+          <Tooltip title="Share link to search">
+            <IconButton
+              className="aspect-square"
+              size="medium"
+              onClick={() => shareLink(window.location.href)}
+            >
+              <Share className="text-3xl mr-1" />
+            </IconButton>
+          </Tooltip>
+        </div>
       </header>
       <Snackbar
         open={openCopied}
