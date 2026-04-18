@@ -109,6 +109,7 @@ export const excludedRooms = [
   'MC 3.612',
   'MC 4.404',
   'MC Other',
+  'Student Union (SU) 2.412',
   'Student Union (SU) 4.600',
   'Student Union (SU) 11.219',
   'Student Union (SU) 12.110',
@@ -186,6 +187,8 @@ export const buildingLocationHardcodes: {
 export const mapLinkOverrides: {
   [key: string]: string;
 } = {
+  'https://locator.utdallas.edu/ATC_Auditorium':
+    'https://map.concept3d.com/?id=1772#!m/527328',
   'https://locator.utdallas.edu/ATC_1.910':
     'https://map.concept3d.com/?id=1772#!m/541788',
   'https://locator.utdallas.edu/ATC_2.705E':
