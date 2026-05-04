@@ -1,6 +1,7 @@
 'use client';
 
 import Filters from '@/components/Filters';
+import Footer from '@/components/Footer';
 import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import type {
@@ -84,6 +85,7 @@ export default function Results(props: Props) {
           search={search}
         />
       </main>
+      <Footer />
     </>
   );
 }
