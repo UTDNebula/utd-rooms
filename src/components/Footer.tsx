@@ -1,5 +1,6 @@
 'use client';
 
+import Background from '@/../public/background2.png';
 import GitHub from '@/../public/github-white.svg';
 import Instagram from '@/../public/instagram-white.svg';
 import Linkedin from '@/../public/linkedin-white.svg';
@@ -12,11 +13,17 @@ const linkClasses =
 
 export default function Footer() {
   return (
-    <footer className="bg-blue-500 w-full px-8 py-4">
-      <div className="flex justify-evenly mt-6">
+    <footer className="relative w-full p-6">
+      <Image
+        src={Background}
+        alt="gradient background"
+        fill
+        className="object-cover -z-10"
+      />
+      <div className="flex justify-evenly">
         <div>
           <h3 className="text-lg font-bold">For organizations</h3>
-          <div className="mt-6 flex flex-col gap-3 text-sm">
+          <div className="mt-6 flex flex-col gap-4 text-sm">
             <Link
               className={linkClasses}
               target="_blank"
@@ -35,7 +42,7 @@ export default function Footer() {
         </div>
         <div>
           <h3 className="text-lg font-bold">For students</h3>
-          <div className="mt-6 flex flex-col gap-3 text-sm">
+          <div className="mt-6 flex flex-col gap-4 text-sm">
             <Link
               className={linkClasses}
               target="_blank"
@@ -68,14 +75,14 @@ export default function Footer() {
         </div>
         <div>
           <h3 className="text-lg font-bold">Get to know us</h3>
-          <div className="mt-6 flex flex-col gap-4">
+          <div className="mt-6 flex flex-col gap-4 text-sm">
             <Link
               className={linkClasses + ' flex items-center gap-2'}
               target="_blank"
               href="https://www.utdnebula.com/"
             >
               <NebulaLogo className="h-6 w-auto" />
-              Our wesbites
+              Our wesbite
             </Link>
             <Link
               className={linkClasses + ' flex items-center gap-2'}
@@ -105,8 +112,8 @@ export default function Footer() {
         </div>
       </div>
       <div className="pt-10">
-        <div className="border-t-2 border-white" />
-        <div className="flex md:flex-row flex-col justify-between pt-4">
+        <div className="border-t border-white" />
+        <div className="flex md:flex-row flex-col justify-between pt-6">
           <Link className={linkClasses} href="/sitemap.xml">
             Sitemap
           </Link>
