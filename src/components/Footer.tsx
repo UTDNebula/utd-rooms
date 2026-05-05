@@ -1,9 +1,8 @@
 'use client';
 
-import Background from '@/../public/background2.png';
-import GitHub from '@/../public/github-white.svg';
-import Instagram from '@/../public/instagram-white.svg';
-import Linkedin from '@/../public/linkedin-white.svg';
+import GitHub from '@/../public/github-black.svg';
+import Instagram from '@/../public/instagram-black.svg';
+import Linkedin from '@/../public/linkedin-black.svg';
 import Image from 'next/image';
 import Link from 'next/link';
 import NebulaLogo from './NebulaLogo';
@@ -13,17 +12,17 @@ const linkClasses =
 
 export default function Footer() {
   return (
-    <footer className="relative w-full p-6">
-      <Image
-        src={Background}
-        alt="gradient background"
-        fill
-        className="object-cover -z-10"
-      />
-      <div className="flex justify-evenly">
+    <footer className="bg-royal dark:bg-cornflower-300 dark:text-black relative w-full">
+      <div 
+        className='text-center py-2 hover:bg-royal hover:text-white'
+        onClick={() => window.scrollTo(0, 0)}
+      >
+        Back to top
+      </div>
+      <div className="flex justify-evenly mt-6">
         <div>
           <h3 className="text-lg font-bold">For organizations</h3>
-          <div className="mt-6 flex flex-col gap-4 text-sm">
+          <div className="mt-6 flex flex-col gap-4">
             <Link
               className={linkClasses}
               target="_blank"
@@ -42,7 +41,14 @@ export default function Footer() {
         </div>
         <div>
           <h3 className="text-lg font-bold">For students</h3>
-          <div className="mt-6 flex flex-col gap-4 text-sm">
+          <div className="mt-6 flex flex-col gap-4">
+            <Link
+              className={linkClasses}
+              target="_blank"
+              href="https://libcal.utdallas.edu/allspaces"
+            >
+              Library
+            </Link>
             <Link
               className={linkClasses}
               target="_blank"
@@ -64,32 +70,25 @@ export default function Footer() {
             >
               Building hours
             </Link>
-            <Link
-              className={linkClasses}
-              target="_blank"
-              href="https://libcal.utdallas.edu/allspaces"
-            >
-              Library
-            </Link>
           </div>
         </div>
         <div>
           <h3 className="text-lg font-bold">Get to know us</h3>
-          <div className="mt-6 flex flex-col gap-4 text-sm">
+          <div className="mt-6 flex flex-col gap-4">
             <Link
               className={linkClasses + ' flex items-center gap-2'}
               target="_blank"
               href="https://www.utdnebula.com/"
             >
-              <NebulaLogo className="h-6 w-auto" />
+              <NebulaLogo className="h-6 w-auto fill-black" />
               Our wesbite
             </Link>
             <Link
               className={linkClasses + ' flex items-center gap-2'}
               target="_blank"
-              href="https://github.com/utdnebula"
+              href="https://github.com/utdnebula/"
             >
-              <Image src={GitHub} alt="GitHub logo" width="30" height="30" />
+              <Image src={GitHub} alt="Github" width="30" height="30" />
               Github
             </Link>
             <Link
@@ -97,22 +96,22 @@ export default function Footer() {
               target="_blank"
               href="https://www.instagram.com/utdnebula/"
             >
-              <Image src={Instagram} alt="GitHub logo" width="30" height="30" />
+              <Image src={Instagram} alt="Instagram" width="30" height="30" />
               Instagram
             </Link>
             <Link
               className={linkClasses + ' flex items-center gap-2'}
               target="_blank"
-              href="https://www.linkedin.com/company/utdnebula"
+              href="https://www.linkedin.com/company/utdnebula/"
             >
-              <Image src={Linkedin} alt="GitHub logo" width="30" height="30" />
+              <Image src={Linkedin} alt="Linkedin" width="30" height="30" />
               Linkedin
             </Link>
           </div>
         </div>
       </div>
-      <div className="pt-10">
-        <div className="border-t border-white" />
+      <div className="p-6">
+        <div className="border-t-2 border-white dark:border-black" />
         <div className="flex md:flex-row flex-col justify-between pt-6">
           <Link className={linkClasses} href="/sitemap.xml">
             Sitemap
