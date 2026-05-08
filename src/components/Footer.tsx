@@ -1,17 +1,17 @@
 'use client';
 
-import FooterLogo from '@/../public/footer-logo.svg';
 import Arrow from '@/../public/arrow-black.svg';
+import FooterLogo from '@/../public/footer-logo.svg';
 import GitHub from '@/../public/github-black.svg';
 import Instagram from '@/../public/instagram-black.svg';
+import { Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import NebulaLogo from './NebulaLogo';
-import { Tooltip } from '@mui/material';
 
 function ScrollUpButton() {
   return (
-    <Tooltip title='Go back to top'>
+    <Tooltip title="Go back to top">
       <button
         onClick={() => window.scrollTo(0, 0)}
         className="flex flex-col items-center justify-center rounded-full p-2 transition border-2 border-white/0 hover:border-black cursor-pointer"
@@ -131,8 +131,13 @@ function GetToKnowUs() {
 export default function Footer() {
   return (
     <footer className="pt-6 bg-royal dark:bg-cornflower-300 dark:text-black relative w-full">
-      <div className='mx-auto px-6 lg:px-35 flex justify-between items-center'>
-        <Image src={FooterLogo} alt="Big Logo" height="50" className="shrink min-w-0"/>
+      <div className="mx-auto px-6 lg:px-35 flex justify-between items-center">
+        <Image
+          src={FooterLogo}
+          alt="Big Logo"
+          height="50"
+          className="shrink min-w-0"
+        />
         <ScrollUpButton />
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-15 mx-auto w-fit lg:w-full lg:justify-items-center mt-10">
