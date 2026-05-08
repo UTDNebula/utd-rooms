@@ -4,6 +4,7 @@ import Arrow from '@/../public/arrow-black.svg';
 import FooterLogo from '@/../public/footer-logo.svg';
 import GitHub from '@/../public/github-black.svg';
 import Instagram from '@/../public/instagram-black.svg';
+import JoinDiscord from '@/../public/join-discord-black.svg';
 import { Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -36,7 +37,7 @@ function ForOrganizations() {
   return (
     <div>
       <h3 className="text-md md:text-lg font-bold">For Organizations</h3>
-      <div className="mt-4 flex flex-col gap-3 text-sm md:text-base">
+      <div className="mt-6 flex flex-col gap-3 text-sm md:text-base">
         <Link
           className={linkClasses}
           target="_blank"
@@ -60,7 +61,7 @@ function ForStudents() {
   return (
     <div>
       <h3 className="text-md md:text-lg font-bold">For Students</h3>
-      <div className="mt-4 flex flex-col gap-3 text-sm md:text-base">
+      <div className="mt-6 flex flex-col gap-3 text-sm md:text-base">
         <Link
           className={linkClasses}
           target="_blank"
@@ -96,34 +97,34 @@ function ForStudents() {
 
 function GetToKnowUs() {
   return (
-    <div>
-      <h3 className="text-md md:text-lg font-bold">Get to know us</h3>
-      <div className="mt-4 flex flex-col gap-3 text-sm md:text-base">
-        <Link
-          className={linkClasses + ' flex items-center gap-2'}
-          target="_blank"
-          href="https://www.utdnebula.com/"
-        >
-          <NebulaLogo className="h-6 w-auto fill-black" />
-          Wesbite
-        </Link>
-        <Link
-          className={linkClasses + ' flex items-center gap-2'}
-          target="_blank"
-          href="https://github.com/utdnebula/"
-        >
-          <Image src={GitHub} alt="Github" width="30" height="30" />
-          Github
-        </Link>
-        <Link
-          className={linkClasses + ' flex items-center gap-2'}
-          target="_blank"
-          href="https://www.instagram.com/utdnebula/"
-        >
-          <Image src={Instagram} alt="Instagram" width="30" height="30" />
-          Instagram
-        </Link>
-      </div>
+    <div className="flex flex-col gap-5 text-sm md:text-base">
+      <Link target="_blank" href="https://discord.utdnebula.com/">
+        <Image src={JoinDiscord} alt="Join Discord" height="40" />
+      </Link>
+      <Link
+        className={linkClasses + ' flex items-center gap-2'}
+        target="_blank"
+        href="https://www.utdnebula.com/"
+      >
+        <NebulaLogo className="h-6 w-auto fill-black" />
+        Wesbite
+      </Link>
+      <Link
+        className={linkClasses + ' flex items-center gap-2'}
+        target="_blank"
+        href="https://github.com/utdnebula/"
+      >
+        <Image src={GitHub} alt="Github" width="30" height="30" />
+        Github
+      </Link>
+      <Link
+        className={linkClasses + ' flex items-center gap-2'}
+        target="_blank"
+        href="https://www.instagram.com/utdnebula/"
+      >
+        <Image src={Instagram} alt="Instagram" width="30" height="30" />
+        Instagram
+      </Link>
     </div>
   );
 }
