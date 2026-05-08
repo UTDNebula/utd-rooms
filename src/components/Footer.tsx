@@ -35,8 +35,8 @@ const linkClasses =
 function ForOrganizations() {
   return (
     <div>
-      <h3 className="text-lg font-bold">For Organizations</h3>
-      <div className="mt-6 flex flex-col gap-3">
+      <h3 className="text-md md:text-lg font-bold">For Organizations</h3>
+      <div className="mt-4 flex flex-col gap-3 text-sm md:text-base">
         <Link
           className={linkClasses}
           target="_blank"
@@ -59,8 +59,8 @@ function ForOrganizations() {
 function ForStudents() {
   return (
     <div>
-      <h3 className="text-lg font-bold">For Students</h3>
-      <div className="mt-6 flex flex-col gap-3">
+      <h3 className="text-md md:text-lg font-bold">For Students</h3>
+      <div className="mt-4 flex flex-col gap-3 text-sm md:text-base">
         <Link
           className={linkClasses}
           target="_blank"
@@ -97,8 +97,8 @@ function ForStudents() {
 function GetToKnowUs() {
   return (
     <div>
-      <h3 className="text-lg font-bold">Get to know us</h3>
-      <div className="mt-6 flex flex-col gap-3">
+      <h3 className="text-md md:text-lg font-bold">Get to know us</h3>
+      <div className="mt-4 flex flex-col gap-3 text-sm md:text-base">
         <Link
           className={linkClasses + ' flex items-center gap-2'}
           target="_blank"
@@ -130,24 +130,24 @@ function GetToKnowUs() {
 
 export default function Footer() {
   return (
-    <footer className="pt-6 bg-royal dark:bg-cornflower-300 dark:text-black relative w-full">
-      <div className="mx-auto px-6 lg:px-35 flex justify-between items-center">
+    <footer className="pt-6 bg-royal dark:bg-cornflower-300 dark:text-black w-full">
+      <div className="w-4/5 mx-auto flex justify-between items-center">
         <Image
           src={FooterLogo}
-          alt="Big Logo"
-          height="50"
+          alt="Footer UTD Rooms Logo"
+          height="60"
           className="shrink min-w-0"
         />
         <ScrollUpButton />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-15 mx-auto w-fit lg:w-full lg:justify-items-center mt-10">
+      <div className="w-4/5 flex flex-wrap gap-5 justify-between mt-10 mx-auto">
         <ForOrganizations />
         <ForStudents />
         <GetToKnowUs />
       </div>
-      <div className="mx-auto px-6 lg:px-35 pb-6 mt-10">
+      <div className="w-4/5 mx-auto pb-6 mt-10">
         <div className="border-t-2 border-white dark:border-black" />
-        <div className="flex md:flex-row flex-col justify-between items-center pt-6">
+        <div className="flex md:flex-row flex-col gap-5 justify-between items-center pt-6">
           <Link className={linkClasses} href="/sitemap.xml">
             Sitemap
           </Link>
