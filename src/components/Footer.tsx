@@ -170,9 +170,14 @@ export default function Footer() {
       <div className="pb-6 mt-10">
         <div className="border-t-2 border-white dark:border-haiti" />
         <div className="flex md:flex-row flex-col gap-5 justify-between items-center pt-6">
-          <Link className={linkClasses} href="/sitemap.xml">
-            Sitemap
-          </Link>
+          <div className="flex gap-x-8 gap-y-1 justify-around md:justify-normal flex-wrap">
+            <Link className={linkClasses} href="/legal/privacy-policy.txt">
+              Privacy Policy
+            </Link>
+            <Link className={linkClasses} href="/sitemap.xml">
+              Sitemap
+            </Link>
+          </div>
           <p className="md:text-right text-center text-xs">
             © 2025-{new Date().getFullYear()} Nebula Labs Maintainers.
             Open-source under the MIT License.
