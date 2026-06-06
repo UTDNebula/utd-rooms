@@ -1,6 +1,7 @@
 'use client';
 
-import Arrow from '@/../public/arrow-black.svg';
+import DarkArrow from '@/../public/arrow-black.svg';
+import LightArrow from '@/../public/arrow-white.svg';
 import DarkGitHub from '@/../public/github-black.svg';
 import LightGitHub from '@/../public/github-white.svg';
 import DarkInsta from '@/../public/instagram-black.svg';
@@ -15,20 +16,42 @@ import Link from 'next/link';
 import NebulaLogo from './NebulaLogo';
 import { UTDRoomsLogoCombination } from './UTDRoomsLogo';
 
+/**
+ * Contact logo that displays a light and dark version based on the current theme
+ */
+function Icon(props: {
+  className?: string;
+  light: string;
+  dark: string;
+  alt: string;
+  size: number | `${number}`;
+}) {
+  return (
+    <>
+      <Image
+        src={props.light}
+        alt={props.alt}
+        height={props.size}
+        className={`block dark:hidden ${props.className || ''}`}
+      />
+      <Image
+        src={props.dark}
+        alt={props.alt}
+        height={props.size}
+        className={`hidden dark:block ${props.className || ''}`}
+      />
+    </>
+  );
+}
+
 function ScrollUpButton() {
   return (
     <Tooltip title="Go back to top">
       <button
         onClick={() => window.scrollTo(0, 0)}
-        className="flex flex-col items-center justify-center rounded-full p-2 transition border-2 border-white/0 hover:border-black cursor-pointer"
+        className="flex flex-col items-center justify-center rounded-full p-2 transition border-2 border-white/0 hover:border-white dark:hover:border-haiti cursor-pointer"
       >
-        <Image
-          src={Arrow}
-          alt="arrow"
-          width="20"
-          height="20"
-          className="rotate-180"
-        />
+        <Icon className='rotate-180' light={LightArrow} dark={DarkArrow} alt="arrow" size="20" />
         Top
       </button>
     </Tooltip>
@@ -93,33 +116,6 @@ function ForStudents() {
   );
 }
 
-/**
- * Contact logo that displays a light and dark version based on the current theme
- */
-function Icon(props: {
-  light: string;
-  dark: string;
-  alt: string;
-  size: number | `${number}`;
-}) {
-  return (
-    <>
-      <Image
-        src={props.light}
-        alt={props.alt}
-        height={props.size}
-        className="block dark:hidden"
-      />
-      <Image
-        src={props.dark}
-        alt={props.alt}
-        height={props.size}
-        className="hidden dark:block"
-      />
-    </>
-  );
-}
-
 function GetToKnowUs() {
   return (
     <div className="flex flex-col gap-5 text-sm md:text-base">
@@ -138,7 +134,7 @@ function GetToKnowUs() {
         target="_blank"
         href="https://www.utdnebula.com/"
       >
-        <NebulaLogo className="h-6 w-auto fill-haiti" />
+        <NebulaLogo className="h-6 w-auto fill-white dark:fill-haiti" />
         Wesbite
       </Link>
       <Link
@@ -208,7 +204,7 @@ export default function Footer() {
         <div className="border-t-2 border-white dark:border-haiti" />
         <div className="flex md:flex-row flex-col gap-5 justify-between items-center pt-6">
           <div className="flex gap-x-8 gap-y-1 justify-around md:justify-normal flex-wrap">
-            <Link className={linkClasses} href="/legal/privacy-policy.txt">
+            <Link className={linkClasses} href="https://www.utdnebula.com/legal/privacy-policy.txt">
               Privacy Policy
             </Link>
             <Link className={linkClasses} href="/sitemap.xml">
