@@ -1,10 +1,14 @@
 'use client';
 
 import Arrow from '@/../public/arrow-black.svg';
-import GitHub from '@/../public/github-black.svg';
-import Instagram from '@/../public/instagram-black.svg';
-import Discord from '@/../public/join-discord-black.svg';
-import Linkedin from '@/../public/linkedin-black.svg';
+import DarkGitHub from '@/../public/github-black.svg';
+import LightGitHub from '@/../public/github-white.svg';
+import DarkInsta from '@/../public/instagram-black.svg';
+import LightInsta from '@/../public/instagram-white.svg';
+import DarkDiscord from '@/../public/join-discord-black.svg';
+import LightDiscord from '@/../public/join-discord-white.svg';
+import DarkLinkedin from '@/../public/linkedin-black.svg';
+import LightLinkedin from '@/../public/linkedin-white.svg';
 import { Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -89,6 +93,35 @@ function ForStudents() {
   );
 }
 
+/**
+ * Contact logo that displays a light and dark version based on the current theme
+ */
+function Icon(props: {
+  light: string;
+  dark: string;
+  alt: string;
+  size: number | `${number}`;
+}) {
+  return (
+    <>
+      <Image
+        src={props.light}
+        alt={props.alt}
+        width={props.size}
+        height={props.size}
+        className="block dark:hidden"
+      />
+      <Image
+        src={props.dark}
+        alt={props.alt}
+        width={props.size}
+        height={props.size}
+        className="hidden dark:block"
+      />
+    </>
+  );
+}
+
 function GetToKnowUs() {
   return (
     <div className="flex flex-col gap-5 text-sm md:text-base">
@@ -100,7 +133,7 @@ function GetToKnowUs() {
         target="_blank"
         href="https://discord.utdnebula.com/"
       >
-        <Image src={Discord} alt="Discord" height={45} />
+        <Icon light={LightDiscord} dark={DarkDiscord} alt="Discord" size={45} />
       </Link>
       <Link
         className={linkClasses + ' flex items-center gap-2'}
@@ -115,7 +148,7 @@ function GetToKnowUs() {
         target="_blank"
         href="https://www.instagram.com/utdnebula/"
       >
-        <Image src={Instagram} alt="Instagram" width="30" height="30" />
+        <Icon light={LightInsta} dark={DarkInsta} alt="Instagram" size="30" />
         Instagram
       </Link>
       <Link
@@ -123,7 +156,12 @@ function GetToKnowUs() {
         target="_blank"
         href="https://www.linkedin.com/company/utdnebula/posts/?feedView=all"
       >
-        <Image src={Linkedin} alt="Linkedin" width="30" height="30" />
+        <Icon
+          light={LightLinkedin}
+          dark={DarkLinkedin}
+          alt="Linkedin"
+          size="30"
+        />
         Linkedin
       </Link>
       <Link
@@ -131,7 +169,7 @@ function GetToKnowUs() {
         target="_blank"
         href="https://github.com/utdnebula/"
       >
-        <Image src={GitHub} alt="Github" width="30" height="30" />
+        <Icon light={LightGitHub} dark={DarkGitHub} alt="Github" size="30" />
         Github
       </Link>
     </div>
@@ -142,6 +180,7 @@ export default function Footer() {
   return (
     <footer className="lg:px-40 px-8 pt-6 bg-royal dark:bg-cornflower-300 text-white dark:text-haiti w-full">
       <div className="flex gap-8 justify-between items-center">
+        {/* Logo */}
         <div className="font-display flex flex-row items-center gap-4">
           <UTDRoomsLogoCombination
             className="h-22 w-auto shrink-0"
