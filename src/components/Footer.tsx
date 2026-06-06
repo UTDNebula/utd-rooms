@@ -1,14 +1,15 @@
 'use client';
 
 import Arrow from '@/../public/arrow-black.svg';
-import FooterLogo from '@/../public/footer-logo.svg';
 import GitHub from '@/../public/github-black.svg';
 import Instagram from '@/../public/instagram-black.svg';
-import JoinDiscord from '@/../public/join-discord-black.svg';
+import Discord from '@/../public/join-discord-black.svg';
+import Linkedin from '@/../public/linkedin-black.svg';
 import { Tooltip } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
 import NebulaLogo from './NebulaLogo';
+import { UTDRoomsLogoCombination } from './UTDRoomsLogo';
 
 function ScrollUpButton() {
   return (
@@ -37,7 +38,7 @@ function ForOrganizations() {
   return (
     <div>
       <h3 className="text-md md:text-lg font-bold">For Organizations</h3>
-      <div className="mt-6 flex flex-col gap-3 text-sm md:text-base">
+      <div className="mt-6 flex flex-col gap-5 text-sm md:text-base">
         <Link
           className={linkClasses}
           target="_blank"
@@ -61,7 +62,7 @@ function ForStudents() {
   return (
     <div>
       <h3 className="text-md md:text-lg font-bold">For Students</h3>
-      <div className="mt-6 flex flex-col gap-3 text-sm md:text-base">
+      <div className="mt-6 flex flex-col gap-5 text-sm md:text-base">
         <Link
           className={linkClasses}
           target="_blank"
@@ -74,7 +75,7 @@ function ForStudents() {
           target="_blank"
           href="https://coursebook.utdallas.edu/"
         >
-          Coursebook
+          CourseBook
         </Link>
         <Link
           className={linkClasses}
@@ -82,13 +83,6 @@ function ForStudents() {
           href="https://calendar.utdallas.edu/"
         >
           Comet Calendar
-        </Link>
-        <Link
-          className={linkClasses}
-          target="_blank"
-          href="https://services.utdallas.edu/contact/"
-        >
-          Building Hours
         </Link>
       </div>
     </div>
@@ -98,24 +92,22 @@ function ForStudents() {
 function GetToKnowUs() {
   return (
     <div className="flex flex-col gap-5 text-sm md:text-base">
-      <Link target="_blank" href="https://discord.utdnebula.com/">
-        <Image src={JoinDiscord} alt="Join Discord" height="40" />
+      <Link
+        className={
+          linkClasses + ' flex items-center gap-2 mb-2 hover:scale-105 transition'
+        }
+        target="_blank"
+        href="https://discord.utdnebula.com/"
+      >
+        <Image src={Discord} alt="Discord" height={45} />
       </Link>
       <Link
         className={linkClasses + ' flex items-center gap-2'}
         target="_blank"
         href="https://www.utdnebula.com/"
       >
-        <NebulaLogo className="h-6 w-auto fill-black" />
+        <NebulaLogo className="h-6 w-auto fill-haiti" />
         Wesbite
-      </Link>
-      <Link
-        className={linkClasses + ' flex items-center gap-2'}
-        target="_blank"
-        href="https://github.com/utdnebula/"
-      >
-        <Image src={GitHub} alt="Github" width="30" height="30" />
-        Github
       </Link>
       <Link
         className={linkClasses + ' flex items-center gap-2'}
@@ -125,29 +117,57 @@ function GetToKnowUs() {
         <Image src={Instagram} alt="Instagram" width="30" height="30" />
         Instagram
       </Link>
+      <Link
+        className={linkClasses + ' flex items-center gap-2'}
+        target="_blank"
+        href="https://www.linkedin.com/company/utdnebula/posts/?feedView=all"
+      >
+        <Image src={Linkedin} alt="Linkedin" width="30" height="30" />
+        Linkedin
+      </Link>
+      <Link
+        className={linkClasses + ' flex items-center gap-2'}
+        target="_blank"
+        href="https://github.com/utdnebula/"
+      >
+        <Image src={GitHub} alt="Github" width="30" height="30" />
+        Github
+      </Link>
     </div>
   );
 }
 
 export default function Footer() {
   return (
-    <footer className="pt-6 bg-royal dark:bg-cornflower-300 dark:text-black w-full">
-      <div className="w-4/5 mx-auto flex justify-between items-center">
-        <Image
-          src={FooterLogo}
-          alt="Footer UTD Rooms Logo"
-          height="60"
-          className="shrink min-w-0"
-        />
+    <footer className="lg:px-40 px-8 pt-6 bg-royal dark:bg-cornflower-300 text-white dark:text-haiti w-full">
+      <div className="flex gap-8 justify-between items-center">
+        <div className="font-display flex flex-row items-center gap-4">
+          <UTDRoomsLogoCombination 
+            className="h-22 w-auto shrink-0"
+            duotone
+            slotClassNames={{
+              nebulaLogo: "fill-current",
+              projectLogo: "fill-haiti dark:fill-white",
+            }}
+          />
+          <div className="flex flex-col max-sm:hidden">
+            <span className="whitespace-nowrap text-2xl md:text-4xl font-bold leading-tight">
+              UTD ROOMS
+            </span>
+            <span className="whitespace-nowrap text-sm md:text-lg font-medium">
+              by Nebula Labs
+            </span>
+          </div>
+        </div>
         <ScrollUpButton />
       </div>
-      <div className="w-4/5 flex flex-wrap gap-5 justify-between mt-10 mx-auto">
+      <div className="flex flex-wrap gap-5 justify-between mt-10">
         <ForOrganizations />
         <ForStudents />
         <GetToKnowUs />
       </div>
-      <div className="w-4/5 mx-auto pb-6 mt-10">
-        <div className="border-t-2 border-white dark:border-black" />
+      <div className="pb-6 mt-10">
+        <div className="border-t-2 border-white dark:border-haiti" />
         <div className="flex md:flex-row flex-col gap-5 justify-between items-center pt-6">
           <Link className={linkClasses} href="/sitemap.xml">
             Sitemap
