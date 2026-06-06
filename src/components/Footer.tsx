@@ -187,7 +187,7 @@ export default function Footer() {
             duotone
             slotClassNames={{
               nebulaLogo: 'fill-current',
-              projectLogo: 'fill-haiti dark:fill-royal',
+              projectLogo: 'fill-cornflower-300 dark:fill-royal',
             }}
           />
           <div className="flex flex-col max-sm:hidden">
