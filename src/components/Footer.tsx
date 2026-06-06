@@ -107,14 +107,12 @@ function Icon(props: {
       <Image
         src={props.light}
         alt={props.alt}
-        width={props.size}
         height={props.size}
         className="block dark:hidden"
       />
       <Image
         src={props.dark}
         alt={props.alt}
-        width={props.size}
         height={props.size}
         className="hidden dark:block"
       />
@@ -133,7 +131,7 @@ function GetToKnowUs() {
         target="_blank"
         href="https://discord.utdnebula.com/"
       >
-        <Icon light={LightDiscord} dark={DarkDiscord} alt="Discord" size={45} />
+        <Icon light={LightDiscord} dark={DarkDiscord} alt="Discord" size="45" />
       </Link>
       <Link
         className={linkClasses + ' flex items-center gap-2'}
