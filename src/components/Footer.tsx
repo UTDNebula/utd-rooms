@@ -94,7 +94,8 @@ function GetToKnowUs() {
     <div className="flex flex-col gap-5 text-sm md:text-base">
       <Link
         className={
-          linkClasses + ' flex items-center gap-2 mb-2 hover:scale-105 transition'
+          linkClasses +
+          ' flex items-center gap-2 mb-2 hover:scale-105 transition'
         }
         target="_blank"
         href="https://discord.utdnebula.com/"
@@ -142,12 +143,12 @@ export default function Footer() {
     <footer className="lg:px-40 px-8 pt-6 bg-royal dark:bg-cornflower-300 text-white dark:text-haiti w-full">
       <div className="flex gap-8 justify-between items-center">
         <div className="font-display flex flex-row items-center gap-4">
-          <UTDRoomsLogoCombination 
+          <UTDRoomsLogoCombination
             className="h-22 w-auto shrink-0"
             duotone
             slotClassNames={{
-              nebulaLogo: "fill-current",
-              projectLogo: "fill-haiti dark:fill-white",
+              nebulaLogo: 'fill-current',
+              projectLogo: 'fill-haiti dark:fill-white',
             }}
           />
           <div className="flex flex-col max-sm:hidden">
