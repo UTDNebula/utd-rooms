@@ -51,7 +51,13 @@ function ScrollUpButton() {
         onClick={() => window.scrollTo(0, 0)}
         className="flex flex-col items-center justify-center rounded-full p-2 transition border-2 border-white/0 hover:border-white dark:hover:border-haiti cursor-pointer"
       >
-        <Icon className='rotate-180' light={LightArrow} dark={DarkArrow} alt="arrow" size="20" />
+        <Icon
+          className="rotate-180"
+          light={LightArrow}
+          dark={DarkArrow}
+          alt="arrow"
+          size="20"
+        />
         Top
       </button>
     </Tooltip>
@@ -181,7 +187,7 @@ export default function Footer() {
             duotone
             slotClassNames={{
               nebulaLogo: 'fill-current',
-              projectLogo: 'fill-haiti dark:fill-white',
+              projectLogo: 'fill-haiti dark:fill-royal',
             }}
           />
           <div className="flex flex-col max-sm:hidden">
@@ -204,7 +210,10 @@ export default function Footer() {
         <div className="border-t-2 border-white dark:border-haiti" />
         <div className="flex md:flex-row flex-col gap-5 justify-between items-center pt-6">
           <div className="flex gap-x-8 gap-y-1 justify-around md:justify-normal flex-wrap">
-            <Link className={linkClasses} href="https://www.utdnebula.com/legal/privacy-policy.txt">
+            <Link
+              className={linkClasses}
+              href="https://www.utdnebula.com/legal/privacy-policy.txt"
+            >
               Privacy Policy
             </Link>
             <Link className={linkClasses} href="/sitemap.xml">
