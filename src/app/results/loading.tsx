@@ -1,4 +1,5 @@
 import { LoadingFilters } from '@/components/Filters';
+import Footer from '@/components/Footer';
 import { LoadingResultsTable } from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import { defaultEndTime, defaultStartTime } from '@/lib/timeUtils';
@@ -17,6 +18,7 @@ export default function Loading() {
           endTime={defaultEndTime + ':00'}
         />
       </main>
+      <Footer />
     </>
   );
 }
