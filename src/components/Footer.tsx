@@ -64,59 +64,65 @@ function ScrollUpButton() {
   );
 }
 
+const links = [
+  {
+    name: 'For Organizations',
+    links: [
+      {
+        name: 'Astra',
+        href: 'https://www.aaiscloud.com/UTXDallas/default.aspx?home',
+      },
+      { name: 'Mazevo', href: 'https://east.mymazevo.com/main-home' },
+    ],
+  },
+  {
+    name: 'For Students',
+    links: [
+      { name: 'Library', href: 'https://libcal.utdallas.edu/allspaces' },
+      { name: 'CourseBook', href: 'https://coursebook.utdallas.edu/' },
+      { name: 'Comet Calendar', href: 'https://calendar.utdallas.edu/' },
+    ],
+  },
+  {
+    name: 'Projects',
+    links: [
+      { name: 'Clubs', href: 'https://clubs.utdnebula.com/' },
+      { name: 'Trends', href: 'https://trends.utdnebula.com/' },
+      { name: 'Skedge', href: 'https://www.utdnebula.com/projects/skedge' },
+      {
+        name: 'API & Platform',
+        href: 'https://www.utdnebula.com/projects/api',
+      },
+    ],
+  },
+];
+
 const linkClasses =
   'underline decoration-transparent hover:decoration-inherit transition';
 
-function ForOrganizations() {
-  return (
-    <div>
-      <h3 className="text-md md:text-lg font-bold">For Organizations</h3>
-      <div className="mt-6 flex flex-col gap-5 text-sm md:text-base">
-        <Link
-          className={linkClasses}
-          target="_blank"
-          href="https://www.aaiscloud.com/UTXDallas/default.aspx?home"
-        >
-          Astra
-        </Link>
-        <Link
-          className={linkClasses}
-          target="_blank"
-          href="https://east.mymazevo.com/main-home"
-        >
-          Mazevo
-        </Link>
-      </div>
-    </div>
-  );
+interface LinkGroupProps {
+  name: string;
+  links: {
+    name: string;
+    href: string;
+  }[];
 }
 
-function ForStudents() {
+function LinkGroup({ name, links }: LinkGroupProps) {
   return (
     <div>
-      <h3 className="text-md md:text-lg font-bold">For Students</h3>
-      <div className="mt-6 flex flex-col gap-5 text-sm md:text-base">
-        <Link
-          className={linkClasses}
-          target="_blank"
-          href="https://libcal.utdallas.edu/allspaces"
-        >
-          Library
-        </Link>
-        <Link
-          className={linkClasses}
-          target="_blank"
-          href="https://coursebook.utdallas.edu/"
-        >
-          CourseBook
-        </Link>
-        <Link
-          className={linkClasses}
-          target="_blank"
-          href="https://calendar.utdallas.edu/"
-        >
-          Comet Calendar
-        </Link>
+      <h3 className="text-md md:text-lg font-bold">{name}</h3>
+      <div className="mt-6 flex flex-col items-start gap-5 text-sm md:text-base">
+        {links.map(({ name, href }) => (
+          <Link
+            key={name + href}
+            className={linkClasses}
+            target={href.startsWith('http') ? '_blank' : undefined}
+            href={href}
+          >
+            {name}
+          </Link>
+        ))}
       </div>
     </div>
   );
@@ -124,7 +130,7 @@ function ForStudents() {
 
 function GetToKnowUs() {
   return (
-    <div className="flex flex-col gap-5 text-sm md:text-base">
+    <div className="flex flex-col items-start gap-5 text-sm md:text-base">
       <Link
         className={
           linkClasses +
@@ -201,9 +207,10 @@ export default function Footer() {
         </div>
         <ScrollUpButton />
       </div>
-      <div className="flex flex-wrap gap-5 justify-between mt-10">
-        <ForOrganizations />
-        <ForStudents />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10 mt-10">
+        {links.map(({ name, links }) => (
+          <LinkGroup key={name} name={name} links={links} />
+        ))}
         <GetToKnowUs />
       </div>
       <div className="pb-6 mt-10">
