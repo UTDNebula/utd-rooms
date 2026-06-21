@@ -17,16 +17,16 @@
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.14.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-    "@mui/icons-material": "^7.3.7",
-    "@mui/material": "^7.3.7",
-    "@mui/material-nextjs": "^7.3.7",
-    "@mui/x-date-pickers": "^8.25.0",
+    "@mui/icons-material": "^9.1.1",
+    "@mui/material": "^9.1.1",
+    "@mui/material-nextjs": "^9.1.1",
+    "@mui/x-date-pickers": "^9.6.0",
     "@next/third-parties": "^16.2.9",
     "@sentry/nextjs": "^10.59.0",
-    "@syncfusion/ej2-base": "^32.1.23",
-    "@syncfusion/ej2-react-schedule": "^32.1.22",
+    "@syncfusion/ej2-base": "^33.2.3",
+    "@syncfusion/ej2-react-schedule": "^33.2.4",
     "dayjs": "^1.11.21",
-    "import-in-the-middle": "^2.0.4",
+    "import-in-the-middle": "^3.1.0",
     "next": "^16.2.9",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.1",
-    "@types/node": "^25.0.9",
+    "@types/node": "^26.0.0",
     "@types/react": "^19.2.17",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "@typescript-eslint/parser": "^8.61.1",
@@ -47,6 +47,6 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.8.4",
     "tailwindcss": "^4.3.1",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
