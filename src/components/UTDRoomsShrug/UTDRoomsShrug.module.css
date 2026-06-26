@@ -1,5 +1,5 @@
 .yl {
-  animation: yl1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: yl1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes yl1 {
   0% {
@@ -11,7 +11,7 @@
 }
 
 .yr {
-  animation: yr1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: yr1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes yr1 {
   0% {
@@ -23,7 +23,7 @@
 }
 
 .lt {
-  animation: lt1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: lt1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes lt1 {
   0% {
@@ -35,7 +35,7 @@
 }
 
 .lb {
-  animation: lb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: lb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes lb1 {
   0% {
@@ -47,7 +47,7 @@
 }
 
 .rt {
-  animation: rt1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: rt1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes rt1 {
   0% {
@@ -59,7 +59,7 @@
 }
 
 .rb {
-  animation: rb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: rb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes rb1 {
   0% {
@@ -71,7 +71,7 @@
 }
 
 .ba {
-  animation: ba1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: ba1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes ba1 {
   0% {
@@ -84,8 +84,8 @@
 
 .bb {
   animation:
-    bb1 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards,
-    bb2 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.3s forwards;
+    bb1 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.25s forwards,
+    bb2 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.55s forwards;
 }
 @keyframes bb1 {
   0% {
@@ -110,8 +110,8 @@
 
 .bc {
   animation:
-    bc1 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards,
-    bc2 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.3s forwards;
+    bc1 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.25s forwards,
+    bc2 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.55s forwards;
 }
 @keyframes bc1 {
   0% {
@@ -135,7 +135,7 @@
 }
 
 .bd {
-  animation: bd1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: bd1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes bd1 {
   0% {
@@ -147,7 +147,7 @@
 }
 
 .ea {
-  animation: ea1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: ea1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes ea1 {
   0% {
@@ -163,7 +163,7 @@
 }
 
 .eb {
-  animation: eb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: eb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.25s forwards;
 }
 @keyframes eb1 {
   0% {
