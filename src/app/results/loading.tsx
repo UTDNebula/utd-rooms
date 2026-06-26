@@ -11,7 +11,7 @@ export default function Loading() {
   return (
     <>
       <TopMenu />
-      <main className="p-4 flex flex-col gap-4">
+      <main className="p-4 flex flex-col gap-4 min-h-screen">
         <LoadingFilters />
         <LoadingResultsTable
           startTime={defaultStartTime + ':00'}
