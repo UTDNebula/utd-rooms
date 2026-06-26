@@ -1,10 +1,8 @@
 import styles from './UTDRoomsShrug.module.css';
 
-export default function UTDRoomsShrug() {
+export default function UTDRoomsShrug(props: { className?: string }) {
   return (
     <svg
-      width="768"
-      height="384"
       viewBox="0 0 384 384"
       version="1.1"
       id="svg1"
@@ -14,6 +12,7 @@ export default function UTDRoomsShrug() {
       fill="none"
       stroke="black"
       strokeWidth={16}
+      className={`aspect-[2] ${props.className}`}
     >
       <path
         d="m 173.547,276.555 -43.308,13.588"

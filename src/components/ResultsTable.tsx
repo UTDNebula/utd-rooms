@@ -38,6 +38,7 @@ import duration from 'dayjs/plugin/duration';
 import minMax from 'dayjs/plugin/minMax';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import NoResults from './NoResults';
 
 interface BuildingResource {
   type: 'building';
@@ -627,6 +628,10 @@ export default function ResultsTable(props: Props) {
         });
     }
   });
+
+  if (roomResources.length === 0) {
+    return <NoResults />;
+  }
 
   if (nearby) {
     // Sort buildings by distance

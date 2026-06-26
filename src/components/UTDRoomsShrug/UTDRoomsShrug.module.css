@@ -1,18 +1,3 @@
-.yl,
-.yr,
-.rt,
-.rb,
-.lt,
-.lb,
-.ba,
-.bb,
-.bc,
-.bd,
-.ea,
-.eb {
-  stroke: black;
-}
-
 .yl {
   animation: yl1 0.75s cubic-bezier(0.77, 0, 0.175, 1) forwards;
 }
