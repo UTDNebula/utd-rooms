@@ -1,0 +1,179 @@
+.yl {
+  animation: yl1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes yl1 {
+  0% {
+    d: path('m 173.547 276.555 -43.308 13.588');
+  }
+  100% {
+    d: path('M 163.92339 186.37058 139.09916 140.81635');
+  }
+}
+
+.yr {
+  animation: yr1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes yr1 {
+  0% {
+    d: path('M 210.453 107.446 253.761 93.857');
+  }
+  100% {
+    d: path('m 184.66562 124.81635 24.82423 45.55423');
+  }
+}
+
+.lt {
+  animation: lt1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes lt1 {
+  0% {
+    d: path('m 185.063 115.411 -49.5 -15.53');
+  }
+  100% {
+    d: path('m -26.95748 116.29364 -48 -0.008');
+  }
+}
+
+.lb {
+  animation: lb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes lb1 {
+  0% {
+    d: path('m 61.541 268.589 68.698 21.554');
+  }
+  100% {
+    d: path('m 21.82422 267.71364 48 0');
+  }
+}
+
+.rt {
+  animation: rt1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes rt1 {
+  0% {
+    d: path('m 253.761 93.857 68.684 21.55 0 0');
+  }
+  100% {
+    d: path('m 410.95787 116.29364 48 0 0 0');
+  }
+}
+
+.rb {
+  animation: rb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes rb1 {
+  0% {
+    d: path('m 198.938 268.589 49.5 15.53');
+  }
+  100% {
+    d: path('m 314.17587 267.71365 48 0');
+  }
+}
+
+.ba {
+  animation: ba1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes ba1 {
+  0% {
+    d: path('m 61.541 268.589 48.782 -151.42');
+  }
+  100% {
+    d: path('M 21.82423 267.71355 -26.95748 116.29364');
+  }
+}
+
+.bb {
+  animation:
+    bb1 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.5s forwards,
+    bb2 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.8s forwards;
+}
+@keyframes bb1 {
+  0% {
+    d: path(
+      'm 185.063 115.411 c -18.27467 58.244 -36.54933 116.488 -54.824 174.732'
+    );
+  }
+  100% {
+    d: path('m 110.52223 116.29355 c 0 50.47336 0 100.94673 0 151.42009');
+  }
+}
+@keyframes bb2 {
+  0% {
+    d: path('m 110.52223 116.29355 c 0 50.47336 0 100.94673 0 151.42009');
+  }
+  100% {
+    d: path(
+      'm 110.52223 116.29355 c -44.3489 50.47336 -40.95655 100.94673 0 151.42009'
+    );
+  }
+}
+
+.bc {
+  animation:
+    bc1 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.5s forwards,
+    bc2 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0.8s forwards;
+}
+@keyframes bc1 {
+  0% {
+    d: path(
+      'M 253.761 93.857 C 235.48667 152.10133 217.21233 210.34567 198.938 268.59'
+    );
+  }
+  100% {
+    d: path('m 274.04423 116.29355 c 0 50.47367 0 100.94733 0 151.421');
+  }
+}
+@keyframes bc2 {
+  0% {
+    d: path('m 274.04423 116.29355 c 0 50.47367 0 100.94733 0 151.421');
+  }
+  100% {
+    d: path(
+      'm 274.04423 116.29355 c 42.66667 49.30068 42.66667 99.77435 0 151.421'
+    );
+  }
+}
+
+.bd {
+  animation: bd1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes bd1 {
+  0% {
+    d: path('m 322.459 115.411 -48.782 151.42');
+  }
+  100% {
+    d: path('m 410.95787 116.29364 -48.782 151.42');
+  }
+}
+
+.ea {
+  animation: ea1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes ea1 {
+  0% {
+    stroke-dashoffset: 498.947909095;
+    transform-origin: 192 191.24606;
+    transform: rotate(180deg);
+  }
+  100% {
+    stroke-dashoffset: 594.280388003;
+    transform-origin: 192 191.24606;
+    transform: rotate(105deg);
+  }
+}
+
+.eb {
+  animation: eb1 0.75s cubic-bezier(0.77, 0, 0.175, 1) 0.5s forwards;
+}
+@keyframes eb1 {
+  0% {
+    stroke-dashoffset: 498.947909095;
+    transform-origin: 192 191.24606;
+    transform: rotate(0);
+  }
+  100% {
+    stroke-dashoffset: 594.280388003;
+    transform-origin: 192 191.24606;
+    transform: rotate(105deg);
+  }
+}
