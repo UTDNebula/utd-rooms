@@ -405,7 +405,13 @@ export default function Filters(props: Props) {
               return selected.join(', ');
             }}
             displayEmpty
-            MenuProps={{ PaperProps: { className: 'max-h-60' } }}
+            MenuProps={{
+              slotProps: {
+                paper: {
+                  className: 'max-h-60',
+                },
+              },
+            }}
           >
             <MenuItem className="h-10" value="any">
               <Radio checked={!buildings.length} />

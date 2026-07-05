@@ -111,8 +111,6 @@ export const excludedRooms = [
   'MC Other',
   'Student Union (SU) 2.412',
   'Student Union (SU) 4.600',
-  'Student Union (SU) 11.219',
-  'Student Union (SU) 12.110',
   'Student Union (SU) Other',
   'SLC Other',
   'GR 2.236',

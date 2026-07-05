@@ -1,6 +1,7 @@
 'use client';
 
 import Filters from '@/components/Filters';
+import Footer from '@/components/Footer';
 import ResultsTable from '@/components/ResultsTable';
 import TopMenu from '@/components/TopMenu';
 import type {
@@ -59,7 +60,7 @@ export default function Results(props: Props) {
   return (
     <>
       <TopMenu search={search} setSearch={setSearch} />
-      <main className="p-4 flex flex-col gap-4">
+      <main className="p-4 flex flex-col gap-4 min-h-screen">
         <Filters
           date={props.date}
           startTime={startTime}
@@ -84,6 +85,7 @@ export default function Results(props: Props) {
           search={search}
         />
       </main>
+      <Footer />
     </>
   );
 }
