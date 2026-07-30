@@ -604,7 +604,7 @@ export default function ResultsTable(props: Props) {
                 (buildingName &&
                   buildingName
                     .split(' (')[1]
-                    .toLowerCase()
+                    ?.toLowerCase()
                     .startsWith(search)) ||
                 events.some((event) =>
                   event.Subject.toLowerCase().startsWith(search),
