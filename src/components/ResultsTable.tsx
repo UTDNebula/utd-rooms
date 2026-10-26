@@ -23,7 +23,7 @@ import type {
 } from '@/types/Events';
 import type { GenericFetchedData } from '@/types/GenericFetchedData';
 import type { Rooms } from '@/types/Rooms';
-import { Button, Skeleton, Tooltip } from '@mui/material';
+import { Alert, Button, Skeleton, Tooltip } from '@mui/material';
 import {
   Inject,
   ResourceDirective,
@@ -604,7 +604,7 @@ export default function ResultsTable(props: Props) {
                 (buildingName &&
                   buildingName
                     .split(' (')[1]
-                    .toLowerCase()
+                    ?.toLowerCase()
                     .startsWith(search)) ||
                 events.some((event) =>
                   event.Subject.toLowerCase().startsWith(search),
@@ -697,8 +697,13 @@ export default function ResultsTable(props: Props) {
 
   return (
     <>
+      <Alert severity="warning" className="w-fit">
+        Room availability is subject to change by admin, faculty, or
+        reservations.
+      </Alert>
       <p>
-        {`Found ${roomResources.length}${roomCountText}${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
+        Found <b>{`${roomResources.length}`}</b>
+        {`${roomCountText}${minCapacity !== 0 ? ' Rooms with unknown capacity excluded.' : ''}${nearby ? ' Sorted by distance.' : ''}`}
       </p>
       <ScheduleComponent
         currentView="TimelineDay"
